@@ -1,0 +1,81 @@
+{
+  "name": "bepthaymao",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "lint": "eslint . --max-warnings 0 && prettier --check . && node scripts/check-suppressions.mjs",
+    "lint:fix": "eslint . --fix && prettier --write .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "node scripts/typecheck.mjs",
+    "test": "ng test customer --watch=false && ng test admin --watch=false && ng test core --watch=false && ng test ui --watch=false",
+    "test:scripts": "node --test scripts/*.test.mjs scripts/lib/*.test.mjs",
+    "build": "node scripts/no-warnings.mjs build customer && node scripts/no-warnings.mjs build admin && node scripts/check-fonts.mjs",
+    "build:customer": "node scripts/no-warnings.mjs build customer",
+    "build:admin": "node scripts/no-warnings.mjs build admin",
+    "start:customer": "ng serve customer --port 4200",
+    "start:admin": "ng serve admin --port 4201",
+    "serve:ssr:customer": "node dist/customer/server/server.mjs",
+    "prepare": "husky",
+    "drill": "node scripts/red-drill.mjs",
+    "secrets:scan": "node scripts/scan-secrets.mjs"
+  },
+  "private": true,
+  "packageManager": "npm@11.19.1",
+  "dependencies": {
+    "@angular/common": "22.2.5",
+    "@angular/compiler": "22.2.5",
+    "@angular/core": "22.2.5",
+    "@angular/forms": "22.2.5",
+    "@angular/platform-browser": "22.2.5",
+    "@angular/platform-server": "22.2.5",
+    "@angular/router": "22.2.5",
+    "@angular/ssr": "22.2.6",
+    "@fontsource/hanken-grotesk": "5.3.0",
+    "@fontsource/vollkorn": "5.3.0",
+    "express": "^5.1.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "22.2.6",
+    "@angular/cli": "22.2.6",
+    "@angular/compiler-cli": "22.2.5",
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "@eslint/js": "10.0.1",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.12.0",
+    "@vitest/coverage-v8": "5.1.0",
+    "angular-eslint": "22.6.0",
+    "eslint": "10.14.0",
+    "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-boundaries": "7.4.2",
+    "eslint-plugin-security": "4.2.1",
+    "husky": "9.1.7",
+    "jsdom": "30.1.3",
+    "lint-staged": "17.6.0",
+    "madge": "8.0.0",
+    "ng-packagr": "^22.2.0",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.1.0"
+  },
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=24.15 <25"
+  },
+  "overrides": {
+    "madge": {
+      "typescript": "$typescript"
+    }
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "esbuild@0.28.2": true,
+    "lmdb@3.5.6": true,
+    "msgpackr-extract@3.0.7": true
+  }
+}

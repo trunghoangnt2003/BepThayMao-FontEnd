@@ -1,0 +1,6 @@
+/* Hallmark · shape: app screen (admin) + Index-First (customer) · genre: editorial · theme: Garden (deal 3/3, seed gian-rustic-vietnamese-home-1376·ad2bb4ce·2026-11-08·r0)
+ * nav: topbar + row of links (admin) / wordmark only (customer) · signature: the branch list table with open/closed status (admin), the branch index with tel links (customer) · states: loading, empty, error, full, session-expired, forbidden
+ * axes: light/roman-serif/chromatic-green · posture: committed · contrast: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P_ H_ E_ S_ R_ V_ · weakest: _, <việc đã làm> */
+@import url('./tokens.css');
+@import url('./base.css');
