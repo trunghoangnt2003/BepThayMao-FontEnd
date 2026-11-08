@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { SkipLink } from '@bepthaymao/ui';
 
 @Component({
   selector: 'adm-root',
-  imports: [RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, SkipLink],
   templateUrl: './app.html',
   styleUrl: './app.css',
   host: { '[attr.lang]': 'pageLanguage' },

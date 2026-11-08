@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SkipLink } from '@bepthaymao/ui';
 
 @Component({
   selector: 'cus-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, SkipLink],
   templateUrl: './app.html',
-  styleUrl: './app.css',
   host: { '[attr.lang]': 'pageLanguage' },
 })
 export class App {

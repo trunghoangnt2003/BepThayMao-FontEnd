@@ -1,9 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { HlmButton } from '@bepthaymao/ui';
 import { PageMeta } from '../../shared/seo/page-meta';
 
 @Component({
   selector: 'cus-not-found-page',
+  imports: [HlmButton],
   templateUrl: './not-found-page.html',
   styleUrl: './not-found-page.css',
 })

@@ -1,0 +1,5 @@
+section {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+}
