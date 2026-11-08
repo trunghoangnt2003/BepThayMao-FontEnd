@@ -1,1 +1,29 @@
-<router-outlet />
+<a uiSkipLink class="skip-link" href="#main">Bỏ qua tới nội dung chính</a>
+<header>
+  <div
+    class="mx-auto flex w-full max-w-(--container-app) items-center gap-(--space-md) px-(--gutter) py-(--space-lg)"
+  >
+    <a class="wordmark" routerLink="/" aria-label="Bếp Thầy Mão, về trang quản trị">Bếp Thầy Mão</a>
+    <span class="administration">Quản trị</span>
+  </div>
+  <nav class="mx-auto w-full max-w-(--container-app) px-(--gutter)" aria-label="Điều hướng chính">
+    <ul>
+      <li>
+        <a
+          class="nav-link"
+          routerLink="/branches"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Cơ sở</a
+        >
+      </li>
+    </ul>
+  </nav>
+</header>
+<main
+  class="mx-auto w-full max-w-(--container-app) px-(--gutter) py-(--space-xl)"
+  id="main"
+  tabindex="-1"
+>
+  <router-outlet />
+</main>

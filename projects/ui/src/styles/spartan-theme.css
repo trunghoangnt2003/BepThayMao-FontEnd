@@ -1,0 +1,59 @@
+:root {
+  --background: var(--color-paper);
+  --foreground: var(--color-ink);
+  --card: var(--color-paper);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-paper);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-accent);
+  --primary-foreground: var(--color-accent-ink);
+  --secondary: var(--color-paper-2);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-paper-2);
+  --muted-foreground: var(--color-muted);
+  --accent: var(--color-paper-3);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-error);
+  --border: var(--color-rule);
+  --input: var(--color-rule-2);
+  --ring: var(--color-focus);
+  --radius: var(--radius-card);
+  --disabled-opacity: 0.55;
+  --shadow-surface: 0 2px 8px oklch(23% 0.05 152 / 0.08);
+}
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+}
+
+@theme {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 60rem;
+  --breakpoint-xl: 80rem;
+}
+
+/* Shared convention: touch controls are at least 44px. */
+[hlmBtn] {
+  min-height: var(--control-h);
+  min-width: var(--control-h);
+  border-radius: var(--radius-pill);
+  padding-inline: var(--space-lg);
+  font-size: var(--text-md);
+  font-weight: var(--weight-strong);
+  text-decoration: none;
+  transition:
+    opacity var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+[hlmBtn]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+[hlmBtn][data-disabled],
+[hlmBtn][aria-busy='true'] {
+  opacity: var(--disabled-opacity);
+}

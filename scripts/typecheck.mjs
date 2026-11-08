@@ -20,6 +20,13 @@ for (const project of readdirSync('projects')) {
     if (result.status !== 0) process.exit(result.status ?? 1);
   }
 }
+const e2e = spawnSync(
+  process.execPath,
+  [resolve('node_modules/typescript/bin/tsc'), '--noEmit', '-p', 'e2e/tsconfig.json'],
+  { stdio: 'inherit' },
+);
+if (e2e.error) throw e2e.error;
+if (e2e.status !== 0) process.exit(e2e.status ?? 1);
 const madge = spawnSync(
   process.execPath,
   [
