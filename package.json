@@ -18,7 +18,8 @@
     "serve:ssr:customer": "node dist/customer/server/server.mjs",
     "prepare": "husky",
     "drill": "node scripts/red-drill.mjs",
-    "secrets:scan": "node scripts/scan-secrets.mjs"
+    "secrets:scan": "node scripts/scan-secrets.mjs",
+    "smoke:ssr": "node scripts/ssr-smoke.mjs"
   },
   "private": true,
   "packageManager": "npm@11.19.1",
