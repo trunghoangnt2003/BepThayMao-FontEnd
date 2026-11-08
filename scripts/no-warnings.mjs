@@ -21,5 +21,5 @@ child.on('error', (error) => {
   process.exitCode = 1;
 });
 child.on('close', (code) => {
-  process.exitCode = code || (/\bWARNING\b|▲/i.test(output) ? 1 : 0);
+  process.exitCode = code === 0 && !/\bWARNING\b|▲/i.test(output) ? 0 : 1;
 });
