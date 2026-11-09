@@ -97,7 +97,7 @@ try {
   const driftEvidence = withFiles(
     root,
     { [generated]: readFileSync(generated, 'utf8') + '\n// deliberate drift\n' },
-    () => assertRed(run(process.execPath, ['scripts/api-check.mjs']), /Client .*th|client|Client/),
+    () => assertRed(run(process.execPath, ['scripts/api-check.mjs']), /Client lỗi thời/),
   );
   console.log(`api-drift | RED | ${driftEvidence}`);
   const cli = resolve('node_modules/@commitlint/cli/cli.js');
