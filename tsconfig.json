@@ -64,5 +64,6 @@
     {
       "path": "./projects/ui/tsconfig.spec.json"
     }
-  ]
+  ],
+  "include": ["orval.config.ts", "playwright.config.ts"]
 }

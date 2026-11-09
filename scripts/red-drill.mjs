@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { assertRed, withFiles } from './lib/drill.mjs';
 
 const root = process.cwd();
@@ -85,6 +86,20 @@ try {
     );
     console.log(`${drill.name} | ĐỎ ĐÚNG | ${evidence}`);
   }
+  const policyPath = 'scripts/license-policy.json';
+  const policy = JSON.parse(readFileSync(policyPath, 'utf8'));
+  policy.allow = policy.allow.filter((license) => license !== 'MIT');
+  const licenseEvidence = withFiles(root, { [policyPath]: JSON.stringify(policy) }, () =>
+    assertRed(run(process.execPath, ['scripts/license-check.mjs']), /violations/),
+  );
+  console.log(`license-outside-allowlist | RED | ${licenseEvidence}`);
+  const generated = 'projects/api-client/src/generated/endpoints/index.ts';
+  const driftEvidence = withFiles(
+    root,
+    { [generated]: readFileSync(generated, 'utf8') + '\n// deliberate drift\n' },
+    () => assertRed(run(process.execPath, ['scripts/api-check.mjs']), /Client .*th|client|Client/),
+  );
+  console.log(`api-drift | RED | ${driftEvidence}`);
   const cli = resolve('node_modules/@commitlint/cli/cli.js');
   const evidence = assertRed(
     run(process.execPath, [cli], { input: 'Update stuff\n' }),

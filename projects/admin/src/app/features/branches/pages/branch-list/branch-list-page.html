@@ -1,0 +1,52 @@
+<h1 tabindex="-1">Danh sách cơ sở</h1>
+<section [attr.aria-busy]="state() === 'loading'" aria-label="Danh sách cơ sở">
+  @switch (state()) {
+    @case ('loading') {
+      <p class="visually-hidden" role="status">Đang tải danh sách cơ sở…</p>
+      @if (showSkeleton()) {
+        <div class="skeleton" aria-hidden="true"></div>
+        <div class="skeleton" aria-hidden="true"></div>
+        <div class="skeleton" aria-hidden="true"></div>
+      }
+    }
+    @case ('error') {
+      <h2>Không tải được danh sách cơ sở</h2>
+      <p>
+        Kiểm tra kết nối mạng rồi thử lại.
+        @if (correlationId(); as id) {
+          Nếu vẫn lỗi, gửi mã {{ id }} cho đội phát triển.
+        }
+      </p>
+      <button hlmBtn type="button" (click)="load()">Thử lại</button>
+    }
+    @case ('loaded') {
+      @if (branches().length) {
+        <table role="table">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th scope="col" role="columnheader">Cơ sở</th>
+              <th scope="col" role="columnheader">Giờ nhận đơn</th>
+            </tr>
+          </thead>
+          <tbody role="rowgroup">
+            @for (branch of branches(); track branch.id) {
+              <tr role="row">
+                <th scope="row" role="rowheader">
+                  <span>{{ branch.name }}</span>
+                  <p>{{ branch.address }}</p>
+                  <p>{{ branch.phone }}</p>
+                </th>
+                <td data-label="Giờ nhận đơn" role="cell">
+                  {{ formatOpeningHours(branch.openTime, branch.closeTime) }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <h2>Chưa có cơ sở nào</h2>
+        <p>Danh sách sẽ hiện ở đây khi có cơ sở mở nhận đơn.</p>
+      }
+    }
+  }
+</section>

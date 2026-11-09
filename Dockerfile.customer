@@ -1,0 +1,13 @@
+FROM node:24.22.2-alpine AS build
+WORKDIR /src
+COPY package*.json .npmrc ./
+RUN npm ci --ignore-scripts
+COPY . .
+RUN npm run build:customer
+FROM node:24.22.2-alpine
+WORKDIR /app
+COPY --from=build /src/dist/customer ./dist/customer
+USER node
+ENV PORT=4000
+EXPOSE 4000
+CMD ["node", "dist/customer/server/server.mjs"]

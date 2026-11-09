@@ -1,0 +1,16 @@
+{
+  "allow": [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "0BSD",
+    "MIT-0",
+    "PostgreSQL",
+    "OFL-1.1",
+    "Python-2.0",
+    "MPL-2.0"
+  ],
+  "exceptions": []
+}

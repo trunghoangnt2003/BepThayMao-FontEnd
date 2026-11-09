@@ -20,6 +20,13 @@ for (const project of readdirSync('projects')) {
     if (result.status !== 0) process.exit(result.status ?? 1);
   }
 }
+const tooling = spawnSync(
+  process.execPath,
+  [resolve('node_modules/typescript/bin/tsc'), '-p', 'tsconfig.tools.json'],
+  { stdio: 'inherit' },
+);
+if (tooling.error) throw tooling.error;
+if (tooling.status !== 0) process.exit(tooling.status ?? 1);
 const madge = spawnSync(
   process.execPath,
   [

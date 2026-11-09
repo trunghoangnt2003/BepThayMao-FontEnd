@@ -1,1 +1,10 @@
-<router-outlet />
+<a class="skip-link" href="#main">Bỏ qua tới nội dung chính</a>
+<header>
+  <div class="container topbar">
+    <span class="wordmark">Bếp Thầy Mão</span><span class="area">Quản trị</span>
+  </div>
+</header>
+<nav class="container" aria-label="Điều hướng chính">
+  <a routerLink="/branches" routerLinkActive="active" ariaCurrentWhenActive="page">Cơ sở</a>
+</nav>
+<main id="main" class="container" tabindex="-1"><router-outlet /></main>
