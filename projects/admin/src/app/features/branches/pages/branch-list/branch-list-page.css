@@ -1,0 +1,134 @@
+:host {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+h1 {
+  overflow-wrap: break-word;
+}
+
+/* Reserve height so the table replaces the placeholder without a layout jump. */
+.loading {
+  min-height: calc(3 * 56px);
+}
+
+.skeleton-row {
+  display: grid;
+  gap: var(--space-xs);
+  align-content: center;
+  min-height: 56px;
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.skeleton {
+  display: block;
+  height: 0.75rem;
+  border-radius: var(--radius-card);
+  background-color: var(--color-paper-3);
+}
+
+.skeleton--name {
+  width: min(16rem, 60%);
+}
+
+.skeleton--line {
+  width: min(24rem, 85%);
+}
+
+.notice {
+  display: grid;
+  gap: var(--space-xs);
+  justify-items: start;
+}
+
+.notice p {
+  max-width: 65ch;
+  color: var(--color-ink-2);
+}
+
+.retry {
+  min-height: var(--control-h);
+  margin-top: var(--space-xs);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: var(--rule-hair) solid var(--color-rule-2);
+}
+
+th,
+td {
+  padding: var(--space-sm) var(--space-md) var(--space-sm) 0;
+  text-align: start;
+  vertical-align: top;
+}
+
+thead th {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-strong);
+  color: var(--color-muted);
+}
+
+tbody tr {
+  border-top: var(--rule-hair) solid var(--color-rule);
+  transition: background-color var(--dur-short) var(--ease-out);
+}
+
+tbody th,
+tbody td {
+  min-height: 56px;
+}
+
+@media (hover: hover) {
+  tbody tr:hover {
+    background-color: var(--color-paper-2);
+  }
+}
+
+tbody th {
+  display: grid;
+  gap: var(--space-2xs);
+  font-weight: var(--weight-regular);
+}
+
+.name {
+  font-weight: var(--weight-strong);
+  overflow-wrap: break-word;
+}
+
+.meta {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  overflow-wrap: break-word;
+}
+
+/* Below 40rem each row becomes a labelled block; the header row is hidden visually only. */
+@media (max-width: 40rem) {
+  thead tr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    display: grid;
+    padding-block: var(--space-sm);
+  }
+
+  tbody th,
+  tbody td {
+    min-height: 0;
+    padding: var(--space-2xs) 0;
+  }
+
+  td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+}

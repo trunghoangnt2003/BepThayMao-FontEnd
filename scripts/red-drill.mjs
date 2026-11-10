@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { assertRed, withFiles } from './lib/drill.mjs';
 
@@ -15,6 +16,7 @@ const status = () => {
 if (status().trim()) throw new Error('Commit changes before running the reversible drill.');
 const eslint = [resolve('node_modules/eslint/bin/eslint.js'), '.', '--max-warnings', '0'];
 const view = 'projects/customer/src/app/features/drill/pages/probe.ts';
+const generatedModel = 'projects/api-client/src/generated/models/publicBranch.ts';
 const cases = [
   {
     name: 'cross-app-import',
@@ -61,6 +63,14 @@ const cases = [
       'projects',
     ],
     expected: /circular dependency/i,
+  },
+  {
+    name: 'api-drift',
+    changes: {
+      [generatedModel]: readFileSync(generatedModel, 'utf8').replace('id: string;', 'id: number;'),
+    },
+    args: ['scripts/api-check.mjs'],
+    expected: /LỆCH/,
   },
   {
     name: 'ts-ignore-without-reason',

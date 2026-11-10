@@ -1,0 +1,93 @@
+/* C1 Index-First: one column on phones, 5/7 grid from 60rem (UI-SPEC). */
+.index {
+  display: grid;
+  gap: var(--space-lg);
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+@media (min-width: 60rem) {
+  .index {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--gap-columns);
+    align-items: start;
+  }
+}
+
+.intro {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+h1,
+h2 {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+p {
+  max-width: 65ch;
+  color: var(--color-ink-2);
+}
+
+article {
+  display: grid;
+  gap: var(--space-sm);
+  padding-block: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+article:first-child {
+  border-top-color: var(--color-rule-2);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--display-weight);
+  line-height: var(--leading-heading);
+}
+
+dl {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+dt {
+  font-size: var(--text-sm);
+  line-height: var(--leading-label);
+  color: var(--color-muted);
+}
+
+dd {
+  font-size: var(--text-md);
+  overflow-wrap: break-word;
+}
+
+/* 44px touch target from vertical padding, without changing how the number looks. */
+.tel,
+.reload {
+  display: inline-block;
+  padding-block: 10px;
+  color: var(--color-ink);
+  text-decoration-line: underline;
+  text-decoration-color: var(--color-rule-2);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--dur-short) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .tel:hover,
+  .reload:hover {
+    text-decoration-color: var(--color-accent);
+  }
+}
+
+.notice {
+  display: grid;
+  gap: var(--space-xs);
+  justify-items: start;
+  padding-block: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule-2);
+}

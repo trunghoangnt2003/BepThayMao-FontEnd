@@ -1,0 +1,63 @@
+<h1 tabindex="-1">Danh sách cơ sở</h1>
+
+@let current = state();
+@switch (current.kind) {
+  @case ('loading') {
+    <div class="loading" aria-busy="true">
+      <p role="status" class="visually-hidden">Đang tải danh sách cơ sở…</p>
+      @if (showSkeleton()) {
+        @for (row of skeletonRows; track row) {
+          <div class="skeleton-row" aria-hidden="true">
+            <span class="skeleton skeleton--name"></span>
+            <span class="skeleton skeleton--line"></span>
+          </div>
+        }
+      }
+    </div>
+  }
+  @case ('error') {
+    <section class="notice" aria-labelledby="branches-error">
+      <h2 id="branches-error">Không tải được danh sách cơ sở</h2>
+      <p>
+        Kiểm tra kết nối mạng rồi thử lại. Nếu vẫn lỗi, gửi mã
+        <span class="num">{{ current.error.correlationId ?? 'không có' }}</span> cho đội phát triển.
+      </p>
+      <button hlmBtn class="retry" type="button" (click)="load()">Thử lại</button>
+    </section>
+  }
+  @case ('loaded') {
+    @if (current.branches.length === 0) {
+      <section class="notice" aria-labelledby="branches-empty">
+        <h2 id="branches-empty">Chưa có cơ sở nào</h2>
+        <p>Danh sách sẽ hiện ở đây khi có cơ sở mở nhận đơn.</p>
+      </section>
+    } @else {
+      <!-- Explicit roles keep table semantics when rows reflow into blocks below 40rem (UI-SPEC A2). -->
+      <table role="table" aria-labelledby="branches-caption">
+        <caption id="branches-caption" class="visually-hidden">
+          Danh sách cơ sở
+        </caption>
+        <thead role="rowgroup">
+          <tr role="row">
+            <th role="columnheader" scope="col">Cơ sở</th>
+            <th role="columnheader" scope="col">Giờ nhận đơn</th>
+          </tr>
+        </thead>
+        <tbody role="rowgroup">
+          @for (branch of current.branches; track branch.id) {
+            <tr role="row">
+              <th role="rowheader" scope="row">
+                <span class="name">{{ branch.name }}</span>
+                <span class="meta">{{ branch.address }}</span>
+                <span class="meta num">{{ branch.phone }}</span>
+              </th>
+              <td role="cell" class="num" data-label="Giờ nhận đơn">
+                {{ formatOpeningHours(branch.openTime, branch.closeTime) }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+}

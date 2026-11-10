@@ -1,7 +1,7 @@
 import { provideCore } from '@bepthaymao/core';
 import { SITE_URL } from './shared/seo/site-url';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 
@@ -10,7 +10,7 @@ export const appConfig: ApplicationConfig = {
     { provide: SITE_URL, useFactory: () => globalThis.location.origin },
     provideCore(),
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideClientHydration(),
   ],
 };
