@@ -28,7 +28,11 @@
     "api:generate": "orval --config orval.config.ts",
     "api:check": "node scripts/api-check.mjs",
     "api:clean": "node scripts/api-clean.mjs",
-    "e2e:ci": "node scripts/e2e-ci.mjs"
+    "e2e:ci": "node scripts/e2e-ci.mjs",
+    "docker:build": "docker build -f Dockerfile.customer -t bepthaymao-customer:dev . && docker build -f Dockerfile.admin -t bepthaymao-admin:dev .",
+    "docker:smoke": "node scripts/docker-smoke.mjs",
+    "licenses:check": "node scripts/license-check.mjs",
+    "deps:audit": "npm audit --omit=dev --audit-level=high && npm audit signatures"
   },
   "private": true,
   "packageManager": "npm@11.19.1",
@@ -75,6 +79,7 @@
     "eslint-plugin-security": "4.2.1",
     "husky": "9.1.7",
     "jsdom": "30.1.3",
+    "license-checker-rseidelsohn": "5.0.1",
     "lint-staged": "17.6.0",
     "madge": "8.0.0",
     "ng-packagr": "^22.2.0",

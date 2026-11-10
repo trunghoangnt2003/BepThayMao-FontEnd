@@ -1,0 +1,17 @@
+# Customer SSR image. Build context: frontend/ only; uses the committed openapi/v1.json (FR-022).
+FROM node:24.22.2-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+COPY . .
+RUN npm run build:customer
+
+FROM node:24.22.2-alpine AS runtime
+WORKDIR /app
+# The SSR bundle is self-contained (verified by docker:smoke), so no node_modules are copied.
+COPY --from=build --chown=node:node /app/dist/customer ./dist/customer
+USER node
+ENV PORT=4000 NODE_ENV=production
+# NG_ALLOWED_HOSTS, API_INTERNAL_URL and SITE_URL come from the environment (compose/k3s), never "*".
+EXPOSE 4000
+CMD ["node", "dist/customer/server/server.mjs"]
