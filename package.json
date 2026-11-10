@@ -13,7 +13,7 @@
     "build": "node scripts/no-warnings.mjs build customer && node scripts/no-warnings.mjs build admin && node scripts/check-fonts.mjs",
     "build:customer": "node scripts/no-warnings.mjs build customer",
     "build:admin": "node scripts/no-warnings.mjs build admin",
-    "start:customer": "ng serve customer --port 4200",
+    "start:customer": "node scripts/start-customer.mjs",
     "start:admin": "ng serve admin --port 4201",
     "serve:ssr:customer": "node dist/customer/server/server.mjs",
     "prepare": "husky",
@@ -27,7 +27,8 @@
     "api:sync": "node scripts/api-sync.mjs",
     "api:generate": "orval --config orval.config.ts",
     "api:check": "node scripts/api-check.mjs",
-    "api:clean": "node scripts/api-clean.mjs"
+    "api:clean": "node scripts/api-clean.mjs",
+    "e2e:ci": "node scripts/e2e-ci.mjs"
   },
   "private": true,
   "packageManager": "npm@11.19.1",

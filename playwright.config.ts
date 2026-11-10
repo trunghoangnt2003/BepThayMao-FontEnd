@@ -21,6 +21,15 @@ export default defineConfig({
   webServer:
     process.env['E2E_START_SERVERS'] === '1'
       ? [
+          ...(process.env['E2E_MOCK_API'] === '1'
+            ? [
+                {
+                  command: 'node e2e/mock-api.mjs',
+                  url: 'http://127.0.0.1:5080/health/live',
+                  reuseExistingServer: false,
+                },
+              ]
+            : []),
           {
             command: 'node dist/customer/server/server.mjs',
             url: 'http://127.0.0.1:4000/healthz',
