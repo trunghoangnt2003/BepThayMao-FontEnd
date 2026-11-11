@@ -6,3 +6,6 @@ export type { ApiError } from './lib/errors/api-error';
 export { provideCore } from './lib/provide-core';
 export { AccessTokenStore } from './lib/auth/access-token-store';
 export type { AdminSession } from './lib/auth/access-token-store';
+export { TOKEN_REFRESHER } from './lib/auth/token-refresher';
+export type { TokenRefresher } from './lib/auth/token-refresher';
+export { authInterceptor } from './lib/auth/auth.interceptor';
