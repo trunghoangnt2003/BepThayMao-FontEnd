@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 
 export interface AdminSession {
   readonly identifier: string;
@@ -7,14 +7,18 @@ export interface AdminSession {
 
 @Injectable({ providedIn: 'root' })
 export class AccessTokenStore {
-  readonly accessToken = signal<string | null>(null).asReadonly();
-  readonly session = signal<AdminSession | null>(null).asReadonly();
+  private readonly value = signal<(AdminSession & { accessToken: string }) | null>(null);
+  readonly accessToken = computed(() => this.value()?.accessToken ?? null);
+  readonly session = computed<AdminSession | null>(() => {
+    const value = this.value();
+    return value ? { identifier: value.identifier, role: value.role } : null;
+  });
 
   set(pair: AdminSession & { accessToken: string }): void {
-    throw new Error(pair.identifier);
+    this.value.set(pair);
   }
 
   clear(): void {
-    return;
+    this.value.set(null);
   }
 }
