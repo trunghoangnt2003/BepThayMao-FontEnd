@@ -4,6 +4,46 @@ import { resolve } from 'node:path';
 import { setTimeout } from 'node:timers/promises';
 
 const app = express();
+app.use(express.json());
+app.post('/api/v1/auth/login', (request, response) => {
+  const { identifier, password } = request.body;
+  if (identifier === 'rate-limited')
+    return response.status(429).json({ title: 'Too many requests', correlationId: 'mock-rate' });
+  if (!['owner', 'quanly1', 'khach1'].includes(identifier) || password !== 'mock-password-only')
+    return response.status(401).json({ title: 'Unauthorized', correlationId: 'mock-login' });
+  const role =
+    identifier === 'owner' ? 'Owner' : identifier === 'quanly1' ? 'BranchManager' : 'Customer';
+  response.cookie('refresh_token', identifier, {
+    httpOnly: true,
+    sameSite: 'strict',
+    path: '/api/v1/auth',
+  });
+  return response.json({
+    accessToken: 'mock-access-' + identifier,
+    identifier,
+    role,
+    expiresIn: 900,
+  });
+});
+app.post('/api/v1/auth/refresh', (request, response) => {
+  const identifier = /(?:^|;\s*)refresh_token=(owner|quanly1|khach1)(?:;|$)/.exec(
+    request.headers.cookie ?? '',
+  )?.[1];
+  if (!identifier)
+    return response.status(401).json({ title: 'Unauthorized', correlationId: 'mock-refresh' });
+  const role =
+    identifier === 'owner' ? 'Owner' : identifier === 'quanly1' ? 'BranchManager' : 'Customer';
+  return response.json({
+    accessToken: 'mock-access-' + identifier,
+    identifier,
+    role,
+    expiresIn: 900,
+  });
+});
+app.post('/api/v1/auth/logout', (_request, response) => {
+  response.clearCookie('refresh_token', { path: '/api/v1/auth' });
+  response.status(204).end();
+});
 app.get('/api/v1/branches', (_request, response) =>
   response.json([
     {

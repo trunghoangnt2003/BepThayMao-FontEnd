@@ -1,3 +1,5 @@
+/* Hallmark · shape: shared app controls · theme: Garden · scope: customer and admin */
+/* Hallmark · critique: token-only controls, instant focus and reduced motion */
 *,
 *::before,
 *::after {
@@ -146,6 +148,27 @@ dd.num {
   border-color: var(--color-accent);
   background: var(--color-accent);
   color: var(--color-accent-ink);
+}
+.field__input {
+  min-height: var(--control-h);
+  width: 100%;
+  min-width: 0;
+  border: var(--rule-hair) solid var(--color-muted);
+  border-radius: var(--radius-card);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  padding-inline: var(--space-sm);
+}
+.field__input:focus-visible {
+  outline-offset: -3px;
+}
+.field__input[aria-invalid='true'] {
+  border-color: var(--color-error);
+}
+.field__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-strong);
+  color: var(--color-ink-2);
 }
 .btn--danger {
   border-color: var(--color-error);

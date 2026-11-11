@@ -1,8 +1,14 @@
 import { Routes } from '@angular/router';
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'branches' },
+  { path: '', pathMatch: 'full', redirectTo: 'owner/branches' },
   {
-    path: 'branches',
+    path: 'login',
+    title: 'Đăng nhập',
+    loadComponent: () => import('./features/auth/pages/login/login-page').then((m) => m.LoginPage),
+  },
+  { path: 'branches', pathMatch: 'full', redirectTo: 'owner/branches' },
+  {
+    path: 'owner/branches',
     title: 'Danh sách cơ sở',
     loadComponent: () =>
       import('./features/branches/pages/branch-list/branch-list-page').then(

@@ -1,0 +1,21 @@
+<section class="login" aria-labelledby="login-title">
+  <h1 id="login-title" tabindex="-1">Đăng nhập quản trị</h1>
+  <p>Dành cho chủ sở hữu và quản lý cơ sở.</p>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label hlmLabel for="identifier">Tên đăng nhập</label>
+      <input hlmInput id="identifier" formControlName="identifier" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label hlmLabel for="password">Mật khẩu</label>
+      <input
+        hlmInput
+        id="password"
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+      />
+    </div>
+    <button hlmBtn type="submit">Đăng nhập</button>
+  </form>
+</section>
