@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { AuthService } from '@bepthaymao/api-client/endpoints';
 import { AccessTokenStore } from '@bepthaymao/core';
 import { firstValueFrom, of, throwError } from 'rxjs';
 import { AuthSessionService } from './auth-session.service';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { provideCore } from '@bepthaymao/core';
+import { provideRouter, Router } from '@angular/router';
 
 describe('AuthSessionService login and logout', () => {
   const pair = {
@@ -34,6 +34,58 @@ describe('AuthSessionService login and logout', () => {
     await firstValueFrom(TestBed.inject(AuthSessionService).logout());
     expect(api.logout).toHaveBeenCalledOnce();
     expect(store.session()).toBeNull();
+  });
+});
+
+describe('session restoration', () => {
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      providers: [provideCore(), provideHttpClientTesting(), provideRouter([])],
+    }),
+  );
+  afterEach(() => {
+    TestBed.inject(HttpTestingController).verify();
+  });
+  it('restores a refresh cookie session and accepts anonymous startup failure', () => {
+    const service = TestBed.inject(AuthSessionService);
+    const values: unknown[] = [];
+    service.restore().subscribe((value) => values.push(value));
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/auth/refresh')
+      .flush({ accessToken: 'new', identifier: 'owner', role: 'Owner', expiresIn: 900 });
+    expect(service.store.accessToken()).toBe('new');
+    service.store.clear();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    service.restore().subscribe((value) => values.push(value));
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/auth/refresh')
+      .flush({}, { status: 401, statusText: 'Unauthorized' });
+    expect(values[1]).toBeNull();
+    expect(navigate).not.toHaveBeenCalled();
+  });
+  it('shares one refresh HTTP request across concurrent subscribers', () => {
+    const service = TestBed.inject(AuthSessionService);
+    const values: string[] = [];
+    service.refreshOnce().subscribe({ next: (value) => values.push(value), error: vi.fn() });
+    service.refreshOnce().subscribe({ next: (value) => values.push(value), error: vi.fn() });
+    service.refreshOnce().subscribe({ next: (value) => values.push(value), error: vi.fn() });
+    const requests = TestBed.inject(HttpTestingController).match('/api/v1/auth/refresh');
+    expect(requests).toHaveLength(1);
+    requests[0]?.flush({ accessToken: 'new', identifier: 'owner', role: 'Owner', expiresIn: 900 });
+    expect(values).toEqual(['new', 'new', 'new']);
+  });
+  it('clears an expired live session and routes back to login', () => {
+    const service = TestBed.inject(AuthSessionService);
+    service.store.set({ accessToken: 'expired', identifier: 'owner', role: 'Owner' });
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    service.refreshOnce().subscribe({ error: vi.fn() });
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/v1/auth/refresh')
+      .flush({}, { status: 401, statusText: 'Unauthorized' });
+    expect(service.store.session()).toBeNull();
+    expect(navigate).toHaveBeenCalledWith(['/login'], {
+      queryParams: { reason: 'expired', returnUrl: '/' },
+    });
   });
 });
 
