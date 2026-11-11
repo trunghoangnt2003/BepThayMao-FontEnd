@@ -2,19 +2,52 @@ import { inject, Injectable } from '@angular/core';
 import { TokenPair } from '@bepthaymao/api-client';
 import { AuthService } from '@bepthaymao/api-client/endpoints';
 import { AccessTokenStore } from '@bepthaymao/core';
-import { catchError, finalize, Observable, of, tap, throwError } from 'rxjs';
+import { TokenRefresher } from '@bepthaymao/core';
+import { Router } from '@angular/router';
+import { catchError, finalize, map, Observable, of, shareReplay, tap, throwError } from 'rxjs';
+import { roleHome } from './role-home';
 
 @Injectable({ providedIn: 'root' })
-export class AuthSessionService {
+export class AuthSessionService implements TokenRefresher {
   private readonly api = inject(AuthService);
+  private readonly router = inject(Router);
+  private refreshing: Observable<TokenPair> | null = null;
   readonly store = inject(AccessTokenStore);
 
   refreshOnce(): Observable<string> {
-    return throwError(() => new Error('Refresh contract is not implemented'));
+    return this.refresh(true).pipe(map((pair) => pair.accessToken));
   }
 
   restore(): Observable<TokenPair | null> {
-    return of(null);
+    return this.refresh(false).pipe(catchError(() => of(null)));
+  }
+
+  roleHome(): string {
+    return roleHome(this.store.session()?.role);
+  }
+
+  private refresh(reportExpiry: boolean): Observable<TokenPair> {
+    if (this.refreshing) return this.refreshing;
+    const hadSession = this.store.session() !== null;
+    this.refreshing = this.api.refreshToken().pipe(
+      tap((pair) => {
+        this.store.set(pair);
+      }),
+      catchError((error: unknown) => {
+        this.store.clear();
+        if (reportExpiry && hadSession) {
+          void this.router.navigate(['/login'], {
+            queryParams: { reason: 'expired', returnUrl: this.router.url },
+          });
+        }
+        return throwError(() => error);
+      }),
+      finalize(() => {
+        this.refreshing = null;
+      }),
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
+    return this.refreshing;
   }
 
   login(identifier: string, password: string): Observable<TokenPair> {
