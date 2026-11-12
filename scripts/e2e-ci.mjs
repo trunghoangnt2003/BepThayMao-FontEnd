@@ -5,14 +5,19 @@ import { setTimeout } from 'node:timers/promises';
 
 const app = express();
 app.use(express.json());
+const roles = {
+  owner: 'Owner',
+  'owner-empty': 'Owner',
+  quanly1: 'BranchManager',
+  khach1: 'Customer',
+};
 app.post('/api/v1/auth/login', (request, response) => {
   const { identifier, password } = request.body;
   if (identifier === 'rate-limited')
     return response.status(429).json({ title: 'Too many requests', correlationId: 'mock-rate' });
-  if (!['owner', 'quanly1', 'khach1'].includes(identifier) || password !== 'mock-password-only')
+  if (!Object.hasOwn(roles, identifier) || password !== 'mock-password-only')
     return response.status(401).json({ title: 'Unauthorized', correlationId: 'mock-login' });
-  const role =
-    identifier === 'owner' ? 'Owner' : identifier === 'quanly1' ? 'BranchManager' : 'Customer';
+  const role = roles[identifier];
   response.cookie('refresh_token', identifier, {
     httpOnly: true,
     sameSite: 'strict',
@@ -26,13 +31,12 @@ app.post('/api/v1/auth/login', (request, response) => {
   });
 });
 app.post('/api/v1/auth/refresh', (request, response) => {
-  const identifier = /(?:^|;\s*)refresh_token=(owner|quanly1|khach1)(?:;|$)/.exec(
+  const identifier = /(?:^|;\s*)refresh_token=(owner-empty|owner|quanly1|khach1)(?:;|$)/.exec(
     request.headers.cookie ?? '',
   )?.[1];
   if (!identifier)
     return response.status(401).json({ title: 'Unauthorized', correlationId: 'mock-refresh' });
-  const role =
-    identifier === 'owner' ? 'Owner' : identifier === 'quanly1' ? 'BranchManager' : 'Customer';
+  const role = roles[identifier];
   return response.json({
     accessToken: 'mock-access-' + identifier,
     identifier,
@@ -100,11 +104,14 @@ const ownerBranches = [
     managerIdentifier: 'quanly2',
   },
 ];
+const ownerTokens = ['Bearer mock-access-owner', 'Bearer mock-access-owner-empty'];
 const ownerOnly = (request, response, next) =>
-  request.headers.authorization === 'Bearer mock-access-owner'
+  ownerTokens.includes(request.headers.authorization)
     ? next()
     : response.status(401).json({ title: 'Unauthorized', correlationId: 'mock-owner' });
-app.get('/api/v1/owner/branches', ownerOnly, (_request, response) => response.json(ownerBranches));
+app.get('/api/v1/owner/branches', ownerOnly, (request, response) =>
+  response.json(request.headers.authorization === ownerTokens[1] ? [] : ownerBranches),
+);
 app.post('/api/v1/owner/branches', ownerOnly, (request, response) => {
   const { branch, manager } = request.body;
   if (manager?.identifier === 'trung-ten')

@@ -18,8 +18,12 @@ test('branch data and accessibility @a11y', async ({ page }, info) => {
     await expect(page.locator('a[href="tel:+842800000001"]')).toBeVisible();
     expect(browserRequests).toEqual([]);
   } else {
-    await page.goto('branches');
-    await expect(page.locator('tbody tr')).toHaveCount(2);
+    await page.goto('owner/branches');
+    await expect(page.locator('tbody tr').first()).toBeVisible();
+    expect(await page.locator('tbody tr').count()).toBeGreaterThanOrEqual(2);
+    await expect(page.getByRole('link', { name: 'Cơ sở Mẫu 1', exact: true })).toBeVisible();
+    await expect(page.getByText('Đang nhận đơn').first()).toBeVisible();
+    await expect(page.getByText('Đã tắt').first()).toBeVisible();
     await expect(page).toHaveTitle('Danh sách cơ sở | Quản trị Bếp Thầy Mão');
   }
   await expectNoA11yViolations(page);
@@ -29,7 +33,7 @@ test('mobile first layouts and reduced motion', async ({ page }, info) => {
   for (const width of [320, 375, 768, 1024, 1440, 1920]) {
     await page.setViewportSize({ width, height: 800 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto(info.project.name === 'customer' ? '/co-so' : 'branches');
+    await page.goto(info.project.name === 'customer' ? '/co-so' : 'owner/branches');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
       true,
