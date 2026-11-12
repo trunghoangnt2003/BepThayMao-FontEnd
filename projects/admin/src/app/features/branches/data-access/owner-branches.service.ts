@@ -5,7 +5,7 @@ import {
   CreateBranchRequest,
 } from '@bepthaymao/api-client';
 import { OwnerService } from '@bepthaymao/api-client/endpoints';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class OwnerBranchesService {
@@ -24,10 +24,10 @@ export class OwnerBranchesService {
   }
 
   update(id: string, body: BranchOwnerSettingsRequest): Observable<BranchResponse> {
-    return throwError(() => new Error(`not implemented: ${id} ${body.name}`));
+    return this.api.updateOwnerBranch(id, body);
   }
 
   resetPassword(id: string, newPassword: string): Observable<void> {
-    return throwError(() => new Error(`not implemented: ${id} ${String(newPassword.length)}`));
+    return this.api.resetBranchManagerPassword(id, { newPassword });
   }
 }
