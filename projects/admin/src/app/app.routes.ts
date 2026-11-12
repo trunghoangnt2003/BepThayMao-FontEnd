@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { unsavedChangesGuard } from './features/branches/pages/branch-edit/unsaved-changes.guard';
 import { authGuard, homeGuard, loginGuard, roleGuard } from './shared/auth/auth.guards';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', canActivate: [homeGuard], children: [] },
@@ -19,6 +20,15 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/branches/pages/branch-create/branch-create-page').then(
             (m) => m.BranchCreatePage,
+          ),
+      },
+      {
+        path: 'branches/:id',
+        title: 'Sửa cơ sở',
+        canDeactivate: [unsavedChangesGuard],
+        loadComponent: () =>
+          import('./features/branches/pages/branch-edit/branch-edit-page').then(
+            (m) => m.BranchEditPage,
           ),
       },
       {

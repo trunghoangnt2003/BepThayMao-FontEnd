@@ -1,5 +1,5 @@
 import { FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { BranchOwnerSettingsRequest } from '@bepthaymao/api-client';
+import { BranchOwnerSettingsRequest, BranchResponse } from '@bepthaymao/api-client';
 import {
   latitudeValidator,
   longitudeValidator,
@@ -199,4 +199,47 @@ export function toBranchSettings(fields: BranchFieldsValue): BranchOwnerSettings
     bankAccountNo: optional(fields.bankAccountNo),
     sepayAccountRef: optional(fields.sepayAccountRef),
   };
+}
+
+/** Form values of a saved branch; times keep `HH:mm` even if the server sends seconds. */
+export function branchToFormValue(branch: BranchResponse): BranchFieldsValue {
+  return {
+    name: branch.name,
+    address: branch.address,
+    phone: branch.phone,
+    lat: String(branch.lat),
+    lng: String(branch.lng),
+    openTime: branch.openTime.slice(0, 5),
+    closeTime: branch.closeTime.slice(0, 5),
+    threshold: String(branch.abandonedThresholdMinutes),
+    zaloIds: branch.zaloRecipientIds.join('\n'),
+    bankCode: branch.bankCode ?? '',
+    bankAccountNo: branch.bankAccountNo ?? '',
+    sepayAccountRef: branch.sepayAccountRef ?? '',
+  };
+}
+
+/** The saved branch as a PUT body with a new `isActive`; used by on/off so unsaved edits are never sent. */
+export function toOwnerSettings(
+  branch: BranchResponse,
+  isActive: boolean,
+): BranchOwnerSettingsRequest {
+  return { ...toBranchSettings(branchToFormValue(branch)), isActive };
+}
+
+/** Like `applyBranchServerErrors`, for the flat keys of a PUT (`openTime`, `lat`...) without a `branch.` prefix. */
+export function applyFlatBranchServerErrors(
+  group: BranchFieldsGroup,
+  errors: Readonly<Record<string, readonly string[]>>,
+): number {
+  let applied = 0;
+  for (const [path, messages] of Object.entries(errors)) {
+    const key = API_FIELD[path.toLowerCase()];
+    const message = messages.at(0);
+    if (key === undefined || message === undefined) continue;
+    group.controls[key].setErrors({ server: message });
+    group.controls[key].markAsTouched();
+    applied++;
+  }
+  return applied;
 }
