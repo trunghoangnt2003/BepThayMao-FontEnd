@@ -54,5 +54,12 @@
         {{ branch()?.isActive ? 'Tắt nhận đơn' : 'Bật nhận đơn' }}
       </button>
     </section>
+    <section class="block" aria-labelledby="manager-title">
+      <h2 id="manager-title">Tài khoản quản lý</h2>
+      <p>Đặt lại khi quản lý quên mật khẩu.</p>
+      <button hlmBtn variant="outline" type="button" (click)="openResetPassword()">
+        Đặt lại mật khẩu
+      </button>
+    </section>
   }
 }

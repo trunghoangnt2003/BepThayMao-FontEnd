@@ -14,7 +14,8 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BranchResponse } from '@bepthaymao/api-client';
 import { ApiError, toApiError } from '@bepthaymao/core';
-import { HlmButton } from '@bepthaymao/ui';
+import { HLM_DIALOG_OPTIONS, HlmButton } from '@bepthaymao/ui';
+import { BrnDialogService } from '@spartan-ng/brain/dialog';
 import { catchError, EMPTY, finalize, firstValueFrom, Observable, switchMap, tap } from 'rxjs';
 import { ConfirmDialog } from '../../../../shared/dialog/confirm-dialog';
 import { failureText } from '../../../../shared/forms/api-failure';
@@ -24,6 +25,10 @@ import { savedTime } from '../../../../shared/forms/saved-time';
 import { adminTitle } from '../../../../shared/title/admin-title-strategy';
 import { OwnerBranchesService } from '../../data-access/owner-branches.service';
 import { BranchForm } from '../../ui/branch-form/branch-form';
+import {
+  ResetPasswordContext,
+  ResetPasswordDialog,
+} from '../../ui/reset-password-dialog/reset-password-dialog';
 import {
   applyFlatBranchServerErrors,
   branchFieldErrors,
@@ -51,6 +56,7 @@ function sameValue(a: BranchFieldsValue, b: BranchFieldsValue): boolean {
 export class BranchEditPage implements HasUnsavedChanges {
   private readonly service = inject(OwnerBranchesService);
   private readonly confirmDialog = inject(ConfirmDialog);
+  private readonly dialogs = inject(BrnDialogService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly title = inject(Title);
@@ -182,6 +188,20 @@ export class BranchEditPage implements HasUnsavedChanges {
     } finally {
       this.toggling.set(false);
     }
+  }
+
+  openResetPassword(): void {
+    const current = this.branch();
+    if (current === null) return;
+    this.dialogs.open<ResetPasswordContext>(
+      ResetPasswordDialog,
+      undefined,
+      {
+        branchId: this.id,
+        branchName: current.name,
+      },
+      HLM_DIALOG_OPTIONS,
+    );
   }
 
   private fetch(): Observable<unknown> {
