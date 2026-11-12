@@ -64,6 +64,75 @@ app.get('/api/v1/branches', (_request, response) =>
     },
   ]),
 );
+const ownerBranches = [
+  {
+    id: '019a5dc0-0001-7000-8000-000000000001',
+    name: 'Cơ sở Mẫu 1',
+    address: 'Số 1 Đường Mẫu',
+    lat: 10.7769,
+    lng: 106.7009,
+    phone: '02800000001',
+    isActive: true,
+    openTime: '06:00',
+    closeTime: '21:30',
+    abandonedThresholdMinutes: 10,
+    zaloRecipientIds: [],
+    bankAccountNo: null,
+    bankCode: null,
+    sepayAccountRef: null,
+    managerIdentifier: 'quanly1',
+  },
+  {
+    id: '019a5dc0-0002-7000-8000-000000000002',
+    name: 'Cơ sở Mẫu 2',
+    address: 'Số 2 Đường Mẫu',
+    lat: 10.78,
+    lng: 106.7,
+    phone: '02800000002',
+    isActive: false,
+    openTime: '07:00',
+    closeTime: '21:00',
+    abandonedThresholdMinutes: 10,
+    zaloRecipientIds: [],
+    bankAccountNo: null,
+    bankCode: null,
+    sepayAccountRef: null,
+    managerIdentifier: 'quanly2',
+  },
+];
+const ownerOnly = (request, response, next) =>
+  request.headers.authorization === 'Bearer mock-access-owner'
+    ? next()
+    : response.status(401).json({ title: 'Unauthorized', correlationId: 'mock-owner' });
+app.get('/api/v1/owner/branches', ownerOnly, (_request, response) => response.json(ownerBranches));
+app.post('/api/v1/owner/branches', ownerOnly, (request, response) => {
+  const { branch, manager } = request.body;
+  if (manager?.identifier === 'trung-ten')
+    return response.status(409).json({
+      title: 'Conflict',
+      errors: { 'manager.identifier': ['Duplicate identifier.'] },
+      correlationId: 'mock-conflict',
+    });
+  const created = {
+    ...branch,
+    id: '019a5dc0-' + String(ownerBranches.length + 1).padStart(4, '0') + '-7000-8000-00000000abcd',
+    bankAccountNo: branch.bankAccountNo ?? null,
+    bankCode: branch.bankCode ?? null,
+    sepayAccountRef: branch.sepayAccountRef ?? null,
+    managerIdentifier: manager.identifier,
+  };
+  ownerBranches.push(created);
+  return response
+    .status(201)
+    .location('/api/v1/owner/branches/' + created.id)
+    .json(created);
+});
+app.get('/api/v1/owner/branches/:id', ownerOnly, (request, response) => {
+  const found = ownerBranches.find((branch) => branch.id === request.params.id);
+  return found
+    ? response.json(found)
+    : response.status(404).json({ title: 'Not found.', correlationId: 'mock-missing' });
+});
 app.use('/admin', express.static(resolve('dist/admin/browser')));
 app.get('/admin/{*path}', (_request, response) =>
   response.sendFile(resolve('dist/admin/browser/index.html')),
@@ -91,14 +160,18 @@ try {
     await setTimeout(100);
   }
   if (!ready) throw new Error('SSR startup timed out.');
-  const test = spawn(process.execPath, ['node_modules/@playwright/test/cli.js', 'test'], {
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      E2E_CUSTOMER_URL: 'http://127.0.0.1:14000',
-      E2E_ADMIN_URL: 'http://127.0.0.1:18080/admin/',
+  const test = spawn(
+    process.execPath,
+    ['node_modules/@playwright/test/cli.js', 'test', ...process.argv.slice(2)],
+    {
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        E2E_CUSTOMER_URL: 'http://127.0.0.1:14000',
+        E2E_ADMIN_URL: 'http://127.0.0.1:18080/admin/',
+      },
     },
-  });
+  );
   process.exitCode = await new Promise((resolveCode, reject) => {
     test.on('error', reject);
     test.on('exit', (code) => resolveCode(code ?? 1));
