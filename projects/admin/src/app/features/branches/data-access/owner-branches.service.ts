@@ -1,7 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { BranchResponse, CreateBranchRequest } from '@bepthaymao/api-client';
+import {
+  BranchOwnerSettingsRequest,
+  BranchResponse,
+  CreateBranchRequest,
+} from '@bepthaymao/api-client';
 import { OwnerService } from '@bepthaymao/api-client/endpoints';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class OwnerBranchesService {
@@ -17,5 +21,13 @@ export class OwnerBranchesService {
 
   get(id: string): Observable<BranchResponse> {
     return this.api.getOwnerBranch(id);
+  }
+
+  update(id: string, body: BranchOwnerSettingsRequest): Observable<BranchResponse> {
+    return throwError(() => new Error(`not implemented: ${id} ${body.name}`));
+  }
+
+  resetPassword(id: string, newPassword: string): Observable<void> {
+    return throwError(() => new Error(`not implemented: ${id} ${String(newPassword.length)}`));
   }
 }

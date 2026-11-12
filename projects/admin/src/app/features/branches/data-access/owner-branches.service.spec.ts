@@ -79,3 +79,53 @@ describe('OwnerBranchesService', () => {
     expect(received).toHaveBeenCalledWith(branch);
   });
 });
+
+describe('OwnerBranchesService writes', () => {
+  let http: HttpTestingController;
+  let service: OwnerBranchesService;
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    http = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(OwnerBranchesService);
+  });
+  afterEach(() => {
+    http.verify();
+  });
+
+  it('updates a branch through updateOwnerBranch with the flat owner body', () => {
+    const body = {
+      name: branch.name,
+      address: branch.address,
+      phone: branch.phone,
+      lat: branch.lat,
+      lng: branch.lng,
+      openTime: '06:00',
+      closeTime: '21:30',
+      abandonedThresholdMinutes: 10,
+      zaloRecipientIds: [],
+      isActive: false,
+      bankCode: null,
+      bankAccountNo: null,
+      sepayAccountRef: null,
+    };
+    const received = vi.fn();
+    service.update(branch.id, body).subscribe(received);
+    const request = http.expectOne(`/api/v1/owner/branches/${branch.id}`);
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body).toEqual(body);
+    request.flush({ ...branch, isActive: false });
+    expect(received).toHaveBeenCalledWith({ ...branch, isActive: false });
+  });
+
+  it('resets the manager password through resetBranchManagerPassword', () => {
+    const received = vi.fn();
+    service.resetPassword(branch.id, 'mat-khau-moi-10').subscribe(received);
+    const request = http.expectOne(`/api/v1/owner/branches/${branch.id}/manager/reset-password`);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ newPassword: 'mat-khau-moi-10' });
+    request.flush(null, { status: 204, statusText: 'No Content' });
+    expect(received).toHaveBeenCalledOnce();
+  });
+});
