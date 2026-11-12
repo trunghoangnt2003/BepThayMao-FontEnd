@@ -46,3 +46,6 @@ Thumbs.db
 # Browser test artifacts are generated, not source.
 /playwright-report/
 /test-results/
+
+# Hallmark sloplint render output (local tooling)
+.hallmark/
