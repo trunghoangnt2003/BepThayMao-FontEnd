@@ -2,8 +2,31 @@
   display: grid;
   gap: var(--space-lg);
 }
+.page-head {
+  display: grid;
+  gap: var(--space-md);
+  align-items: center;
+}
+.page-head a {
+  width: 100%;
+}
 section {
   min-height: 240px;
+}
+.branch-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  font-weight: var(--weight-strong);
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-muted);
+}
+.status--on btm-icon {
+  color: var(--color-success);
 }
 section > p,
 section > button {
@@ -40,6 +63,14 @@ tbody tr:hover {
   height: 56px;
   margin-block: var(--space-xs);
   background: var(--color-paper-2);
+}
+@media (min-width: 40rem) {
+  .page-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .page-head a {
+    width: auto;
+  }
 }
 @media (max-width: 40rem) {
   thead {

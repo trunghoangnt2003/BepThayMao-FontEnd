@@ -1,14 +1,16 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { BranchResponse } from '@bepthaymao/api-client';
 import { toApiError } from '@bepthaymao/core';
 import { formatOpeningHours, HlmButton } from '@bepthaymao/ui';
 import { finalize, Subscription, timer } from 'rxjs';
+import { IconComponent } from '../../../../shared/icon/icon';
 import { OwnerBranchesService } from '../../data-access/owner-branches.service';
 
 @Component({
   selector: 'adm-branch-list-page',
-  imports: [HlmButton],
+  imports: [HlmButton, RouterLink, IconComponent],
   templateUrl: './branch-list-page.html',
   styleUrl: './branch-list-page.css',
 })

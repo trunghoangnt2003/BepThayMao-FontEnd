@@ -1,4 +1,9 @@
-<h1 tabindex="-1">Danh sách cơ sở</h1>
+<header class="page-head">
+  <h1 tabindex="-1">Danh sách cơ sở</h1>
+  @if (state() === 'loaded' && branches().length) {
+    <a hlmBtn routerLink="/owner/branches/new">Tạo cơ sở mới</a>
+  }
+</header>
 <section [attr.aria-busy]="state() === 'loading'" aria-label="Danh sách cơ sở">
   @switch (state()) {
     @case ('loading') {
@@ -26,18 +31,28 @@
             <tr role="row">
               <th scope="col" role="columnheader">Cơ sở</th>
               <th scope="col" role="columnheader">Giờ nhận đơn</th>
+              <th scope="col" role="columnheader">Trạng thái</th>
             </tr>
           </thead>
           <tbody role="rowgroup">
             @for (branch of branches(); track branch.id) {
               <tr role="row">
                 <th scope="row" role="rowheader">
-                  <span>{{ branch.name }}</span>
+                  <a class="branch-link" [routerLink]="['/owner/branches', branch.id]">{{
+                    branch.name
+                  }}</a>
                   <p>{{ branch.address }}</p>
                   <p>{{ branch.phone }}</p>
                 </th>
                 <td data-label="Giờ nhận đơn" role="cell">
                   {{ formatOpeningHours(branch.openTime, branch.closeTime) }}
+                </td>
+                <td data-label="Trạng thái" role="cell">
+                  <span class="status" [class.status--on]="branch.isActive">
+                    <btm-icon [name]="branch.isActive ? 'check-circle' : 'prohibit'" />{{
+                      branch.isActive ? 'Đang nhận đơn' : 'Đã tắt'
+                    }}
+                  </span>
                 </td>
               </tr>
             }
