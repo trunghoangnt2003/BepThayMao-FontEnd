@@ -1,0 +1,141 @@
+<div [formGroup]="group()" class="branch-form">
+  <section class="block" aria-labelledby="branch-info-title">
+    <h2 id="branch-info-title">Thông tin cơ sở</h2>
+    <div class="field">
+      <label hlmLabel for="branch-name">Tên cơ sở</label>
+      <input
+        hlmInput
+        id="branch-name"
+        formControlName="name"
+        autocomplete="organization"
+        aria-required="true"
+      />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-address">Địa chỉ</label>
+      <input
+        hlmInput
+        id="branch-address"
+        formControlName="address"
+        autocomplete="street-address"
+        aria-required="true"
+      />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-phone">Số điện thoại</label>
+      <input
+        hlmInput
+        id="branch-phone"
+        type="tel"
+        formControlName="phone"
+        autocomplete="tel"
+        aria-required="true"
+      />
+    </div>
+    <fieldset aria-describedby="branch-position-help">
+      <legend>Vị trí</legend>
+      <div class="pair">
+        <div class="field">
+          <label hlmLabel for="branch-lat">Vĩ độ</label>
+          <input
+            hlmInput
+            id="branch-lat"
+            formControlName="lat"
+            inputmode="decimal"
+            placeholder="10.7769"
+            autocomplete="off"
+            aria-required="true"
+          />
+        </div>
+        <div class="field">
+          <label hlmLabel for="branch-lng">Kinh độ</label>
+          <input
+            hlmInput
+            id="branch-lng"
+            formControlName="lng"
+            inputmode="decimal"
+            placeholder="106.7009"
+            autocomplete="off"
+            aria-required="true"
+          />
+        </div>
+      </div>
+      <p class="field__help" id="branch-position-help">
+        Ví dụ 10.7769. Sao chép tọa độ từ ứng dụng bản đồ.
+      </p>
+    </fieldset>
+    <fieldset>
+      <legend>Giờ nhận đơn</legend>
+      <div class="pair">
+        <div class="field">
+          <label hlmLabel for="branch-open">Giờ mở nhận đơn</label>
+          <input
+            hlmInput
+            id="branch-open"
+            type="time"
+            formControlName="openTime"
+            aria-required="true"
+          />
+        </div>
+        <div class="field">
+          <label hlmLabel for="branch-close">Giờ đóng nhận đơn</label>
+          <input
+            hlmInput
+            id="branch-close"
+            type="time"
+            formControlName="closeTime"
+            aria-required="true"
+          />
+        </div>
+      </div>
+    </fieldset>
+    <div class="field">
+      <label hlmLabel for="branch-threshold">Cảnh báo đơn bị bỏ quên sau (phút)</label>
+      <input
+        hlmInput
+        id="branch-threshold"
+        formControlName="threshold"
+        inputmode="numeric"
+        autocomplete="off"
+        aria-required="true"
+        aria-describedby="branch-threshold-help"
+      />
+      <p class="field__help" id="branch-threshold-help">
+        Đơn đã thanh toán mà chưa ai nhận quá số phút này sẽ được cảnh báo.
+      </p>
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-zalo">ID Zalo người nhận tin (không bắt buộc)</label>
+      <textarea
+        hlmInput
+        id="branch-zalo"
+        formControlName="zaloIds"
+        rows="4"
+        autocomplete="off"
+        aria-describedby="branch-zalo-help"
+      ></textarea>
+      <p class="field__help" id="branch-zalo-help">Mỗi dòng một ID.</p>
+    </div>
+  </section>
+  <section class="block" aria-labelledby="branch-bank-title">
+    <h2 id="branch-bank-title">Tài khoản nhận tiền</h2>
+    <div class="field">
+      <label hlmLabel for="branch-bank-code">Mã ngân hàng (không bắt buộc)</label>
+      <input hlmInput id="branch-bank-code" formControlName="bankCode" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-bank-account">Số tài khoản (không bắt buộc)</label>
+      <input
+        hlmInput
+        id="branch-bank-account"
+        formControlName="bankAccountNo"
+        inputmode="numeric"
+        autocomplete="off"
+      />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-sepay">Mã tham chiếu SePay (không bắt buộc)</label>
+      <input hlmInput id="branch-sepay" formControlName="sepayAccountRef" autocomplete="off" />
+    </div>
+  </section>
+</div>

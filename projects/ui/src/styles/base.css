@@ -207,3 +207,26 @@ dd.num {
     scroll-behavior: auto !important;
   }
 }
+.field {
+  display: grid;
+  gap: var(--space-xs);
+  align-content: start;
+  min-width: 0;
+}
+.field__help,
+.field__error {
+  min-height: 1lh;
+  font-size: var(--text-sm);
+  line-height: var(--leading-label);
+}
+.field__help {
+  color: var(--color-muted);
+}
+.field__error {
+  color: var(--color-error);
+}
+textarea.field__input {
+  min-height: 6rem;
+  padding-block: var(--space-sm);
+  resize: vertical;
+}

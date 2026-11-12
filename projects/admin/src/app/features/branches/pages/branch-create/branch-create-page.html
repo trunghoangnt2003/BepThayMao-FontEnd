@@ -1,0 +1,81 @@
+@if (created(); as result) {
+  <section class="success" aria-labelledby="created-title">
+    <h1 id="created-title" tabindex="-1">Đã tạo cơ sở {{ result.name }}</h1>
+    <p>
+      Tài khoản quản lý đăng nhập được ngay. Mật khẩu chỉ hiện một lần ở đây, hãy sao chép và gửi
+      cho quản lý.
+    </p>
+    <dl class="credentials">
+      <div>
+        <dt>Tên đăng nhập</dt>
+        <dd>{{ result.identifier }}</dd>
+      </div>
+      <div>
+        <dt>Mật khẩu</dt>
+        <dd class="secret">{{ result.password }}</dd>
+      </div>
+    </dl>
+    <button hlmBtn variant="outline" type="button" (click)="copyPassword()">
+      <btm-icon name="copy" />{{ copied() ? 'Đã sao chép' : 'Sao chép mật khẩu' }}
+    </button>
+    <div class="actions">
+      <a hlmBtn routerLink="/owner/branches">Về danh sách cơ sở</a>
+      <button hlmBtn variant="outline" type="button" (click)="another()">Tạo cơ sở khác</button>
+    </div>
+  </section>
+} @else {
+  <h1 tabindex="-1">Tạo cơ sở mới</h1>
+  <p class="lead">Điền thông tin cơ sở và tạo luôn tài khoản cho quản lý.</p>
+  <p class="note">Các trường đều bắt buộc trừ khi ghi “không bắt buộc”.</p>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <adm-branch-form [group]="form.controls.branch" />
+    <section class="block" aria-labelledby="manager-title" formGroupName="manager">
+      <h2 id="manager-title">Tài khoản quản lý</h2>
+      <div class="field">
+        <label hlmLabel for="manager-identifier">Tên đăng nhập của quản lý</label>
+        <input
+          hlmInput
+          id="manager-identifier"
+          formControlName="identifier"
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          aria-required="true"
+        />
+      </div>
+      <div class="field">
+        <label hlmLabel for="manager-password">Mật khẩu</label>
+        <div class="password-control">
+          <input
+            hlmInput
+            id="manager-password"
+            [type]="visiblePassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="new-password"
+            aria-required="true"
+            aria-describedby="manager-password-help"
+          /><button
+            hlmBtn
+            variant="outline"
+            type="button"
+            [attr.aria-label]="visiblePassword() ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+            [attr.aria-pressed]="visiblePassword()"
+            (click)="visiblePassword.set(!visiblePassword())"
+          >
+            <btm-icon [name]="visiblePassword() ? 'eye-slash' : 'eye'" />{{
+              visiblePassword() ? 'Ẩn' : 'Hiện'
+            }}
+          </button>
+        </div>
+        <p class="field__help" id="manager-password-help">Ít nhất 10 ký tự.</p>
+      </div>
+      <button hlmBtn variant="outline" type="button" (click)="generatePassword()">
+        Tạo mật khẩu ngẫu nhiên
+      </button>
+    </section>
+    <div class="actions">
+      <button hlmBtn type="submit" [disabled]="submitting()">Tạo cơ sở</button>
+      <a class="cancel" routerLink="/owner/branches">Bỏ tạo cơ sở</a>
+    </div>
+  </form>
+}

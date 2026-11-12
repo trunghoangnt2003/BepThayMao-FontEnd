@@ -14,6 +14,14 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard('Owner')],
     children: [
       {
+        path: 'branches/new',
+        title: 'Tạo cơ sở mới',
+        loadComponent: () =>
+          import('./features/branches/pages/branch-create/branch-create-page').then(
+            (m) => m.BranchCreatePage,
+          ),
+      },
+      {
         path: 'branches',
         title: 'Danh sách cơ sở',
         loadComponent: () =>
