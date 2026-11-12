@@ -6,8 +6,12 @@ import { BrnButton } from '@spartan-ng/brain/button';
   selector: 'button[hlmBtn], a[hlmBtn]',
   exportAs: 'hlmBtn',
   hostDirectives: [{ directive: BrnButton, inputs: ['disabled'] }],
-  host: { class: 'btn', '[class.btn--primary]': "variant() === 'default'" },
+  host: {
+    class: 'btn',
+    '[class.btn--primary]': "variant() === 'default'",
+    '[class.btn--danger]': "variant() === 'danger'",
+  },
 })
 export class HlmButton {
-  readonly variant = input<'default' | 'outline'>('default');
+  readonly variant = input<'default' | 'outline' | 'danger'>('default');
 }

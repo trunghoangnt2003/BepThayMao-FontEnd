@@ -1,0 +1,53 @@
+/* Hallmark · shape: shared modal dialog · theme: Garden · scope: customer and admin */
+/* Hallmark · critique: token-only panel on the scrim, opacity is the only motion */
+.hlm-dialog-pane {
+  width: min(32rem, 100% - 2 * var(--gutter));
+  max-height: min(80dvh, 40rem);
+  opacity: 1;
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+.hlm-dialog-pane[data-state='closed'] {
+  opacity: 0;
+}
+.hlm-dialog-backdrop {
+  background: var(--color-scrim);
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+.hlm-dialog-backdrop[data-state='closed'] {
+  opacity: 0;
+}
+@starting-style {
+  .hlm-dialog-pane,
+  .hlm-dialog-backdrop {
+    opacity: 0;
+  }
+}
+.hlm-dialog {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  max-height: inherit;
+  overflow-y: auto;
+  padding: var(--space-lg);
+  border: var(--rule-hair) solid var(--color-rule-2);
+  border-radius: var(--radius-card);
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+.hlm-dialog__title {
+  max-width: 28ch;
+}
+.hlm-dialog__description {
+  max-width: 65ch;
+}
+.hlm-dialog__actions {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+@media (min-width: 40rem) {
+  .hlm-dialog__actions {
+    grid-auto-flow: column;
+    justify-content: end;
+  }
+}

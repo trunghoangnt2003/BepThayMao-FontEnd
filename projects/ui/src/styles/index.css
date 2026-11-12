@@ -4,4 +4,5 @@
 /* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: density; short directory verified at 320px and desktop */
 @import './tokens.css';
 @import './base.css';
+@import './dialog.css';
 @import 'tailwindcss' source('../../../../');
