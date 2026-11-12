@@ -32,10 +32,6 @@ export class BranchForm {
     return outsideVietnamWarning(lat, lng);
   });
 
-  protected invalid(key: BranchFieldKey): true | null {
-    return this.errors()[key] === undefined ? null : true;
-  }
-
   /** The note line is referenced when it shows an error, or always when the field has its own help. */
   protected describedBy(key: BranchFieldKey, ...fixed: string[]): string | null {
     const note =

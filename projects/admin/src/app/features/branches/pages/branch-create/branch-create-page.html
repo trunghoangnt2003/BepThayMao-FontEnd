@@ -48,7 +48,6 @@
           spellcheck="false"
           aria-required="true"
           aria-describedby="manager-identifier-note"
-          [attr.aria-invalid]="managerMessages().identifier ? true : null"
         />
         <adm-field-note
           noteId="manager-identifier-note"
@@ -67,7 +66,6 @@
             autocomplete="new-password"
             aria-required="true"
             aria-describedby="manager-password-note"
-            [attr.aria-invalid]="managerMessages().password ? true : null"
           /><button
             hlmBtn
             variant="outline"

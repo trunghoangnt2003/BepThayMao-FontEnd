@@ -9,7 +9,6 @@
         formControlName="name"
         autocomplete="organization"
         aria-required="true"
-        [attr.aria-invalid]="invalid('name')"
         [attr.aria-describedby]="describedBy('name')"
       />
       <adm-field-note noteId="branch-name-note" [error]="errors().name" />
@@ -22,7 +21,6 @@
         formControlName="address"
         autocomplete="street-address"
         aria-required="true"
-        [attr.aria-invalid]="invalid('address')"
         [attr.aria-describedby]="describedBy('address')"
       />
       <adm-field-note noteId="branch-address-note" [error]="errors().address" />
@@ -36,7 +34,6 @@
         formControlName="phone"
         autocomplete="tel"
         aria-required="true"
-        [attr.aria-invalid]="invalid('phone')"
         [attr.aria-describedby]="describedBy('phone')"
       />
       <adm-field-note noteId="branch-phone-note" [error]="errors().phone" />
@@ -54,7 +51,6 @@
             placeholder="10.7769"
             autocomplete="off"
             aria-required="true"
-            [attr.aria-invalid]="invalid('lat')"
             [attr.aria-describedby]="describedBy('lat', 'branch-position-help')"
           />
           <adm-field-note noteId="branch-lat-note" [error]="errors().lat" />
@@ -69,7 +65,6 @@
             placeholder="106.7009"
             autocomplete="off"
             aria-required="true"
-            [attr.aria-invalid]="invalid('lng')"
             [attr.aria-describedby]="describedBy('lng', 'branch-position-help')"
           />
           <adm-field-note noteId="branch-lng-note" [error]="errors().lng" />
@@ -91,7 +86,6 @@
             type="time"
             formControlName="openTime"
             aria-required="true"
-            [attr.aria-invalid]="invalid('openTime')"
             [attr.aria-describedby]="describedBy('openTime')"
           />
           <adm-field-note noteId="branch-open-note" [error]="errors().openTime" />
@@ -104,7 +98,6 @@
             type="time"
             formControlName="closeTime"
             aria-required="true"
-            [attr.aria-invalid]="invalid('closeTime')"
             [attr.aria-describedby]="describedBy('closeTime')"
           />
           <adm-field-note noteId="branch-close-note" [error]="errors().closeTime" />
@@ -120,7 +113,6 @@
         inputmode="numeric"
         autocomplete="off"
         aria-required="true"
-        [attr.aria-invalid]="invalid('threshold')"
         [attr.aria-describedby]="describedBy('threshold')"
       />
       <adm-field-note
@@ -137,7 +129,6 @@
         formControlName="zaloIds"
         rows="4"
         autocomplete="off"
-        [attr.aria-invalid]="invalid('zaloIds')"
         [attr.aria-describedby]="describedBy('zaloIds')"
       ></textarea>
       <adm-field-note
@@ -156,7 +147,6 @@
         id="branch-bank-code"
         formControlName="bankCode"
         autocomplete="off"
-        [attr.aria-invalid]="invalid('bankCode')"
         [attr.aria-describedby]="describedBy('bankCode')"
       />
       <adm-field-note noteId="branch-bank-code-note" [error]="errors().bankCode" />
@@ -169,7 +159,6 @@
         formControlName="bankAccountNo"
         inputmode="numeric"
         autocomplete="off"
-        [attr.aria-invalid]="invalid('bankAccountNo')"
         [attr.aria-describedby]="describedBy('bankAccountNo')"
       />
       <adm-field-note noteId="branch-bank-account-note" [error]="errors().bankAccountNo" />
@@ -181,7 +170,6 @@
         id="branch-sepay"
         formControlName="sepayAccountRef"
         autocomplete="off"
-        [attr.aria-invalid]="invalid('sepayAccountRef')"
         [attr.aria-describedby]="describedBy('sepayAccountRef')"
       />
       <adm-field-note noteId="branch-sepay-note" [error]="errors().sepayAccountRef" />
