@@ -1,14 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import { PublicBranch } from '@bepthaymao/api-client';
-import { AdminBranchesService } from '../../data-access/admin-branches.service';
+import { BranchResponse } from '@bepthaymao/api-client';
+import { OwnerBranchesService } from '../../data-access/owner-branches.service';
+import { branchFixture } from '../../testing/branch-fixture';
 import { BranchListPage } from './branch-list-page';
 
-let responses: Subject<PublicBranch[]>;
+let responses: Subject<BranchResponse[]>;
 beforeEach(() => {
-  responses = new Subject<PublicBranch[]>();
+  responses = new Subject<BranchResponse[]>();
   TestBed.configureTestingModule({
-    providers: [{ provide: AdminBranchesService, useValue: { list: () => responses } }],
+    providers: [{ provide: OwnerBranchesService, useValue: { list: () => responses } }],
   });
 });
 it('shows loading, public rows, and empty state', async () => {
@@ -16,22 +17,13 @@ it('shows loading, public rows, and empty state', async () => {
   await fixture.whenStable();
   expect(fixture.componentInstance.state()).toBe('loading');
   expect(fixture.componentInstance.showSkeleton()).toBe(false);
-  responses.next([
-    {
-      id: '1',
-      name: 'Mẫu',
-      address: 'Địa chỉ',
-      phone: '0901234567',
-      openTime: '06:00',
-      closeTime: '21:30',
-    },
-  ]);
+  responses.next([branchFixture({ name: 'Mẫu', address: 'Địa chỉ' })]);
   responses.complete();
   await fixture.whenStable();
   const html = fixture.nativeElement as HTMLElement;
   expect(html.querySelectorAll('tbody tr')).toHaveLength(1);
   expect(html.textContent).toContain('06:00 đến 21:30');
-  responses = new Subject<PublicBranch[]>();
+  responses = new Subject<BranchResponse[]>();
   fixture.componentInstance.load();
   responses.next([]);
   responses.complete();
@@ -50,7 +42,7 @@ it('renders safe errors with correlation and permits retry', async () => {
   const html = fixture.nativeElement as HTMLElement;
   expect(html.textContent).toContain('real-id');
   expect(html.textContent).not.toContain('private-detail');
-  responses = new Subject<PublicBranch[]>();
+  responses = new Subject<BranchResponse[]>();
   html.querySelector('button')?.click();
   responses.next([]);
   responses.complete();

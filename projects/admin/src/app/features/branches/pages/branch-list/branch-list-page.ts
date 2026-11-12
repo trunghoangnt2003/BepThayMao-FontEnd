@@ -1,10 +1,10 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { PublicBranch } from '@bepthaymao/api-client';
+import { BranchResponse } from '@bepthaymao/api-client';
 import { toApiError } from '@bepthaymao/core';
 import { formatOpeningHours, HlmButton } from '@bepthaymao/ui';
 import { finalize, Subscription, timer } from 'rxjs';
-import { AdminBranchesService } from '../../data-access/admin-branches.service';
+import { OwnerBranchesService } from '../../data-access/owner-branches.service';
 
 @Component({
   selector: 'adm-branch-list-page',
@@ -13,11 +13,11 @@ import { AdminBranchesService } from '../../data-access/admin-branches.service';
   styleUrl: './branch-list-page.css',
 })
 export class BranchListPage {
-  private readonly service = inject(AdminBranchesService);
+  private readonly service = inject(OwnerBranchesService);
   private readonly destroy = inject(DestroyRef);
   private request?: Subscription;
   readonly state = signal<'loading' | 'loaded' | 'error'>('loading');
-  readonly branches = signal<readonly PublicBranch[]>([]);
+  readonly branches = signal<readonly BranchResponse[]>([]);
   readonly showSkeleton = signal(false);
   readonly correlationId = signal<string | undefined>(undefined);
   readonly formatOpeningHours = formatOpeningHours;

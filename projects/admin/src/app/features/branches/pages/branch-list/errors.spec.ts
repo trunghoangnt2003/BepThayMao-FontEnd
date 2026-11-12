@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { throwError } from 'rxjs';
 import { BranchListPage } from './branch-list-page';
-import { AdminBranchesService } from '../../data-access/admin-branches.service';
+import { OwnerBranchesService } from '../../data-access/owner-branches.service';
 
 it.each([
   new HttpErrorResponse({ status: 0 }),
@@ -27,7 +27,7 @@ it.each([
 ])('keeps error UI safe across malformed and transport responses', async (error: unknown) => {
   TestBed.configureTestingModule({
     providers: [
-      { provide: AdminBranchesService, useValue: { list: () => throwError(() => error) } },
+      { provide: OwnerBranchesService, useValue: { list: () => throwError(() => error) } },
     ],
   });
   const fixture = TestBed.createComponent(BranchListPage);
