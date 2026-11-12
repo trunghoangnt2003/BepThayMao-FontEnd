@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { expectNoA11yViolations } from './support/a11y';
+import { loginAdmin } from './support/admin-login';
+
+test.beforeEach(async ({ page }, info) => {
+  if (info.project.name === 'admin') await loginAdmin(page);
+});
 
 test('branch data and accessibility @a11y', async ({ page }, info) => {
   if (info.project.name === 'customer') {

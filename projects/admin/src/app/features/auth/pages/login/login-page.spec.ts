@@ -3,6 +3,7 @@ import { provideRouter, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AuthSessionService } from '../../data-access/auth-session.service';
 import { LoginPage } from './login-page';
+import { AccessTokenStore } from '@bepthaymao/core';
 
 describe('LoginPage', () => {
   const pair = {
@@ -11,7 +12,11 @@ describe('LoginPage', () => {
     role: 'Owner' as const,
     expiresIn: 900,
   };
-  const service = { login: vi.fn(() => of(pair)), logout: vi.fn(() => of(undefined)) };
+  const service = {
+    login: vi.fn(() => of(pair)),
+    logout: vi.fn(() => of(undefined)),
+    store: new AccessTokenStore(),
+  };
   beforeEach(() => {
     vi.clearAllMocks();
     TestBed.configureTestingModule({
