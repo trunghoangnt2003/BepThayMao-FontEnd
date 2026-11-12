@@ -32,7 +32,7 @@ beforeEach(() => {
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
-      { provide: OwnerBranchesService, useValue: { get, update } },
+      { provide: OwnerBranchesService, useValue: { get, update, resetPassword: vi.fn() } },
       { provide: ConfirmDialog, useValue: { confirm } },
       { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: 'b-1' })) } },
     ],
@@ -280,5 +280,24 @@ describe('turning orders off with an unsaved edit', () => {
     expect(root(fixture).querySelector('.order-status')?.textContent.trim()).toBe(
       'Cơ sở đang nhận đơn.',
     );
+  });
+});
+
+describe('resetting the manager password', () => {
+  it('opens the reset dialog for this branch and returns focus to the button on Escape', async () => {
+    const fixture = await mount();
+    expect(root(fixture).textContent).toContain('Đặt lại khi quản lý quên mật khẩu.');
+    const button = find(fixture, 'Đặt lại mật khẩu');
+    button.focus();
+    button.click();
+    await fixture.whenStable();
+    const dialog = document.querySelector('[role="dialog"]');
+    expect(dialog?.textContent).toContain('Đặt lại mật khẩu quản lý');
+    expect(dialog?.textContent).toContain('Quản lý cơ sở Cơ sở Mẫu 1 sẽ dùng mật khẩu mới.');
+    dialog?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await vi.waitFor(() => {
+      expect(document.querySelector('[role="dialog"]')).toBeNull();
+    });
+    expect(document.activeElement).toBe(button);
   });
 });
