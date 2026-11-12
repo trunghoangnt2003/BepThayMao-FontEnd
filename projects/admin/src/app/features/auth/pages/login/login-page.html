@@ -1,21 +1,67 @@
 <section class="login" aria-labelledby="login-title">
   <h1 id="login-title" tabindex="-1">Đăng nhập quản trị</h1>
   <p>Dành cho chủ sở hữu và quản lý cơ sở.</p>
-  <form [formGroup]="form" (ngSubmit)="submit()">
+  @if (expired()) {
+    <p class="banner" role="status">Phiên đăng nhập đã hết hạn. Đăng nhập lại để tiếp tục.</p>
+  }
+  @if (customerDenied()) {
+    <p class="banner" role="alert">Tài khoản này không có quyền vào trang quản trị.</p>
+    <button hlmBtn type="button" (click)="logout()">Đăng xuất</button>
+  }
+  @if (errorMessage(); as message) {
+    <p class="banner banner--error" role="alert">{{ message }}</p>
+  }
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <div class="field">
       <label hlmLabel for="identifier">Tên đăng nhập</label>
-      <input hlmInput id="identifier" formControlName="identifier" autocomplete="username" />
+      <input
+        hlmInput
+        #identifierInput
+        id="identifier"
+        formControlName="identifier"
+        autocomplete="username"
+        [attr.aria-invalid]="fieldInvalid('identifier')"
+        [attr.aria-describedby]="fieldInvalid('identifier') ? 'identifier-error' : null"
+      />
+      @if (fieldInvalid('identifier')) {
+        <p class="field-error" id="identifier-error">Nhập tên đăng nhập.</p>
+      }
     </div>
     <div class="field">
       <label hlmLabel for="password">Mật khẩu</label>
-      <input
-        hlmInput
-        id="password"
-        type="password"
-        formControlName="password"
-        autocomplete="current-password"
-      />
+      <div class="password-control">
+        <input
+          hlmInput
+          #passwordInput
+          id="password"
+          [type]="visiblePassword() ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="current-password"
+          [attr.aria-invalid]="fieldInvalid('password')"
+          [attr.aria-describedby]="fieldInvalid('password') ? 'password-error' : null"
+        /><button
+          hlmBtn
+          variant="outline"
+          type="button"
+          [attr.aria-label]="visiblePassword() ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+          [attr.aria-pressed]="visiblePassword()"
+          (click)="visiblePassword.set(!visiblePassword())"
+        >
+          <btm-icon [name]="visiblePassword() ? 'eye-slash' : 'eye'" />{{
+            visiblePassword() ? 'Ẩn' : 'Hiện'
+          }}
+        </button>
+      </div>
+      @if (fieldInvalid('password')) {
+        <p class="field-error" id="password-error">Nhập mật khẩu.</p>
+      }
     </div>
-    <button hlmBtn type="submit">Đăng nhập</button>
+    <button hlmBtn type="submit" [disabled]="submitting()">
+      @if (showProgress()) {
+        Đang đăng nhập…
+      } @else {
+        Đăng nhập
+      }
+    </button>
   </form>
 </section>

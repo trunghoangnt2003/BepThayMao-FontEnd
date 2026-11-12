@@ -1,5 +1,7 @@
-<a class="skip-link" href="#main">Bỏ qua tới nội dung chính</a>
-@if (store.session(); as session) {
+<a class="skip-link" href="#main" (click)="$event.preventDefault(); mainContent.focus()"
+  >Bỏ qua tới nội dung chính</a
+>
+@if (staffSession(); as session) {
   <header>
     <div class="container topbar">
       <span class="wordmark">Bếp Thầy Mão</span><span class="area">Quản trị</span>
@@ -31,4 +33,4 @@
     }
   </nav>
 }
-<main id="main" class="container" tabindex="-1"><router-outlet /></main>
+<main #mainContent id="main" class="container" tabindex="-1"><router-outlet /></main>

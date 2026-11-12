@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { Router } from '@angular/router';
 import { AccessTokenStore } from '@bepthaymao/core';
@@ -13,6 +13,10 @@ import { IconComponent } from './shared/icon/icon';
 })
 export class App {
   protected readonly store = inject(AccessTokenStore);
+  protected readonly staffSession = computed(() => {
+    const session = this.store.session();
+    return session?.role === 'Customer' ? null : session;
+  });
   private readonly auth = inject(AuthSessionService);
   private readonly router = inject(Router);
   readonly lang = 'vi';
