@@ -6,8 +6,15 @@
  * OpenAPI spec version: 1.0.0
  */
 
+export * from './branchOwnerSettingsRequest';
+export * from './branchResponse';
+export * from './branchSettingsRequest';
+export * from './createBranchRequest';
 export * from './loginRequest';
+export * from './managerAccountRequest';
+export * from './managerBranchView';
 export * from './problemDetails';
 export * from './publicBranch';
+export * from './resetManagerPasswordRequest';
 export * from './tokenPair';
 export * from './userRole';
