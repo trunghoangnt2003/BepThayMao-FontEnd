@@ -140,6 +140,46 @@ app.get('/api/v1/owner/branches/:id', ownerOnly, (request, response) => {
     ? response.json(found)
     : response.status(404).json({ title: 'Not found.', correlationId: 'mock-missing' });
 });
+const managerOnly = (request, response, next) =>
+  request.headers.authorization === 'Bearer mock-access-quanly1'
+    ? next()
+    : response.status(401).json({ title: 'Unauthorized', correlationId: 'mock-manager' });
+const MANAGER_KEYS = [
+  'phone',
+  'openTime',
+  'closeTime',
+  'abandonedThresholdMinutes',
+  'zaloRecipientIds',
+];
+const managerView = (() => {
+  const { id, lat, lng, managerIdentifier, ...view } = ownerBranches[0];
+  return { ...view, zaloRecipientIds: [...view.zaloRecipientIds] };
+})();
+app.get('/api/v1/manager/branch/settings', managerOnly, (_request, response) =>
+  response.json(managerView),
+);
+app.put('/api/v1/manager/branch/settings', managerOnly, (request, response) => {
+  const body = request.body ?? {};
+  const keys = Object.keys(body).sort();
+  if (keys.join() !== [...MANAGER_KEYS].sort().join())
+    return response.status(400).json({
+      title: 'Bad Request',
+      errors: {
+        '': [
+          'Chỉ nhận năm trường: phone, openTime, closeTime, abandonedThresholdMinutes, zaloRecipientIds.',
+        ],
+      },
+      correlationId: 'mock-manager-keys',
+    });
+  if (body.closeTime <= body.openTime)
+    return response.status(400).json({
+      title: 'Bad Request',
+      errors: { closeTime: ['Giờ đóng phải sau giờ mở.'] },
+      correlationId: 'mock-manager-time',
+    });
+  Object.assign(managerView, body);
+  return response.json(managerView);
+});
 app.use('/admin', express.static(resolve('dist/admin/browser')));
 app.get('/admin/{*path}', (_request, response) =>
   response.sendFile(resolve('dist/admin/browser/index.html')),
