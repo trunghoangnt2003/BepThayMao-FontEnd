@@ -248,11 +248,25 @@ it('shows a focused error summary with one link per invalid field', async () => 
   fixture.destroy();
 });
 
-it('focuses the first invalid field instead of a summary when fewer than 3 are wrong', async () => {
+it('still summarises a single problem because the form has more than 3 fields', async () => {
   const fixture = mount();
-  const root = await submitInvalid(fixture, { name: '', address: '' });
-  expect(root.querySelector('.summary')).toBeNull();
-  expect(document.activeElement?.id).toBe('branch-name');
+  const root = await submitInvalid(fixture, { name: '' });
+  expect(root.querySelector('h2[tabindex="-1"]')?.textContent.trim()).toBe('Có 1 chỗ cần sửa');
+  expect(document.activeElement).toBe(root.querySelector('h2[tabindex="-1"]'));
+  fixture.destroy();
+});
+
+it('warns without blocking when the coordinates fall outside Vietnam', async () => {
+  const fixture = mount();
+  const root = fixture.nativeElement as HTMLElement;
+  fill(fixture.componentInstance);
+  await fixture.whenStable();
+  typeInto(root, 'branch-lat', '50');
+  await fixture.whenStable();
+  expect(root.querySelector('#branch-position-warning')?.textContent).toContain(
+    'Tọa độ này nằm ngoài Việt Nam.',
+  );
+  expect(root.querySelector('#branch-lat')?.getAttribute('aria-invalid')).toBeNull();
   fixture.destroy();
 });
 

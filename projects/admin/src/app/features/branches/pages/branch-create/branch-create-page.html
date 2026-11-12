@@ -27,6 +27,12 @@
   <h1 tabindex="-1">Tạo cơ sở mới</h1>
   <p class="lead">Điền thông tin cơ sở và tạo luôn tài khoản cho quản lý.</p>
   <p class="note">Các trường đều bắt buộc trừ khi ghi “không bắt buộc”.</p>
+  @if (failure()) {
+    <adm-banner kind="error">{{ failureMessage() }}</adm-banner>
+  }
+  @if (summary().length) {
+    <adm-error-summary [errors]="summary()" />
+  }
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <adm-branch-form [group]="form.controls.branch" />
     <section class="block" aria-labelledby="manager-title" formGroupName="manager">
@@ -41,6 +47,13 @@
           autocapitalize="none"
           spellcheck="false"
           aria-required="true"
+          aria-describedby="manager-identifier-note"
+          [attr.aria-invalid]="managerMessages().identifier ? true : null"
+        />
+        <adm-field-note
+          noteId="manager-identifier-note"
+          [error]="managerMessages().identifier"
+          [help]="identifierHint"
         />
       </div>
       <div class="field">
@@ -53,7 +66,8 @@
             formControlName="password"
             autocomplete="new-password"
             aria-required="true"
-            aria-describedby="manager-password-help"
+            aria-describedby="manager-password-note"
+            [attr.aria-invalid]="managerMessages().password ? true : null"
           /><button
             hlmBtn
             variant="outline"
@@ -67,14 +81,24 @@
             }}
           </button>
         </div>
-        <p class="field__help" id="manager-password-help">Ít nhất 10 ký tự.</p>
+        <adm-field-note
+          noteId="manager-password-note"
+          [error]="managerMessages().password"
+          help="Ít nhất 10 ký tự."
+        />
       </div>
       <button hlmBtn variant="outline" type="button" (click)="generatePassword()">
         Tạo mật khẩu ngẫu nhiên
       </button>
     </section>
     <div class="actions">
-      <button hlmBtn type="submit" [disabled]="submitting()">Tạo cơ sở</button>
+      <button hlmBtn type="submit" [disabled]="submitting()">
+        @if (showProgress()) {
+          Đang tạo cơ sở…
+        } @else {
+          Tạo cơ sở
+        }
+      </button>
       <a class="cancel" routerLink="/owner/branches">Bỏ tạo cơ sở</a>
     </div>
   </form>
