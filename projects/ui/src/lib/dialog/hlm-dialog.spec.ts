@@ -47,7 +47,7 @@ describe('HlmDialog', () => {
     ref.forceClose();
   });
 
-  it('styles the pane and the scrim with the Garden classes', async () => {
+  it('styles the pane and the scrim with the shared dialog classes', async () => {
     const { ref } = await open();
     expect(document.querySelector('.cdk-overlay-pane.hlm-dialog-pane')).not.toBeNull();
     expect(document.querySelector('.cdk-overlay-backdrop.hlm-dialog-backdrop')).not.toBeNull();

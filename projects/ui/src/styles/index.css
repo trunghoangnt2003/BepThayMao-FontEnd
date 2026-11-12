@@ -1,7 +1,7 @@
-/* Hallmark · shape: app screen (admin) + Index-First (customer) · genre: editorial · theme: Garden (deal 3/3, seed gian-rustic-vietnamese-home-1376·ad2bb4ce·2026-11-08·r0)
- * nav: topbar + row of links (admin) / wordmark only (customer) · signature: the branch list table with open/closed status (admin), the branch index with tel links (customer) · states: loading, empty, error, full, session-expired, forbidden
- * axes: light/roman-serif/chromatic-green · posture: committed · contrast: pass · v2.0.0 */
-/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: density; short directory verified at 320px and desktop */
+/* Hallmark · shape: app screen (admin) + food-delivery app (customer) · genre: modern-minimal · theme: Chanh muối (custom, by request 2026-11-12; replaces Garden)
+ * nav: sidebar Vận hành/Quản trị, bottom bar below 56rem (admin) / head band with wordmark (customer) · signature: lime head band and white cards (customer), one-accent neutral console (admin) · states: loading, empty, error, full, session-expired, forbidden
+ * posture: restrained · contrast: ink on every lime surface · v2.0.0 */
+/* Hallmark · pre-emit critique: one accent per screen, cards only for separate objects; ink text on lime keeps 4.5:1 */
 @import './tokens.css';
 @import './base.css';
 @import './dialog.css';

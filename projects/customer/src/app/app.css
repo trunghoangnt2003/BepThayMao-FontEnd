@@ -1,6 +1,5 @@
 header {
-  background: var(--color-paper-2);
-  border-bottom: var(--rule-hair) solid var(--color-rule);
+  background: var(--color-head);
 }
 .topbar {
   display: flex;
@@ -11,7 +10,8 @@ header {
 .wordmark {
   font-family: var(--font-display);
   font-size: var(--text-lg);
-  font-weight: var(--weight-strong);
+  font-weight: var(--weight-heavy);
+  letter-spacing: var(--tracking-display);
 }
 .area {
   border-left: var(--rule-hair) solid var(--color-rule-2);

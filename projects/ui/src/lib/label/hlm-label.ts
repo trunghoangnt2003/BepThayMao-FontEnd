@@ -1,4 +1,4 @@
-// Adapted from @spartan-ng/cli 1.9.0 helm label (MIT); Garden styling is owned here.
+// Adapted from @spartan-ng/cli 1.9.0 helm label (MIT); Chanh muối styling is owned here.
 import { Directive } from '@angular/core';
 import { BrnLabel } from '@spartan-ng/brain/label';
 

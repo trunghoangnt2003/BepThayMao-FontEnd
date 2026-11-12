@@ -5,9 +5,10 @@ import { fileURLToPath } from 'node:url';
 export function checkFonts(mediaDirectory) {
   const files = readdirSync(mediaDirectory);
   const required = [
-    'vollkorn-vietnamese-600',
-    'hanken-grotesk-vietnamese-400',
-    'hanken-grotesk-vietnamese-600',
+    'be-vietnam-pro-vietnamese-400',
+    'be-vietnam-pro-vietnamese-600',
+    'be-vietnam-pro-vietnamese-700',
+    'be-vietnam-pro-vietnamese-800',
   ];
   for (const font of required) {
     if (!files.some((file) => file.startsWith(font) && file.endsWith('.woff2'))) {

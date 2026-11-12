@@ -1,4 +1,4 @@
-// Adapted from @spartan-ng/cli 1.9.0 helm input (MIT); Garden styling is owned here.
+// Adapted from @spartan-ng/cli 1.9.0 helm input (MIT); Chanh muối styling is owned here.
 import { afterRenderEffect, Directive, ElementRef, inject } from '@angular/core';
 import { BrnFieldControl } from '@spartan-ng/brain/field';
 import { BrnInput } from '@spartan-ng/brain/input';

@@ -1,4 +1,4 @@
-/* Hallmark · shape: shared app controls · theme: Garden · scope: customer and admin */
+/* Hallmark · shape: shared app controls · theme: Chanh muối (custom, by request 2026-11-12) · scope: customer and admin */
 /* Hallmark · critique: token-only controls, instant focus and reduced motion */
 *,
 *::before,
@@ -118,7 +118,8 @@ dd.num {
 }
 .wordmark {
   font-family: var(--font-display);
-  font-weight: var(--weight-strong);
+  font-weight: var(--weight-heavy);
+  letter-spacing: var(--tracking-display);
   text-decoration: none;
 }
 .btn {
@@ -128,9 +129,9 @@ dd.num {
   gap: var(--space-xs);
   min-height: var(--control-h);
   padding-inline: var(--space-lg);
-  border: var(--rule-hair) solid var(--color-muted);
-  border-radius: var(--radius-pill);
-  background: transparent;
+  border: var(--rule-hair) solid var(--color-rule-2);
+  border-radius: var(--radius-control);
+  background: var(--color-paper-2);
   color: var(--color-ink);
   font-family: var(--font-body);
   font-size: var(--text-md);
@@ -153,9 +154,9 @@ dd.num {
   min-height: var(--control-h);
   width: 100%;
   min-width: 0;
-  border: var(--rule-hair) solid var(--color-muted);
-  border-radius: var(--radius-card);
-  background: var(--color-paper);
+  border: var(--rule-hair) solid var(--color-rule-2);
+  border-radius: var(--radius-control);
+  background: var(--color-paper-2);
   color: var(--color-ink);
   padding-inline: var(--space-sm);
 }
@@ -177,6 +178,7 @@ dd.num {
 }
 .btn--quiet {
   border-color: transparent;
+  background: transparent;
   text-decoration: underline;
   text-decoration-color: transparent;
 }
@@ -185,13 +187,19 @@ dd.num {
 }
 .btn:disabled,
 .btn[aria-disabled='true'] {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: not-allowed;
-  border-style: dashed;
 }
 @media (hover: hover) {
   .btn:hover:not(:disabled):not([aria-disabled='true']) {
+    background: var(--color-paper-3);
+  }
+  .btn--primary:hover:not(:disabled):not([aria-disabled='true']) {
     border-color: var(--color-ink);
+    background: var(--color-ink);
+  }
+  .btn--quiet:hover:not(:disabled):not([aria-disabled='true']) {
+    background: transparent;
   }
   .btn--quiet:hover {
     text-decoration-color: currentColor;

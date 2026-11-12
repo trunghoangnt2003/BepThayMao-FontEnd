@@ -1,4 +1,4 @@
-// Adapted from @spartan-ng/cli 1.9.0 helm dialog (MIT); Garden styling lives in styles/dialog.css.
+// Adapted from @spartan-ng/cli 1.9.0 helm dialog (MIT); Chanh muối styling lives in styles/dialog.css.
 import { Component, Directive } from '@angular/core';
 import { BrnDialogDescription, BrnDialogOptions, BrnDialogTitle } from '@spartan-ng/brain/dialog';
 

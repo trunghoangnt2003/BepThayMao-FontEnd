@@ -1,57 +1,143 @@
-/* Hallmark · shape: app screen · theme: Garden · scope: authenticated admin shell */
-/* Hallmark · critique: clear role navigation, token controls and mobile account action */
-header {
-  background: var(--color-paper-2);
-  border-bottom: var(--rule-hair) solid var(--color-rule);
+/* Hallmark · shape: app screen · theme: Chanh muối admin (custom, by request 2026-11-12) · scope: authenticated admin shell */
+/* Hallmark · critique: sidebar groups by job (Vận hành, Quản trị), one accent for the current item, bottom bar below 56rem */
+.shell {
+  min-height: 100dvh;
+  max-width: var(--container);
+  margin-inline: auto;
 }
-.topbar {
+.shell--staff {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+}
+.side {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--space-md);
+  background: var(--color-paper-2);
+  border-right: var(--rule-hair) solid var(--color-rule);
+}
+.brand {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  min-height: 72px;
+  gap: var(--space-sm);
+  font-weight: var(--weight-heavy);
+  letter-spacing: var(--tracking-display);
 }
-.wordmark {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-strong);
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-control);
+  background: var(--color-main);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
 }
-.area {
-  border-left: var(--rule-hair) solid var(--color-rule-2);
-  padding-left: var(--space-md);
+.nav {
+  display: grid;
+  gap: var(--space-2xs);
+}
+.nav__group {
+  padding: var(--space-xs) var(--space-sm) var(--space-2xs);
   color: var(--color-muted);
   font-size: var(--text-sm);
 }
-nav {
+.nav__link {
   display: flex;
-  gap: var(--space-lg);
-  overflow-x: auto;
-}
-nav a {
-  display: inline-flex;
   align-items: center;
-  min-height: var(--control-h);
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-}
-nav a.active {
-  border-color: var(--color-accent);
+  min-height: 40px;
+  padding-inline: var(--space-sm);
+  border-radius: var(--radius-control);
+  color: var(--color-ink-2);
   font-weight: var(--weight-strong);
+  text-decoration: none;
+  transition: background-color var(--dur-micro) var(--ease-out);
 }
-main {
-  padding-block: var(--space-xl);
+.nav__link:hover {
+  background: var(--color-paper-3);
+  color: var(--color-ink);
+}
+.nav__link--active {
+  background: var(--color-tint);
+  color: var(--color-ink);
 }
 .account {
-  margin-left: auto;
+  margin-top: auto;
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: var(--rule-hair) solid var(--color-rule);
 }
-.identity {
-  display: none;
+.account__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-3);
+  font-weight: var(--weight-strong);
+  font-size: var(--text-sm);
 }
-@media (min-width: 40rem) {
-  .identity {
-    display: grid;
-    font-size: var(--text-sm);
+.account__identity {
+  display: grid;
+  min-width: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-strong);
+  line-height: var(--leading-label);
+  overflow-wrap: anywhere;
+}
+.account__identity span {
+  color: var(--color-muted);
+  font-weight: var(--weight-regular);
+}
+.account__logout {
+  margin-left: auto;
+}
+.main {
+  min-width: 0;
+  padding: var(--space-xl) var(--gutter) var(--space-2xl);
+}
+@media (max-width: 56rem) {
+  .shell--staff {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .side {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky-nav);
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-xs) var(--gutter);
+    border-right: 0;
+    border-bottom: var(--rule-hair) solid var(--color-rule);
+  }
+  .brand__name {
+    display: none;
+  }
+  .nav {
+    grid-auto-flow: column;
+    overflow-x: auto;
+  }
+  .nav__group,
+  .account__identity,
+  .account__avatar,
+  .account__logout-text {
+    display: none;
+  }
+  .account {
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 0;
+  }
+  .main {
+    padding-top: var(--space-lg);
   }
 }

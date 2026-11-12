@@ -1,36 +1,53 @@
 <a class="skip-link" href="#main" (click)="$event.preventDefault(); mainContent.focus()"
   >Bỏ qua tới nội dung chính</a
 >
-@if (staffSession(); as session) {
-  <header>
-    <div class="container topbar">
-      <span class="wordmark">Bếp Thầy Mão</span><span class="area">Quản trị</span>
+<div class="shell" [class.shell--staff]="staffSession() !== null">
+  @if (staffSession(); as session) {
+    <aside class="side" aria-label="Thanh điều hướng quản trị">
+      <span class="brand"
+        ><span class="brand__mark" aria-hidden="true">BTM</span
+        ><span class="brand__name">Bếp Thầy Mão</span></span
+      >
+      <nav class="nav" aria-label="Điều hướng chính">
+        @if (session.role === 'Owner') {
+          <p class="nav__group">Quản trị</p>
+          <a
+            class="nav__link"
+            routerLink="/owner/branches"
+            routerLinkActive="nav__link--active"
+            ariaCurrentWhenActive="page"
+            >Cơ sở</a
+          >
+        } @else {
+          <p class="nav__group">Vận hành</p>
+          <a
+            class="nav__link"
+            routerLink="/manager/settings"
+            routerLinkActive="nav__link--active"
+            ariaCurrentWhenActive="page"
+            >Thông số cơ sở</a
+          >
+        }
+      </nav>
       <div class="account">
-        <span class="identity"
+        <span class="account__avatar" aria-hidden="true">{{
+          session.identifier.charAt(0).toUpperCase()
+        }}</span>
+        <span class="account__identity"
           >{{ session.identifier }}
           <span>{{ session.role === 'Owner' ? 'Chủ sở hữu' : 'Quản lý cơ sở' }}</span></span
         >
         <button
           hlmBtn
           variant="outline"
+          class="account__logout"
           (click)="logout()"
           [attr.aria-label]="'Đăng xuất khỏi tài khoản ' + session.identifier"
         >
-          <btm-icon name="sign-out" />Đăng xuất
+          <btm-icon name="sign-out" /><span class="account__logout-text">Đăng xuất</span>
         </button>
       </div>
-    </div>
-  </header>
-  <nav class="container" aria-label="Điều hướng chính">
-    @if (session.role === 'Owner') {
-      <a routerLink="/owner/branches" routerLinkActive="active" ariaCurrentWhenActive="page"
-        >Cơ sở</a
-      >
-    } @else {
-      <a routerLink="/manager/settings" routerLinkActive="active" ariaCurrentWhenActive="page"
-        >Thông số cơ sở</a
-      >
-    }
-  </nav>
-}
-<main #mainContent id="main" class="container" tabindex="-1"><router-outlet /></main>
+    </aside>
+  }
+  <main #mainContent id="main" class="main" tabindex="-1"><router-outlet /></main>
+</div>

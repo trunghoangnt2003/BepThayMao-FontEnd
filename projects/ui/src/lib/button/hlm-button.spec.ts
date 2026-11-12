@@ -17,8 +17,8 @@ class Probe {
 class DangerProbe {
   readonly ready = true;
 }
-describe('Garden helm button', () => {
-  it('uses brain disabled behavior and Garden primary styling', async () => {
+describe('Chanh muối helm button', () => {
+  it('uses brain disabled behavior and Chanh muối primary styling', async () => {
     const fixture = TestBed.createComponent(Probe);
     await fixture.whenStable();
     const button = (fixture.nativeElement as HTMLElement).querySelector('button');

@@ -13,11 +13,17 @@
   color: var(--color-muted);
 }
 article {
-  border-top: var(--rule-hair) solid var(--color-rule-2);
-  padding-block: var(--space-lg);
+  background: var(--color-paper-2);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-md);
+  display: grid;
+  gap: var(--space-sm);
 }
-article + article {
-  border-color: var(--color-rule);
+.branches {
+  display: grid;
+  gap: var(--space-sm);
+  align-content: start;
 }
 dl {
   margin-bottom: 0;

@@ -1,4 +1,4 @@
-/* Hallmark · shape: shared modal dialog · theme: Garden · scope: customer and admin */
+/* Hallmark · shape: shared modal dialog · theme: Chanh muối · scope: customer and admin */
 /* Hallmark · critique: token-only panel on the scrim, opacity is the only motion */
 .hlm-dialog-pane {
   width: min(32rem, 100% - 2 * var(--gutter));

@@ -1,4 +1,4 @@
-// Adapted from @spartan-ng/cli 1.9.0 helm button (MIT); Garden styling is owned here.
+// Adapted from @spartan-ng/cli 1.9.0 helm button (MIT); Chanh muối styling is owned here.
 import { Directive, input } from '@angular/core';
 import { BrnButton } from '@spartan-ng/brain/button';
 
