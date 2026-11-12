@@ -1,0 +1,93 @@
+<div class="head">
+  <div>
+    <h1 tabindex="-1">Còn món</h1>
+    <p>Tắt món đã hết. Khách thấy "Hết món" ở cơ sở này và vẫn đặt được ở cơ sở khác.</p>
+  </div>
+  @if (state() === 'loaded') {
+    <span class="pill" [class.pill--warn]="soldOut() > 0">{{ soldOut() }} món đang hết</span>
+  }
+</div>
+
+@if (service.isOwner()) {
+  <div class="toolbar">
+    <div class="field">
+      <label class="field__label" for="s-branch">Cơ sở</label>
+      <select id="s-branch" class="field__input" [(ngModel)]="branchId" (ngModelChange)="load()">
+        <option value="">Tất cả cơ sở</option>
+        @for (branch of branches(); track branch.id) {
+          <option [value]="branch.id">{{ branch.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+}
+
+<p class="visually-hidden" role="status">{{ message() }}</p>
+
+<div class="panel">
+  @switch (state()) {
+    @case ('loading') {
+      <p class="empty status">Đang tải…</p>
+    }
+    @case ('error') {
+      <div class="error" role="alert">
+        <p>Không tải được tình trạng món. Kiểm tra mạng rồi thử lại.</p>
+        <button hlmBtn variant="outline" type="button" (click)="load()">Thử lại</button>
+      </div>
+    }
+    @default {
+      @if (rows().length === 0) {
+        <div class="empty">
+          <h2>Chưa có món nào</h2>
+          <p class="meta">Chủ quán thêm món ở mục Thực đơn.</p>
+        </div>
+      } @else {
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Món</th>
+                @for (item of matrix(); track item.branch.id) {
+                  <th scope="col">
+                    {{ showMatrix() || service.isOwner() ? item.branch.name : 'Còn món' }}
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (dish of rows(); track dish.dishId) {
+                <tr>
+                  <th scope="row">
+                    <span class="strong">{{ dish.name }}</span>
+                    <span class="meta"
+                      >{{ categories[dish.category] }},
+                      <span class="num">{{ formatVnd(dish.price) }}</span></span
+                    >
+                  </th>
+                  @for (item of matrix(); track item.branch.id) {
+                    <td>
+                      <button
+                        type="button"
+                        class="switch"
+                        role="switch"
+                        [attr.aria-checked]="available(item.branch.id, dish.dishId)"
+                        [attr.aria-label]="dish.name + ' còn món ở ' + item.branch.name"
+                        [disabled]="busy() === item.branch.id + ':' + dish.dishId"
+                        (click)="toggle(item.branch, dish)"
+                      >
+                        <span class="track" aria-hidden="true"></span>
+                        <span>{{
+                          available(item.branch.id, dish.dishId) ? 'Còn món' : 'Hết món'
+                        }}</span>
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+</div>

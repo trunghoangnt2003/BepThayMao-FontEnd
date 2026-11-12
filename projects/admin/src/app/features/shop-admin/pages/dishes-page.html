@@ -1,0 +1,184 @@
+<div class="head">
+  <div>
+    <h1 tabindex="-1">Thực đơn</h1>
+    <p>Thực đơn chung cho mọi cơ sở. Giá áp dụng ở mọi cơ sở; quản lý cơ sở chỉ bật/tắt còn món.</p>
+  </div>
+  <button hlmBtn type="button" (click)="open(null)">Thêm món</button>
+</div>
+<p class="visually-hidden" role="status">{{ message() }}</p>
+
+<div class="layout" [class.layout--split]="editing() !== null">
+  <div class="panel">
+    @switch (state()) {
+      @case ('loading') {
+        <p class="empty status">Đang tải thực đơn…</p>
+      }
+      @case ('error') {
+        <div class="error" role="alert">
+          <p>Không tải được thực đơn. Kiểm tra mạng rồi thử lại.</p>
+          <button hlmBtn variant="outline" type="button" (click)="load()">Thử lại</button>
+        </div>
+      }
+      @default {
+        @if (dishes().length === 0) {
+          <div class="empty">
+            <h2>Chưa có món nào</h2>
+            <p class="meta">Thêm món đầu tiên để khách bắt đầu đặt hàng.</p>
+          </div>
+        } @else {
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Món</th>
+                  <th scope="col">Nhóm</th>
+                  <th scope="col" class="right">Giá</th>
+                  <th scope="col">Quán giới thiệu</th>
+                  <th scope="col">Còn ở cơ sở</th>
+                  <th scope="col"><span class="visually-hidden">Thao tác</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (dish of dishes(); track dish.id) {
+                  <tr>
+                    <th scope="row">
+                      <button
+                        type="button"
+                        class="rowlink"
+                        (click)="open(dish)"
+                        [attr.aria-pressed]="isEditing(dish)"
+                      >
+                        {{ dish.name }}
+                      </button>
+                      @if (dish.description) {
+                        <span class="meta">{{ dish.description }}</span>
+                      }
+                    </th>
+                    <td>{{ labels[dish.category] }}</td>
+                    <td class="right num strong">{{ formatVnd(dish.price) }}</td>
+                    <td>
+                      <button
+                        type="button"
+                        class="switch"
+                        role="switch"
+                        [attr.aria-checked]="dish.isFeatured"
+                        [attr.aria-label]="'Quán giới thiệu ' + dish.name"
+                        (click)="toggleFeatured(dish)"
+                      >
+                        <span class="track" aria-hidden="true"></span>
+                        <span>{{ dish.isFeatured ? 'Có' : 'Không' }}</span>
+                      </button>
+                    </td>
+                    <td>
+                      @if (dish.unavailableBranchCount === 0) {
+                        <span class="pill pill--ok">Mọi cơ sở</span>
+                      } @else {
+                        <span class="pill pill--warn"
+                          >Hết ở {{ dish.unavailableBranchCount }} cơ sở</span
+                        >
+                      }
+                    </td>
+                    <td class="right">
+                      <button
+                        hlmBtn
+                        variant="outline"
+                        type="button"
+                        (click)="remove(dish)"
+                        [attr.aria-label]="'Xóa ' + dish.name"
+                      >
+                        Xóa
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  @if (editing(); as current) {
+    <aside class="detail" #panel aria-labelledby="dish-form-h">
+      <div class="detail-head">
+        <h2 id="dish-form-h">{{ current === 'new' ? 'Thêm món' : 'Sửa món' }}</h2>
+        <button hlmBtn variant="outline" type="button" (click)="close()">Đóng</button>
+      </div>
+      <form class="form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+        @if (formError()) {
+          <p class="error" role="alert">{{ formError() }}</p>
+        }
+        <div class="field">
+          <label class="field__label" for="d-name">Tên món</label>
+          <input id="d-name" class="field__input" formControlName="name" maxlength="120" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="d-desc">Mô tả (không bắt buộc)</label>
+          <textarea
+            id="d-desc"
+            class="field__input"
+            rows="3"
+            formControlName="description"
+            maxlength="1000"
+          ></textarea>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label class="field__label" for="d-price">Giá (đồng)</label>
+            <input
+              id="d-price"
+              class="field__input"
+              type="number"
+              min="0"
+              inputmode="numeric"
+              formControlName="price"
+              aria-describedby="d-price-help"
+            />
+            <span class="field__help" id="d-price-help">Áp dụng cho mọi cơ sở.</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="d-cat">Nhóm món</label>
+            <select id="d-cat" class="field__input" formControlName="category">
+              @for (item of categories; track item[0]) {
+                <option [value]="item[0]">{{ item[1] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label class="field__label" for="d-sort">Thứ tự hiển thị</label>
+            <input
+              id="d-sort"
+              class="field__input"
+              type="number"
+              min="0"
+              inputmode="numeric"
+              formControlName="sortOrder"
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" for="d-img">Đường dẫn ảnh (không bắt buộc)</label>
+            <input
+              id="d-img"
+              class="field__input"
+              type="url"
+              formControlName="imageUrl"
+              aria-describedby="d-img-help"
+            />
+            <span class="field__help" id="d-img-help">Tải ảnh trực tiếp sẽ có ở bản sau.</span>
+          </div>
+        </div>
+        <label class="check"
+          ><input type="checkbox" formControlName="isFeatured" /> Đưa vào mục Quán giới thiệu</label
+        >
+        <div class="actions">
+          <button hlmBtn type="submit" [disabled]="saving()">
+            {{ saving() ? 'Đang lưu…' : current === 'new' ? 'Thêm món' : 'Lưu món' }}
+          </button>
+        </div>
+      </form>
+    </aside>
+  }
+</div>

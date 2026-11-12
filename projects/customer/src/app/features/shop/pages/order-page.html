@@ -1,0 +1,161 @@
+@switch (state()) {
+  @case ('loading') {
+    <h1 tabindex="-1">Đơn hàng {{ code().toUpperCase() }}</h1>
+    <p class="note">Đang tải đơn hàng…</p>
+  }
+  @case ('ask-phone') {
+    <h1 tabindex="-1">Đơn hàng {{ code().toUpperCase() }}</h1>
+    <form class="card" [formGroup]="phoneForm" (ngSubmit)="submitPhone()">
+      <p>Nhập số điện thoại đã dùng khi đặt để xem đơn này.</p>
+      <div class="field">
+        <label class="field__label" for="o-phone">Số điện thoại</label>
+        <input
+          id="o-phone"
+          class="field__input"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel-national"
+          formControlName="phone"
+        />
+      </div>
+      <button type="submit" class="btn btn--primary">Xem đơn</button>
+    </form>
+  }
+  @case ('not-found') {
+    <h1 tabindex="-1">Không tìm thấy đơn hàng</h1>
+    <p>Kiểm tra lại mã đơn hoặc tra cứu bằng mã đơn và số điện thoại.</p>
+    <a class="btn" routerLink="/tra-don">Tra cứu đơn</a>
+  }
+  @case ('error') {
+    <h1 tabindex="-1">Không tải được đơn hàng</h1>
+    <p>Kiểm tra kết nối mạng rồi tải lại trang.</p>
+  }
+  @case ('ready') {
+    @if (tracking(); as value) {
+      @let order = value.order;
+      <h1 tabindex="-1">
+        @if (value.payment) {
+          Thanh toán đơn hàng
+        } @else if (order.status === 'Cancelled') {
+          Đơn đã hủy
+        } @else if (order.status === 'PendingPayment') {
+          Đơn đã quá thời hạn thanh toán
+        } @else {
+          Đơn hàng của bạn
+        }
+      </h1>
+      <section class="status">
+        <span class="small">Đơn {{ order.code }}, {{ order.branchName }}</span>
+        <strong class="big">{{ labels[order.status] }}</strong>
+        @if (order.status !== 'Cancelled') {
+          <ol class="steps" aria-label="Tiến trình đơn">
+            @for (item of steps; track item; let index = $index) {
+              <li [class.on]="index <= step()">{{ labels[item] }}</li>
+            }
+          </ol>
+        }
+        @if (value.payment && remaining()) {
+          <div class="timer">
+            <span role="timer" aria-live="off" class="num">{{ remaining() }}</span>
+            <span class="small">còn lại để chuyển khoản, hết hạn lúc {{ expireAt() }}</span>
+          </div>
+        }
+        @if (order.isNextDay) {
+          <span class="small">Giao ngày {{ order.deliveryDate }} (đặt ngoài giờ nhận đơn)</span>
+        }
+      </section>
+
+      @if (value.payment; as payment) {
+        <section class="card qr" aria-labelledby="qr-h">
+          <h2 id="qr-h">Quét mã bằng ứng dụng ngân hàng</h2>
+          <img
+            [src]="payment.qrUrl"
+            width="256"
+            height="256"
+            [alt]="'Mã QR chuyển khoản ' + formatVnd(payment.amount) + ' cho đơn ' + order.code"
+          />
+          <p class="small">
+            Đang dùng điện thoại này? Chụp màn hình rồi chọn ảnh trong mục quét mã của ứng dụng ngân
+            hàng.
+          </p>
+          <dl>
+            <div>
+              <dt>Số tiền</dt>
+              <dd class="num">{{ formatVnd(payment.amount) }}</dd>
+              <button
+                type="button"
+                class="btn"
+                (click)="copy('amount', '' + payment.amount)"
+                aria-label="Sao chép số tiền"
+              >
+                {{ copied() === 'amount' ? 'Đã sao chép' : 'Sao chép' }}
+              </button>
+            </div>
+            <div>
+              <dt>Nội dung chuyển khoản</dt>
+              <dd class="num">{{ payment.transferContent }}</dd>
+              <button
+                type="button"
+                class="btn"
+                (click)="copy('content', payment.transferContent)"
+                aria-label="Sao chép nội dung chuyển khoản"
+              >
+                {{ copied() === 'content' ? 'Đã sao chép' : 'Sao chép' }}
+              </button>
+            </div>
+          </dl>
+          <p class="small">Nhập đúng nội dung chuyển khoản để cơ sở nhận ra đơn của bạn.</p>
+          <p class="visually-hidden" role="status">{{ copied() ? 'Đã sao chép.' : '' }}</p>
+        </section>
+      }
+
+      <section class="card" aria-labelledby="items-h">
+        <h2 id="items-h">Món đã đặt</h2>
+        <ul class="lines">
+          @for (item of order.items; track $index) {
+            <li>
+              <span>{{ item.dishName }} × {{ item.quantity }}</span
+              ><span class="num">{{ formatVnd(item.lineTotal) }}</span>
+            </li>
+          }
+        </ul>
+        <div class="total">
+          <span>Tổng tiền món</span><span class="num">{{ formatVnd(order.itemsTotal) }}</span>
+        </div>
+        <p class="small">Phí ship trả riêng khi nhận hàng.</p>
+      </section>
+
+      @if (value.payment) {
+        <section class="danger">
+          @if (!confirmCancel()) {
+            <button type="button" class="btn" (click)="confirmCancel.set(true)">Hủy đơn</button>
+          } @else {
+            <div
+              class="card"
+              role="alertdialog"
+              aria-labelledby="cancel-h"
+              aria-describedby="cancel-d"
+            >
+              <h2 id="cancel-h">Hủy đơn {{ order.code }}?</h2>
+              <p id="cancel-d">
+                Bạn sẽ không cần thanh toán đơn này. Nếu đã chuyển khoản, đừng hủy mà hãy liên hệ cơ
+                sở.
+              </p>
+              @if (cancelError()) {
+                <p role="alert" class="error">{{ cancelError() }}</p>
+              }
+              <div class="row">
+                <button type="button" class="btn btn--primary" (click)="confirmCancel.set(false)">
+                  Giữ đơn
+                </button>
+                <button type="button" class="btn btn--danger" (click)="cancel()">Hủy đơn</button>
+              </div>
+            </div>
+          }
+        </section>
+      } @else if (order.status === 'Cancelled' || order.status === 'PendingPayment') {
+        <a class="btn btn--primary" routerLink="/thuc-don">Đặt đơn mới</a>
+      }
+    }
+  }
+}

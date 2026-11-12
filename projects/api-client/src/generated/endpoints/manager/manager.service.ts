@@ -24,8 +24,12 @@ import type {
 } from 'rxjs';
 
 import type {
+  BranchDishDto,
   BranchSettingsRequest,
-  ManagerBranchView
+  DishAvailabilityRequest,
+  ListManagerOrdersParams,
+  ManagerBranchView,
+  OrderDto
 } from '../../models';
 
 import type {
@@ -72,7 +76,78 @@ type HttpClientObserveOptions = HttpClientOptions & {
   readonly observe?: 'body' | 'events' | 'response';
 };
 
+type AngularHttpParamValue = string | number | boolean | Array<string | number | boolean>;
+type AngularHttpParamValueWithNullable = AngularHttpParamValue | null;
 
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys?: ReadonlySet<string>,
+  preserveRequiredNullables?: false,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValue>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: true,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValueWithNullable>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: boolean | undefined,
+  passthroughKeys: ReadonlySet<string>,
+): Record<string, unknown>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> = new Set(),
+  preserveRequiredNullables = false,
+  passthroughKeys: ReadonlySet<string> = new Set(),
+): Record<string, unknown> {
+  const filteredParams: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (passthroughKeys.has(key)) {
+      if (value !== undefined) {
+        filteredParams[key] = value;
+      }
+      continue;
+    }
+    if (Array.isArray(value)) {
+      const filtered = value
+        .filter(
+          (item) =>
+            item != null &&
+            (typeof item === 'string' ||
+              typeof item === 'number' ||
+              typeof item === 'boolean' ||
+              (item instanceof Date && !Number.isNaN(item.getTime()))),
+        )
+        .map((item) =>
+          item instanceof Date ? item.toISOString() : item,
+        ) as Array<string | number | boolean>;
+      if (filtered.length) {
+        filteredParams[key] = filtered;
+      }
+    } else if (value === null && requiredNullableKeys.has(key)) {
+      // With a paramsSerializer (preserveRequiredNullables) the literal null
+      // is passed through for it to consume; without one, emit an empty
+      // string so the required key still reaches the wire as `?key=`
+      // instead of being silently dropped. See #3712.
+      filteredParams[key] = preserveRequiredNullables ? null : '';
+    } else if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      // useDates produces Date query params; serialize to ISO so they reach
+      // the wire instead of being dropped by the primitive check below. See #3856.
+      filteredParams[key] = value.toISOString();
+    } else if (
+      value != null &&
+      (typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean')
+    ) {
+      filteredParams[key] = value;
+    }
+  }
+  return filteredParams;
+}
 
 
 
@@ -81,6 +156,42 @@ type HttpClientObserveOptions = HttpClientOptions & {
 @Injectable({ providedIn: 'root' })
 export class ManagerService {
   private readonly http = inject(HttpClient);
+/**
+ * Đơn của cơ sở mình (lọc theo trạng thái, thanh toán)
+ * @summary Đơn của cơ sở mình (lọc theo trạng thái, thanh toán)
+ */
+ listManagerOrders<TData = OrderDto[]>(params?: ListManagerOrdersParams, options?: HttpClientBodyOptions): Observable<TData>;
+ listManagerOrders<TData = OrderDto[]>(params?: ListManagerOrdersParams, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ listManagerOrders<TData = OrderDto[]>(params?: ListManagerOrdersParams, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  listManagerOrders<TData = OrderDto[]>(
+    params?: ListManagerOrdersParams, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/manager/orders`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+        params: filteredParams,}
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/manager/orders`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+        params: filteredParams,}
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/manager/orders`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+        params: filteredParams,}
+    );
+  }
 /**
  * Chỉ vai trò BranchManager; cơ sở lấy từ claim branch_id, không nhận mã cơ sở trong đường dẫn hay thân.
  * @summary Thông số của cơ sở mình
@@ -152,7 +263,85 @@ export class ManagerService {
       }
     );
   }
+/**
+ * Quản lý không thêm, sửa, xóa món; chỉ bật/tắt còn món.
+ * @summary Món của thực đơn chung kèm tình trạng còn món ở cơ sở mình
+ */
+ listManagerDishes<TData = BranchDishDto[]>( options?: HttpClientBodyOptions): Observable<TData>;
+ listManagerDishes<TData = BranchDishDto[]>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ listManagerDishes<TData = BranchDishDto[]>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  listManagerDishes<TData = BranchDishDto[]>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/manager/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/manager/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/manager/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Bật/tắt còn món ở cơ sở mình
+ * @summary Bật/tắt còn món ở cơ sở mình
+ */
+ setManagerDishAvailability<TData = BranchDishDto>(dishId: string,
+    dishAvailabilityRequest: DishAvailabilityRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ setManagerDishAvailability<TData = BranchDishDto>(dishId: string,
+    dishAvailabilityRequest: DishAvailabilityRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ setManagerDishAvailability<TData = BranchDishDto>(dishId: string,
+    dishAvailabilityRequest: DishAvailabilityRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  setManagerDishAvailability<TData = BranchDishDto>(
+    dishId: string,
+    dishAvailabilityRequest: DishAvailabilityRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/v1/manager/dishes/${dishId}/availability`,
+      dishAvailabilityRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/v1/manager/dishes/${dishId}/availability`,
+      dishAvailabilityRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/v1/manager/dishes/${dishId}/availability`,
+      dishAvailabilityRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
 };
 
+export type ListManagerOrdersClientResult = NonNullable<OrderDto[]>
 export type GetManagerBranchSettingsClientResult = NonNullable<ManagerBranchView>
 export type UpdateManagerBranchSettingsClientResult = NonNullable<ManagerBranchView>
+export type ListManagerDishesClientResult = NonNullable<BranchDishDto[]>
+export type SetManagerDishAvailabilityClientResult = NonNullable<BranchDishDto>

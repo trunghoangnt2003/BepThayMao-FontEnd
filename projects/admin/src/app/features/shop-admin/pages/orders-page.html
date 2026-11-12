@@ -1,0 +1,149 @@
+<div class="head">
+  <div>
+    <h1 tabindex="-1">Đơn hàng</h1>
+    <p>Chuyển trạng thái đơn và xác nhận thanh toán thủ công có ở các phase sau.</p>
+  </div>
+  <button hlmBtn variant="outline" type="button" (click)="load()">Tải lại</button>
+</div>
+
+<div class="toolbar">
+  @if (service.isOwner()) {
+    <div class="field">
+      <label class="field__label" for="o-branch">Cơ sở</label>
+      <select id="o-branch" class="field__input" [(ngModel)]="branchId" (ngModelChange)="load()">
+        <option value="">Tất cả cơ sở</option>
+        @for (branch of branches(); track branch.id) {
+          <option [value]="branch.id">{{ branch.name }}</option>
+        }
+      </select>
+    </div>
+  }
+  <div class="field">
+    <label class="field__label" for="o-status">Trạng thái đơn</label>
+    <select id="o-status" class="field__input" [(ngModel)]="status" (ngModelChange)="load()">
+      <option value="">Tất cả</option>
+      @for (item of statuses; track item) {
+        <option [value]="item">{{ labels[item] }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+<div class="layout" [class.layout--split]="selected() !== null">
+  <div class="panel">
+    @switch (state()) {
+      @case ('loading') {
+        <p class="empty status" role="status">Đang tải đơn…</p>
+      }
+      @case ('error') {
+        <div class="error" role="alert">
+          <p>Không tải được danh sách đơn. Kiểm tra mạng rồi thử lại.</p>
+          <button hlmBtn variant="outline" type="button" (click)="load()">Thử lại</button>
+        </div>
+      }
+      @default {
+        @if (orders().length === 0) {
+          <div class="empty">
+            <h2>Chưa có đơn nào</h2>
+            <p class="meta">Đơn mới sẽ hiện ở đây khi khách đặt hàng.</p>
+          </div>
+        } @else {
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Đơn</th>
+                  @if (service.isOwner() && !branchId) {
+                    <th scope="col">Cơ sở</th>
+                  }
+                  <th scope="col">Khách</th>
+                  <th scope="col">Món</th>
+                  <th scope="col" class="right">Tiền món</th>
+                  <th scope="col">Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (order of orders(); track order.id) {
+                  <tr>
+                    <th scope="row">
+                      <button type="button" class="rowlink num" (click)="selected.set(order)">
+                        {{ order.code }}
+                      </button>
+                      <span class="meta num">{{ formatTime(order.createdAt) }}</span>
+                      @if (order.isNextDay) {
+                        <span class="meta">Giao ngày {{ order.deliveryDate }}</span>
+                      }
+                    </th>
+                    @if (service.isOwner() && !branchId) {
+                      <td>{{ order.branchName }}</td>
+                    }
+                    <td>
+                      {{ order.customerName
+                      }}<span class="meta num">{{ order.customerPhone }}</span>
+                    </td>
+                    <td>{{ items(order) }}</td>
+                    <td class="right num strong">{{ formatVnd(order.itemsTotal) }}</td>
+                    <td>
+                      <span [class]="pillClass(order)">{{ labels[order.status] }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  @if (selected(); as order) {
+    <aside class="detail" aria-labelledby="order-detail-h">
+      <div class="detail-head">
+        <h2 id="order-detail-h">Đơn {{ order.code }}</h2>
+        <button hlmBtn variant="outline" type="button" (click)="selected.set(null)">Đóng</button>
+      </div>
+      <span [class]="pillClass(order)">{{ labels[order.status] }}</span>
+      <dl class="kv">
+        <div>
+          <dt>Cơ sở</dt>
+          <dd>{{ order.branchName }}</dd>
+        </div>
+        <div>
+          <dt>Khách</dt>
+          <dd>{{ order.customerName }}</dd>
+        </div>
+        <div>
+          <dt>Điện thoại</dt>
+          <dd class="num">{{ order.customerPhone }}</dd>
+        </div>
+        <div>
+          <dt>Địa chỉ</dt>
+          <dd>{{ order.deliveryAddress }}</dd>
+        </div>
+        @if (order.note) {
+          <div>
+            <dt>Ghi chú</dt>
+            <dd>{{ order.note }}</dd>
+          </div>
+        }
+        <div>
+          <dt>Đặt lúc</dt>
+          <dd class="num">{{ formatTime(order.createdAt) }}</dd>
+        </div>
+      </dl>
+      <dl class="kv">
+        @for (item of order.items; track $index) {
+          <div>
+            <dt>{{ item.dishName }} × {{ item.quantity }}</dt>
+            <dd class="num">{{ formatVnd(item.lineTotal) }}</dd>
+          </div>
+        }
+        <div>
+          <dt class="strong">Tiền món</dt>
+          <dd class="num strong">{{ formatVnd(order.itemsTotal) }}</dd>
+        </div>
+      </dl>
+      <p class="meta">Phí ship khách trả riêng khi nhận hàng.</p>
+    </aside>
+  }
+</div>

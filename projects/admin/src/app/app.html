@@ -9,8 +9,38 @@
         ><span class="brand__name">Bếp Thầy Mão</span></span
       >
       <nav class="nav" aria-label="Điều hướng chính">
+        @let area = session.role === 'Owner' ? '/owner' : '/manager';
+        <p class="nav__group">Vận hành</p>
+        <a
+          class="nav__link"
+          [routerLink]="area + '/orders'"
+          routerLinkActive="nav__link--active"
+          ariaCurrentWhenActive="page"
+          >Đơn hàng</a
+        >
+        <a
+          class="nav__link"
+          [routerLink]="area + '/stock'"
+          routerLinkActive="nav__link--active"
+          ariaCurrentWhenActive="page"
+          >Còn món</a
+        >
         @if (session.role === 'Owner') {
           <p class="nav__group">Quản trị</p>
+          <a
+            class="nav__link"
+            routerLink="/owner/dishes"
+            routerLinkActive="nav__link--active"
+            ariaCurrentWhenActive="page"
+            >Thực đơn</a
+          >
+          <a
+            class="nav__link"
+            routerLink="/owner/content"
+            routerLinkActive="nav__link--active"
+            ariaCurrentWhenActive="page"
+            >Giới thiệu quán</a
+          >
           <a
             class="nav__link"
             routerLink="/owner/branches"
@@ -19,7 +49,6 @@
             >Cơ sở</a
           >
         } @else {
-          <p class="nav__group">Vận hành</p>
           <a
             class="nav__link"
             routerLink="/manager/settings"

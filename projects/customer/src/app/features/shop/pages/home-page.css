@@ -1,0 +1,212 @@
+/* Hallmark · shape: food-delivery home · theme: Chanh muối · scope: customer home */
+/* Hallmark · critique: banner does not auto-advance, one filled action per card, cards only for separate sections */
+:host {
+  display: grid;
+  gap: var(--space-sm);
+}
+.card {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border-radius: var(--radius-panel);
+  background: var(--color-paper-2);
+  box-shadow: var(--shadow-card);
+}
+.card h2 {
+  font-size: var(--text-lg);
+}
+.row-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+.row-h a,
+.card > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  color: var(--color-accent);
+  font-weight: var(--weight-strong);
+  text-decoration: none;
+}
+.banner {
+  display: grid;
+  gap: var(--space-xs);
+}
+.track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  border-radius: var(--radius-panel);
+}
+.slide {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  align-content: end;
+  gap: var(--space-xs);
+  min-height: 176px;
+  padding: var(--space-lg) var(--space-md);
+  scroll-snap-align: start;
+  background: var(--color-head);
+  color: var(--color-ink);
+}
+.slide[data-tone='1'] {
+  background: var(--xoi-ngot);
+  color: var(--on-xoi-dark);
+}
+.slide[data-tone='2'] {
+  background: var(--color-tint);
+}
+.slide h2 {
+  position: relative;
+  max-width: 12ch;
+  font-size: var(--text-display);
+  font-weight: var(--weight-heavy);
+  line-height: 1.05;
+}
+.slide p {
+  position: relative;
+  max-width: 26ch;
+  font-size: var(--text-sm);
+}
+.blob {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-2);
+  opacity: 0.35;
+}
+.go {
+  position: relative;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding-inline: var(--space-md);
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-2);
+  color: var(--color-ink);
+  font-weight: var(--weight-strong);
+  text-decoration: none;
+}
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--space-xs);
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+.buttons {
+  display: flex;
+  gap: var(--space-xs);
+}
+.buttons button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-2);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+.buttons button::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+.buttons svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.cats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-xs);
+}
+.cats a {
+  display: grid;
+  place-items: center;
+  min-height: 56px;
+  border-radius: var(--radius-card);
+  background: var(--color-tint);
+  color: var(--color-ink);
+  font-weight: var(--weight-strong);
+  text-decoration: none;
+}
+.hint {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+.featured {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(200px, 240px);
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0 0 var(--space-2xs);
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.featured li {
+  display: grid;
+  gap: var(--space-2xs);
+}
+.thumb {
+  position: relative;
+}
+.tag {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: var(--xoi-man);
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-strong);
+  transform: rotate(-3deg);
+  box-shadow: var(--shadow-card);
+}
+.name {
+  color: var(--color-ink);
+  font-weight: var(--weight-strong);
+  text-decoration: none;
+}
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.price {
+  color: var(--color-accent);
+  font-weight: var(--weight-heavy);
+}
+.about {
+  color: var(--color-ink-2);
+}
+@media (min-width: 60rem) {
+  :host {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+  .banner,
+  cus-cart-bar {
+    grid-column: 1 / -1;
+  }
+}

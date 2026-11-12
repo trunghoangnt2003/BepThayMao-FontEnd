@@ -1,0 +1,171 @@
+<div class="head">
+  <div>
+    <h1 tabindex="-1">Giới thiệu quán</h1>
+    <p>
+      Banner và đoạn giới thiệu hiện ở trang chủ khách. Không ghi số liệu hay khuyến mãi chưa có
+      thật.
+    </p>
+  </div>
+  <button hlmBtn type="button" (click)="open(null)">Thêm banner</button>
+</div>
+<p class="visually-hidden" role="status">{{ message() }}</p>
+
+<div class="layout" [class.layout--split]="editing() !== null">
+  <section class="panel" aria-labelledby="banners-h">
+    <h2 id="banners-h" class="visually-hidden">Banner trang chủ</h2>
+    @switch (state()) {
+      @case ('loading') {
+        <p class="empty status">Đang tải…</p>
+      }
+      @case ('error') {
+        <div class="error" role="alert">
+          <p>Không tải được banner. Kiểm tra mạng rồi thử lại.</p>
+          <button hlmBtn variant="outline" type="button" (click)="load()">Thử lại</button>
+        </div>
+      }
+      @default {
+        @if (banners().length === 0) {
+          <div class="empty">
+            <h2>Chưa có banner nào</h2>
+            <p class="meta">Thêm banner giới thiệu quán hoặc món quán giới thiệu.</p>
+          </div>
+        } @else {
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Thứ tự</th>
+                  <th scope="col">Banner</th>
+                  <th scope="col">Hiện</th>
+                  <th scope="col"><span class="visually-hidden">Thao tác</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (
+                  banner of banners();
+                  track banner.id;
+                  let index = $index, first = $first, last = $last
+                ) {
+                  <tr>
+                    <td>
+                      <div class="actions">
+                        <button
+                          hlmBtn
+                          variant="outline"
+                          type="button"
+                          (click)="move(index, -1)"
+                          [disabled]="first"
+                          [attr.aria-label]="'Đưa ' + banner.title + ' lên'"
+                        >
+                          Lên
+                        </button>
+                        <button
+                          hlmBtn
+                          variant="outline"
+                          type="button"
+                          (click)="move(index, 1)"
+                          [disabled]="last"
+                          [attr.aria-label]="'Đưa ' + banner.title + ' xuống'"
+                        >
+                          Xuống
+                        </button>
+                      </div>
+                    </td>
+                    <th scope="row">
+                      <button type="button" class="rowlink" (click)="open(banner)">
+                        {{ banner.title }}
+                      </button>
+                      @if (banner.body) {
+                        <span class="meta">{{ banner.body }}</span>
+                      }
+                    </th>
+                    <td>
+                      <button
+                        type="button"
+                        class="switch"
+                        role="switch"
+                        [attr.aria-checked]="banner.isActive"
+                        [attr.aria-label]="'Hiện banner ' + banner.title"
+                        (click)="toggle(banner)"
+                      >
+                        <span class="track" aria-hidden="true"></span>
+                        <span>{{ banner.isActive ? 'Hiện' : 'Ẩn' }}</span>
+                      </button>
+                    </td>
+                    <td class="right">
+                      <button
+                        hlmBtn
+                        variant="outline"
+                        type="button"
+                        (click)="remove(banner)"
+                        [attr.aria-label]="'Xóa banner ' + banner.title"
+                      >
+                        Xóa
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  </section>
+
+  @if (editing(); as current) {
+    <aside class="detail" aria-labelledby="banner-form-h">
+      <div class="detail-head">
+        <h2 id="banner-form-h">{{ current === 'new' ? 'Thêm banner' : 'Sửa banner' }}</h2>
+        <button hlmBtn variant="outline" type="button" (click)="close()">Đóng</button>
+      </div>
+      <form class="form" [formGroup]="bannerForm" (ngSubmit)="saveBanner()" novalidate>
+        @if (formError()) {
+          <p class="error" role="alert">{{ formError() }}</p>
+        }
+        <div class="field">
+          <label class="field__label" for="b-title">Tiêu đề</label>
+          <input
+            id="b-title"
+            class="field__input"
+            formControlName="title"
+            maxlength="40"
+            aria-describedby="b-title-help"
+          />
+          <span class="field__help" id="b-title-help">Tối đa 40 ký tự, hiện chữ lớn.</span>
+        </div>
+        <div class="field">
+          <label class="field__label" for="b-body">Dòng phụ (không bắt buộc)</label>
+          <input id="b-body" class="field__input" formControlName="body" maxlength="80" />
+        </div>
+        <label class="check"
+          ><input type="checkbox" formControlName="isActive" /> Hiện ở trang chủ</label
+        >
+        <div class="actions"><button hlmBtn type="submit">Lưu banner</button></div>
+      </form>
+    </aside>
+  }
+</div>
+
+<section class="detail" aria-labelledby="about-h">
+  <h2 id="about-h">Đoạn giới thiệu quán</h2>
+  <form class="form" [formGroup]="aboutForm" (ngSubmit)="saveAbout()" novalidate>
+    <div class="field">
+      <label class="field__label" for="a-about">Nội dung</label>
+      <textarea
+        id="a-about"
+        class="field__input"
+        rows="3"
+        maxlength="300"
+        formControlName="about"
+        aria-describedby="a-about-help"
+      ></textarea>
+      <span class="field__help" id="a-about-help"
+        >Tối đa 300 ký tự: nguồn gốc, cách nấu, điều làm quán khác biệt.</span
+      >
+    </div>
+    <div class="actions">
+      <button hlmBtn variant="outline" type="submit">Lưu đoạn giới thiệu</button>
+    </div>
+  </form>
+</section>

@@ -38,3 +38,60 @@ nav a.active {
 main {
   padding-block: var(--space-xl);
 }
+
+.topbar {
+  justify-content: space-between;
+}
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  color: var(--color-ink);
+}
+nav {
+  align-items: center;
+  gap: var(--space-md);
+}
+nav a {
+  color: var(--color-ink);
+  font-weight: var(--weight-strong);
+}
+.cart {
+  position: relative;
+  justify-content: center;
+  width: var(--control-h);
+  border-radius: var(--radius-pill);
+  background: var(--color-paper-2);
+}
+.cart svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--color-error);
+  color: var(--color-accent-ink);
+  font-size: var(--text-sm);
+  line-height: 20px;
+  text-align: center;
+}
+main {
+  padding-block: var(--space-md) var(--space-2xl);
+}
+@media (max-width: 40rem) {
+  nav {
+    gap: var(--space-sm);
+  }
+  nav a:not(.cart) {
+    font-size: var(--text-sm);
+  }
+}

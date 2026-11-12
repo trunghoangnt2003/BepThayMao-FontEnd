@@ -1,0 +1,227 @@
+<h1 tabindex="-1">Đặt hàng</h1>
+@if (cart.count() === 0) {
+  <section class="card">
+    <h2>Giỏ hàng đang trống</h2>
+    <p>Chọn món từ thực đơn để bắt đầu đặt hàng.</p>
+    <a class="btn btn--primary" routerLink="/thuc-don">Xem thực đơn</a>
+  </section>
+} @else {
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (errors().length > 0 || serverError()) {
+      <div class="summary" #summary tabindex="-1" role="alert">
+        @if (errors().length > 0) {
+          <h2>Có {{ errors().length }} chỗ cần sửa</h2>
+          <ul>
+            @for (error of errors(); track error.id) {
+              <li>
+                <a [href]="'#' + error.id" (click)="focusField(error.id, $event)">{{
+                  error.message
+                }}</a>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p>{{ serverError() }}</p>
+        }
+      </div>
+    }
+
+    <section class="card" aria-labelledby="s1">
+      <div class="section-h">
+        <span class="n" aria-hidden="true">1</span>
+        <h2 id="s1">Món đã chọn</h2>
+      </div>
+      <ul class="lines">
+        @for (line of cart.lines(); track line.dishId) {
+          <li>
+            <cus-dish-thumb [name]="line.name" [category]="line.category" />
+            <div class="line-text">
+              <span>{{ line.name }}</span>
+              <span class="price num">{{ formatVnd(line.price * line.quantity) }}</span>
+            </div>
+            <cus-qty-stepper
+              [dish]="{
+                id: line.dishId,
+                name: line.name,
+                price: line.price,
+                category: line.category,
+              }"
+            />
+          </li>
+        }
+      </ul>
+      <div class="total">
+        <span>Tổng tiền món</span><span class="num">{{ formatVnd(cart.total()) }}</span>
+      </div>
+      <p class="note">Phí ship trả riêng khi nhận hàng.</p>
+      <a routerLink="/thuc-don">Thêm món</a>
+    </section>
+
+    <section class="card" aria-labelledby="s2">
+      <div class="section-h">
+        <span class="n" aria-hidden="true">2</span>
+        <h2 id="s2">Giao tới đâu</h2>
+      </div>
+      <div class="field">
+        <label class="field__label" for="f-address">Địa chỉ giao hàng</label>
+        <textarea
+          id="f-address"
+          class="field__input"
+          rows="2"
+          formControlName="address"
+          autocomplete="street-address"
+          maxlength="300"
+          aria-describedby="f-address-help"
+        ></textarea>
+        <span class="field__help" id="f-address-help"
+          >Số nhà, đường, phường để cơ sở giao đúng chỗ.</span
+        >
+      </div>
+      <button type="button" class="btn" (click)="locate()" [disabled]="locating() === 'busy'">
+        {{
+          locating() === 'busy'
+            ? 'Đang lấy vị trí…'
+            : 'Dùng vị trí hiện tại để gợi ý cơ sở gần nhất'
+        }}
+      </button>
+      <p class="note" role="status">
+        @switch (locating()) {
+          @case ('done') {
+            Đã sắp cơ sở theo khoảng cách và chọn cơ sở gần nhất. Bạn vẫn đổi được.
+          }
+          @case ('denied') {
+            Không lấy được vị trí. Bạn chọn cơ sở trong danh sách bên dưới.
+          }
+        }
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="s3">
+      <div class="section-h">
+        <span class="n" aria-hidden="true">3</span>
+        <h2 id="s3">Cơ sở nấu cho bạn</h2>
+      </div>
+      @if (optionsError()) {
+        <p>Không tải được danh sách cơ sở. Kiểm tra mạng rồi tải lại trang.</p>
+      } @else if (options() === null) {
+        <p class="note">Đang tải danh sách cơ sở…</p>
+      } @else {
+        <fieldset class="branches">
+          <legend class="visually-hidden">Cơ sở nhận đơn</legend>
+          @for (option of options(); track option.branchId; let first = $first) {
+            <label class="branch" [class.branch--off]="!option.acceptsOrders">
+              <input
+                type="radio"
+                formControlName="branchId"
+                [value]="option.branchId"
+                [id]="first ? 'branch-first' : 'branch-' + option.branchId"
+              />
+              <span class="branch-text">
+                <span class="branch-top">
+                  <strong>{{ option.name }}</strong>
+                  @if (option.distanceKm !== null && option.distanceKm !== undefined) {
+                    <span class="num"
+                      >{{ option.distanceKm }} km{{
+                        option.isSuggested ? ', gần bạn nhất' : ''
+                      }}</span
+                    >
+                  }
+                </span>
+                <span class="meta">{{ option.address }}</span>
+                <span class="meta num">
+                  @if (!option.acceptsOrders) {
+                    Tạm chưa nhận đơn
+                  } @else if (option.isOpenNow) {
+                    Đang nhận đơn, {{ option.openTime }} đến {{ option.closeTime }}
+                  } @else {
+                    Ngoài giờ ({{ option.openTime }} đến {{ option.closeTime }}), giao ngày hôm sau
+                  }
+                </span>
+                @if (option.unavailableDishIds.length > 0) {
+                  <span class="meta warn"
+                    >Đang hết {{ option.unavailableDishIds.length }} món trong giỏ</span
+                  >
+                }
+              </span>
+            </label>
+          }
+        </fieldset>
+      }
+      @if (selected(); as option) {
+        @if (missingNames().length > 0) {
+          <div class="notice" role="status">
+            <p>
+              {{ option.name }} đang hết {{ missingNames().join(', ') }}. Bỏ món đó hoặc chọn cơ sở
+              khác.
+            </p>
+            <button type="button" class="btn" id="drop-missing" (click)="dropMissing()">
+              Bỏ món đang hết
+            </button>
+          </div>
+        }
+        @if (!option.isOpenNow && option.acceptsOrders) {
+          <div class="notice">
+            <p>
+              {{ option.name }} đang ngoài giờ nhận đơn ({{ option.openTime }} đến
+              {{ option.closeTime }}). Đơn này sẽ được giao vào ngày hôm sau.
+            </p>
+            <label class="check">
+              <input type="checkbox" id="f-ack" formControlName="acknowledged" />
+              Tôi đồng ý nhận đơn vào ngày hôm sau
+            </label>
+          </div>
+        }
+      }
+    </section>
+
+    <section class="card" aria-labelledby="s4">
+      <div class="section-h">
+        <span class="n" aria-hidden="true">4</span>
+        <h2 id="s4">Người nhận</h2>
+      </div>
+      <div class="field">
+        <label class="field__label" for="f-name">Họ và tên</label>
+        <input
+          id="f-name"
+          class="field__input"
+          formControlName="name"
+          autocomplete="name"
+          maxlength="120"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="f-phone">Số điện thoại</label>
+        <input
+          id="f-phone"
+          class="field__input"
+          type="tel"
+          inputmode="tel"
+          formControlName="phone"
+          autocomplete="tel-national"
+        />
+      </div>
+      <div class="field">
+        <label class="field__label" for="f-note">Ghi chú cho quán (không bắt buộc)</label>
+        <input
+          id="f-note"
+          class="field__input"
+          formControlName="note"
+          maxlength="500"
+          aria-describedby="f-note-help"
+        />
+        <span class="field__help" id="f-note-help">Ví dụ: ít hành, gọi trước khi tới.</span>
+      </div>
+    </section>
+
+    <div class="submit">
+      <div class="sum">
+        <span>Tổng tiền món</span>
+        <strong class="num">{{ formatVnd(cart.total()) }}</strong>
+      </div>
+      <button type="submit" class="btn btn--primary" [disabled]="submitting()">
+        {{ submitting() ? 'Đang gửi đơn…' : 'Đặt hàng' }}
+      </button>
+    </div>
+    <p class="note center">Bước tiếp theo bạn sẽ nhận mã QR để thanh toán.</p>
+  </form>
+}

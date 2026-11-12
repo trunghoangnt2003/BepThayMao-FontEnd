@@ -1,6 +1,27 @@
 <a class="skip-link" href="#main">Bỏ qua tới nội dung chính</a>
 <header>
-  <div class="container topbar"><span class="wordmark">Bếp Thầy Mão</span></div>
+  <div class="container topbar">
+    <a class="wordmark" routerLink="/">Bếp Thầy Mão</a>
+    <nav aria-label="Điều hướng chính">
+      <a routerLink="/thuc-don" routerLinkActive="active" ariaCurrentWhenActive="page">Thực đơn</a>
+      <a routerLink="/tra-don" routerLinkActive="active" ariaCurrentWhenActive="page"
+        >Tra cứu đơn</a
+      >
+      <a
+        class="cart"
+        routerLink="/dat-hang"
+        [attr.aria-label]="'Giỏ hàng, ' + cart.count() + ' món'"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 8h14l-1 12H6z" />
+          <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+        </svg>
+        @if (cart.count() > 0) {
+          <span class="badge num" aria-hidden="true">{{ cart.count() }}</span>
+        }
+      </a>
+    </nav>
+  </div>
 </header>
 
 <main id="main" class="container" tabindex="-1"><router-outlet /></main>

@@ -24,10 +24,20 @@ import type {
 } from 'rxjs';
 
 import type {
+  AboutInputRequest,
+  BannerDto,
+  BannerInputRequest,
+  BranchDishDto,
   BranchOwnerSettingsRequest,
   BranchResponse,
   CreateBranchRequest,
-  ResetManagerPasswordRequest
+  DishAvailabilityRequest,
+  DishDto,
+  DishInputRequest,
+  ListOwnerOrdersParams,
+  OrderDto,
+  ResetManagerPasswordRequest,
+  ShopContentDto
 } from '../../models';
 
 import type {
@@ -74,7 +84,78 @@ type HttpClientObserveOptions = HttpClientOptions & {
   readonly observe?: 'body' | 'events' | 'response';
 };
 
+type AngularHttpParamValue = string | number | boolean | Array<string | number | boolean>;
+type AngularHttpParamValueWithNullable = AngularHttpParamValue | null;
 
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys?: ReadonlySet<string>,
+  preserveRequiredNullables?: false,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValue>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: true,
+  passthroughKeys?: undefined,
+): Record<string, AngularHttpParamValueWithNullable>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> | undefined,
+  preserveRequiredNullables: boolean | undefined,
+  passthroughKeys: ReadonlySet<string>,
+): Record<string, unknown>;
+function filterParams(
+  params: Record<string, unknown>,
+  requiredNullableKeys: ReadonlySet<string> = new Set(),
+  preserveRequiredNullables = false,
+  passthroughKeys: ReadonlySet<string> = new Set(),
+): Record<string, unknown> {
+  const filteredParams: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (passthroughKeys.has(key)) {
+      if (value !== undefined) {
+        filteredParams[key] = value;
+      }
+      continue;
+    }
+    if (Array.isArray(value)) {
+      const filtered = value
+        .filter(
+          (item) =>
+            item != null &&
+            (typeof item === 'string' ||
+              typeof item === 'number' ||
+              typeof item === 'boolean' ||
+              (item instanceof Date && !Number.isNaN(item.getTime()))),
+        )
+        .map((item) =>
+          item instanceof Date ? item.toISOString() : item,
+        ) as Array<string | number | boolean>;
+      if (filtered.length) {
+        filteredParams[key] = filtered;
+      }
+    } else if (value === null && requiredNullableKeys.has(key)) {
+      // With a paramsSerializer (preserveRequiredNullables) the literal null
+      // is passed through for it to consume; without one, emit an empty
+      // string so the required key still reaches the wire as `?key=`
+      // instead of being silently dropped. See #3712.
+      filteredParams[key] = preserveRequiredNullables ? null : '';
+    } else if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      // useDates produces Date query params; serialize to ISO so they reach
+      // the wire instead of being dropped by the primitive check below. See #3856.
+      filteredParams[key] = value.toISOString();
+    } else if (
+      value != null &&
+      (typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean')
+    ) {
+      filteredParams[key] = value;
+    }
+  }
+  return filteredParams;
+}
 
 
 
@@ -83,6 +164,42 @@ type HttpClientObserveOptions = HttpClientOptions & {
 @Injectable({ providedIn: 'root' })
 export class OwnerService {
   private readonly http = inject(HttpClient);
+/**
+ * Owner là superadmin trên cơ sở của mình; branchId của Owner khác trả 403.
+ * @summary Đơn của mọi cơ sở mình sở hữu, hoặc một cơ sở
+ */
+ listOwnerOrders<TData = OrderDto[]>(params?: ListOwnerOrdersParams, options?: HttpClientBodyOptions): Observable<TData>;
+ listOwnerOrders<TData = OrderDto[]>(params?: ListOwnerOrdersParams, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ listOwnerOrders<TData = OrderDto[]>(params?: ListOwnerOrdersParams, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  listOwnerOrders<TData = OrderDto[]>(
+    params?: ListOwnerOrdersParams, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/owner/orders`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+        params: filteredParams,}
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/owner/orders`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+        params: filteredParams,}
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/owner/orders`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+        params: filteredParams,}
+    );
+  }
 /**
  * Chỉ trả cơ sở của Chủ sở hữu đang đăng nhập; Quản lý gọi /owner/* nhận 403.
  * @summary Danh sách cơ sở của chủ sở hữu
@@ -270,10 +387,430 @@ export class OwnerService {
       }
     );
   }
+/**
+ * Thực đơn chung của Chủ sở hữu đang đăng nhập.
+ * @summary Thực đơn chung (gồm số cơ sở đang hết từng món)
+ */
+ listOwnerDishes<TData = DishDto[]>( options?: HttpClientBodyOptions): Observable<TData>;
+ listOwnerDishes<TData = DishDto[]>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ listOwnerDishes<TData = DishDto[]>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  listOwnerDishes<TData = DishDto[]>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/owner/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/owner/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/owner/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Món mới mặc định còn ở mọi cơ sở.
+ * @summary Thêm món vào thực đơn chung
+ */
+ createOwnerDish<TData = DishDto>(dishInputRequest: DishInputRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ createOwnerDish<TData = DishDto>(dishInputRequest: DishInputRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ createOwnerDish<TData = DishDto>(dishInputRequest: DishInputRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  createOwnerDish<TData = DishDto>(
+    dishInputRequest: DishInputRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.post<TData>(
+      `/api/v1/owner/dishes`,
+      dishInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.post<TData>(
+      `/api/v1/owner/dishes`,
+      dishInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.post<TData>(
+      `/api/v1/owner/dishes`,
+      dishInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Đơn đã đặt giữ tên và giá cũ.
+ * @summary Sửa món (giá áp dụng mọi cơ sở)
+ */
+ updateOwnerDish<TData = DishDto>(dishId: string,
+    dishInputRequest: DishInputRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ updateOwnerDish<TData = DishDto>(dishId: string,
+    dishInputRequest: DishInputRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ updateOwnerDish<TData = DishDto>(dishId: string,
+    dishInputRequest: DishInputRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  updateOwnerDish<TData = DishDto>(
+    dishId: string,
+    dishInputRequest: DishInputRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/v1/owner/dishes/${dishId}`,
+      dishInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/v1/owner/dishes/${dishId}`,
+      dishInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/v1/owner/dishes/${dishId}`,
+      dishInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Xóa món (xóa mềm)
+ * @summary Xóa món (xóa mềm)
+ */
+ deleteOwnerDish<TData = void>(dishId: string, options?: HttpClientBodyOptions): Observable<TData>;
+ deleteOwnerDish<TData = void>(dishId: string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ deleteOwnerDish<TData = void>(dishId: string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  deleteOwnerDish<TData = void>(
+    dishId: string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.delete<TData>(
+      `/api/v1/owner/dishes/${dishId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.delete<TData>(
+      `/api/v1/owner/dishes/${dishId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.delete<TData>(
+      `/api/v1/owner/dishes/${dishId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Tình trạng còn món ở một cơ sở của mình
+ * @summary Tình trạng còn món ở một cơ sở của mình
+ */
+ listOwnerBranchDishes<TData = BranchDishDto[]>(branchId: string, options?: HttpClientBodyOptions): Observable<TData>;
+ listOwnerBranchDishes<TData = BranchDishDto[]>(branchId: string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ listOwnerBranchDishes<TData = BranchDishDto[]>(branchId: string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  listOwnerBranchDishes<TData = BranchDishDto[]>(
+    branchId: string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/owner/branches/${branchId}/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/owner/branches/${branchId}/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/owner/branches/${branchId}/dishes`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Bật/tắt còn món ở một cơ sở của mình
+ * @summary Bật/tắt còn món ở một cơ sở của mình
+ */
+ setOwnerDishAvailability<TData = BranchDishDto>(branchId: string,
+    dishId: string,
+    dishAvailabilityRequest: DishAvailabilityRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ setOwnerDishAvailability<TData = BranchDishDto>(branchId: string,
+    dishId: string,
+    dishAvailabilityRequest: DishAvailabilityRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ setOwnerDishAvailability<TData = BranchDishDto>(branchId: string,
+    dishId: string,
+    dishAvailabilityRequest: DishAvailabilityRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  setOwnerDishAvailability<TData = BranchDishDto>(
+    branchId: string,
+    dishId: string,
+    dishAvailabilityRequest: DishAvailabilityRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/v1/owner/branches/${branchId}/dishes/${dishId}/availability`,
+      dishAvailabilityRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/v1/owner/branches/${branchId}/dishes/${dishId}/availability`,
+      dishAvailabilityRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/v1/owner/branches/${branchId}/dishes/${dishId}/availability`,
+      dishAvailabilityRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Mọi banner (kể cả đang ẩn)
+ * @summary Mọi banner (kể cả đang ẩn)
+ */
+ listOwnerBanners<TData = BannerDto[]>( options?: HttpClientBodyOptions): Observable<TData>;
+ listOwnerBanners<TData = BannerDto[]>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ listOwnerBanners<TData = BannerDto[]>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  listOwnerBanners<TData = BannerDto[]>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/owner/shop-content/banners`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/owner/shop-content/banners`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/owner/shop-content/banners`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Thêm banner
+ * @summary Thêm banner
+ */
+ createOwnerBanner<TData = BannerDto>(bannerInputRequest: BannerInputRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ createOwnerBanner<TData = BannerDto>(bannerInputRequest: BannerInputRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ createOwnerBanner<TData = BannerDto>(bannerInputRequest: BannerInputRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  createOwnerBanner<TData = BannerDto>(
+    bannerInputRequest: BannerInputRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.post<TData>(
+      `/api/v1/owner/shop-content/banners`,
+      bannerInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.post<TData>(
+      `/api/v1/owner/shop-content/banners`,
+      bannerInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.post<TData>(
+      `/api/v1/owner/shop-content/banners`,
+      bannerInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Sửa, bật/tắt hoặc đổi thứ tự banner
+ * @summary Sửa, bật/tắt hoặc đổi thứ tự banner
+ */
+ updateOwnerBanner<TData = BannerDto>(bannerId: string,
+    bannerInputRequest: BannerInputRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ updateOwnerBanner<TData = BannerDto>(bannerId: string,
+    bannerInputRequest: BannerInputRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ updateOwnerBanner<TData = BannerDto>(bannerId: string,
+    bannerInputRequest: BannerInputRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  updateOwnerBanner<TData = BannerDto>(
+    bannerId: string,
+    bannerInputRequest: BannerInputRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/v1/owner/shop-content/banners/${bannerId}`,
+      bannerInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/v1/owner/shop-content/banners/${bannerId}`,
+      bannerInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/v1/owner/shop-content/banners/${bannerId}`,
+      bannerInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Xóa banner
+ * @summary Xóa banner
+ */
+ deleteOwnerBanner<TData = void>(bannerId: string, options?: HttpClientBodyOptions): Observable<TData>;
+ deleteOwnerBanner<TData = void>(bannerId: string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ deleteOwnerBanner<TData = void>(bannerId: string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  deleteOwnerBanner<TData = void>(
+    bannerId: string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.delete<TData>(
+      `/api/v1/owner/shop-content/banners/${bannerId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.delete<TData>(
+      `/api/v1/owner/shop-content/banners/${bannerId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.delete<TData>(
+      `/api/v1/owner/shop-content/banners/${bannerId}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Chuỗi rỗng xóa đoạn giới thiệu.
+ * @summary Sửa đoạn giới thiệu quán
+ */
+ updateOwnerAbout<TData = ShopContentDto>(aboutInputRequest: AboutInputRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ updateOwnerAbout<TData = ShopContentDto>(aboutInputRequest: AboutInputRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ updateOwnerAbout<TData = ShopContentDto>(aboutInputRequest: AboutInputRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  updateOwnerAbout<TData = ShopContentDto>(
+    aboutInputRequest: AboutInputRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/v1/owner/shop-content/about`,
+      aboutInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/v1/owner/shop-content/about`,
+      aboutInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/v1/owner/shop-content/about`,
+      aboutInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
 };
 
+export type ListOwnerOrdersClientResult = NonNullable<OrderDto[]>
 export type ListOwnerBranchesClientResult = NonNullable<BranchResponse[]>
 export type CreateOwnerBranchClientResult = NonNullable<BranchResponse>
 export type GetOwnerBranchClientResult = NonNullable<BranchResponse>
 export type UpdateOwnerBranchClientResult = NonNullable<BranchResponse>
 export type ResetBranchManagerPasswordClientResult = NonNullable<void>
+export type ListOwnerDishesClientResult = NonNullable<DishDto[]>
+export type CreateOwnerDishClientResult = NonNullable<DishDto>
+export type UpdateOwnerDishClientResult = NonNullable<DishDto>
+export type DeleteOwnerDishClientResult = NonNullable<void>
+export type ListOwnerBranchDishesClientResult = NonNullable<BranchDishDto[]>
+export type SetOwnerDishAvailabilityClientResult = NonNullable<BranchDishDto>
+export type ListOwnerBannersClientResult = NonNullable<BannerDto[]>
+export type CreateOwnerBannerClientResult = NonNullable<BannerDto>
+export type UpdateOwnerBannerClientResult = NonNullable<BannerDto>
+export type DeleteOwnerBannerClientResult = NonNullable<void>
+export type UpdateOwnerAboutClientResult = NonNullable<ShopContentDto>

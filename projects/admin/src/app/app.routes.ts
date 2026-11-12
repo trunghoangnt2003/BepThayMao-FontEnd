@@ -32,6 +32,30 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'orders',
+        title: 'Đơn hàng',
+        loadComponent: () =>
+          import('./features/shop-admin/pages/orders-page').then((m) => m.OrdersPage),
+      },
+      {
+        path: 'stock',
+        title: 'Còn món',
+        loadComponent: () =>
+          import('./features/shop-admin/pages/stock-page').then((m) => m.StockPage),
+      },
+      {
+        path: 'dishes',
+        title: 'Thực đơn',
+        loadComponent: () =>
+          import('./features/shop-admin/pages/dishes-page').then((m) => m.DishesPage),
+      },
+      {
+        path: 'content',
+        title: 'Giới thiệu quán',
+        loadComponent: () =>
+          import('./features/shop-admin/pages/content-page').then((m) => m.ContentPage),
+      },
+      {
         path: 'branches',
         title: 'Danh sách cơ sở',
         loadComponent: () =>
@@ -45,6 +69,18 @@ export const routes: Routes = [
     path: 'manager',
     canActivate: [authGuard, roleGuard('BranchManager')],
     children: [
+      {
+        path: 'orders',
+        title: 'Đơn hàng',
+        loadComponent: () =>
+          import('./features/shop-admin/pages/orders-page').then((m) => m.OrdersPage),
+      },
+      {
+        path: 'stock',
+        title: 'Còn món',
+        loadComponent: () =>
+          import('./features/shop-admin/pages/stock-page').then((m) => m.StockPage),
+      },
       {
         path: 'settings',
         title: 'Thông số cơ sở',
