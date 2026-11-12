@@ -103,6 +103,23 @@ const ownerBranches = [
     sepayAccountRef: null,
     managerIdentifier: 'quanly2',
   },
+  {
+    id: '019a5dc0-0003-7000-8000-000000000003',
+    name: 'Cơ sở Mẫu 3',
+    address: 'Số 3 Đường Mẫu',
+    lat: 10.79,
+    lng: 106.71,
+    phone: '02800000003',
+    isActive: true,
+    openTime: '06:30',
+    closeTime: '20:30',
+    abandonedThresholdMinutes: 10,
+    zaloRecipientIds: [],
+    bankAccountNo: null,
+    bankCode: null,
+    sepayAccountRef: null,
+    managerIdentifier: 'quanly3',
+  },
 ];
 const ownerTokens = ['Bearer mock-access-owner', 'Bearer mock-access-owner-empty'];
 const ownerOnly = (request, response, next) =>
@@ -139,6 +156,55 @@ app.get('/api/v1/owner/branches/:id', ownerOnly, (request, response) => {
   return found
     ? response.json(found)
     : response.status(404).json({ title: 'Not found.', correlationId: 'mock-missing' });
+});
+const OWNER_KEYS = [
+  'name',
+  'address',
+  'phone',
+  'lat',
+  'lng',
+  'openTime',
+  'closeTime',
+  'abandonedThresholdMinutes',
+  'zaloRecipientIds',
+  'isActive',
+];
+app.put('/api/v1/owner/branches/:id', ownerOnly, (request, response) => {
+  const found = ownerBranches.find((branch) => branch.id === request.params.id);
+  if (!found)
+    return response.status(404).json({ title: 'Not found.', correlationId: 'mock-missing' });
+  const body = request.body ?? {};
+  if (!OWNER_KEYS.every((key) => Object.hasOwn(body, key)))
+    return response.status(400).json({
+      title: 'Bad Request',
+      errors: { '': ['Thiếu trường bắt buộc.'] },
+      correlationId: 'mock-owner-keys',
+    });
+  if (body.closeTime <= body.openTime)
+    return response.status(400).json({
+      title: 'Bad Request',
+      errors: { closeTime: ['Giờ đóng phải sau giờ mở.'] },
+      correlationId: 'mock-owner-time',
+    });
+  Object.assign(found, {
+    ...body,
+    bankAccountNo: body.bankAccountNo ?? null,
+    bankCode: body.bankCode ?? null,
+    sepayAccountRef: body.sepayAccountRef ?? null,
+  });
+  return response.json(found);
+});
+app.post('/api/v1/owner/branches/:id/manager/reset-password', ownerOnly, (request, response) => {
+  if (!ownerBranches.some((branch) => branch.id === request.params.id))
+    return response.status(404).json({ title: 'Not found.', correlationId: 'mock-missing' });
+  const { newPassword } = request.body ?? {};
+  if (typeof newPassword !== 'string' || newPassword.length < 10)
+    return response.status(400).json({
+      title: 'Bad Request',
+      errors: { newPassword: ['Mật khẩu cần ít nhất 10 ký tự.'] },
+      correlationId: 'mock-owner-password',
+    });
+  return response.status(204).end();
 });
 const managerOnly = (request, response, next) =>
   request.headers.authorization === 'Bearer mock-access-quanly1'
