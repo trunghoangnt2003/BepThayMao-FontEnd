@@ -1,3 +1,5 @@
+/* Hallmark · shape: app screen · theme: Garden · scope: admin branch list */
+/* Hallmark · critique: hairline table that reflows below 40rem, one filled action, token-only */
 :host {
   display: grid;
   gap: var(--space-lg);
@@ -13,24 +15,19 @@
 section {
   min-height: 240px;
 }
-.branch-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--control-h);
-  font-weight: var(--weight-strong);
-}
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  color: var(--color-muted);
-}
-.status--on btm-icon {
-  color: var(--color-success);
+section > h2 {
+  max-width: 30ch;
 }
 section > p,
-section > button {
+section > button,
+section > a {
   margin-top: var(--space-md);
+}
+section > p {
+  max-width: 65ch;
+}
+section > a {
+  display: inline-flex;
 }
 table {
   border-collapse: collapse;
@@ -50,19 +47,71 @@ thead th {
 }
 tbody th {
   font-weight: var(--weight-strong);
+  min-width: 0;
 }
 tbody th p {
   font-weight: var(--weight-regular);
   color: var(--color-muted);
+  font-size: var(--text-sm);
   overflow-wrap: anywhere;
 }
-tbody tr:hover {
-  background: var(--color-paper-2);
+.branch-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-h);
+  font-weight: var(--weight-strong);
+  overflow-wrap: anywhere;
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-ink);
+}
+.status btm-icon {
+  color: var(--color-muted);
+}
+.status--on btm-icon {
+  color: var(--color-success);
 }
 .skeleton {
   height: 56px;
   margin-block: var(--space-xs);
-  background: var(--color-paper-2);
+  border-radius: var(--radius-card);
+  background: var(--color-paper-3);
+}
+/* Below 40rem each row becomes a labelled block; the explicit table roles in the template keep the semantics. */
+thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+tr {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+tbody tr:first-child {
+  border-top: var(--rule-hair) solid var(--color-rule-2);
+}
+tbody th {
+  border-bottom: 0;
+  padding-bottom: var(--space-xs);
+}
+tbody td {
+  border-bottom: 0;
+  padding-block: var(--space-2xs);
+}
+tbody tr {
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  padding-bottom: var(--space-sm);
+}
+td::before {
+  content: attr(data-label);
+  display: block;
+  color: var(--color-muted);
+  font-size: var(--text-sm);
 }
 @media (min-width: 40rem) {
   .page-head {
@@ -71,25 +120,40 @@ tbody tr:hover {
   .page-head a {
     width: auto;
   }
-}
-@media (max-width: 40rem) {
   thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    clip-path: inset(50%);
-    overflow: hidden;
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+    overflow: visible;
   }
   tr {
-    display: grid;
-  }
-  th {
+    display: table-row;
+    padding-bottom: 0;
     border-bottom: 0;
   }
+  tbody tr:first-child {
+    border-top: 0;
+  }
+  tbody th,
+  tbody td {
+    padding: var(--space-md);
+    border-bottom: var(--rule-hair) solid var(--color-rule);
+  }
   td::before {
-    content: attr(data-label);
-    margin-right: var(--space-md);
-    color: var(--color-muted);
-    font-size: var(--text-sm);
+    content: none;
+  }
+}
+@media (hover: hover) {
+  tbody tr {
+    transition: background-color var(--dur-micro) var(--ease-out);
+  }
+  tbody tr:hover {
+    background: var(--color-paper-2);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  tbody tr {
+    transition: none;
   }
 }
