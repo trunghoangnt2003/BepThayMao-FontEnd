@@ -9,8 +9,10 @@
 export interface ProblemDetails {
   /** @nullable */
   type?: string | null;
-  title: string;
-  status: number;
+  /** @nullable */
+  title?: string | null;
+  /** @nullable */
+  status?: number | null;
   /** @nullable */
   detail?: string | null;
   /** @nullable */

@@ -11,8 +11,8 @@ export interface PublicBranch {
   name: string;
   address: string;
   phone: string;
-  /** @pattern ^([01]\d|2[0-3]):[0-5]\d$ */
+  /** @pattern ^\d{2}:\d{2}$ */
   openTime: string;
-  /** @pattern ^([01]\d|2[0-3]):[0-5]\d$ */
+  /** @pattern ^\d{2}:\d{2}$ */
   closeTime: string;
 }

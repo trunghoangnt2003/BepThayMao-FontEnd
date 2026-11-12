@@ -1,5 +1,0 @@
-{
-  "componentsPath": "projects/ui/src/lib/helm",
-  "importAlias": "@bepthaymao/ui/helm",
-  "style": "vega"
-}

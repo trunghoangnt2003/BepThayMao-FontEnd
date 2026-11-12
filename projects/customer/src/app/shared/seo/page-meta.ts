@@ -1,44 +1,36 @@
 import { DOCUMENT } from '@angular/common';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, InjectionToken } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { SITE_URL } from './site-url';
 
-interface PageMetadata {
-  readonly title: string;
-  readonly description: string;
-  readonly path: string;
-  readonly robots?: string;
-}
+export const SITE_URL = new InjectionToken<string>('SITE_URL', {
+  factory: () => 'http://localhost:8080',
+});
 
 @Injectable({ providedIn: 'root' })
 export class PageMeta {
-  private readonly document = inject(DOCUMENT);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+  private readonly document = inject(DOCUMENT);
   private readonly siteUrl = inject(SITE_URL);
 
-  set(page: PageMetadata): void {
-    const title = `${page.title} | Bếp Thầy Mão`;
+  set(value: { title: string; description: string; path: string; robots?: string }): void {
+    const title = `${value.title} | Bếp Thầy Mão`;
     this.title.setTitle(title);
-    this.meta.updateTag({ name: 'description', content: page.description });
-    this.meta.updateTag({ property: 'og:title', content: title });
-    this.meta.updateTag({ property: 'og:description', content: page.description });
-    this.meta.updateTag({ property: 'og:type', content: 'website' });
-    this.meta.updateTag({ property: 'og:locale', content: 'vi_VN' });
-    this.meta.updateTag({ property: 'og:site_name', content: 'Bếp Thầy Mão' });
-    if (page.robots) this.meta.updateTag({ name: 'robots', content: page.robots });
-    else this.meta.removeTag('name="robots"');
-
-    let canonical = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = this.document.createElement('link');
-      canonical.setAttribute('rel', 'canonical');
-      this.document.head.appendChild(canonical);
-    }
-    const path = page.path.startsWith('/') && !page.path.startsWith('//') ? page.path : '/';
-    const url = new URL(path, new URL(this.siteUrl).origin);
-    url.search = '';
-    url.hash = '';
-    canonical.setAttribute('href', url.href);
+    this.meta.updateTag({ name: 'description', content: value.description });
+    this.meta.updateTag({ name: 'robots', content: value.robots ?? 'index,follow' });
+    for (const [property, content] of Object.entries({
+      'og:title': title,
+      'og:description': value.description,
+      'og:type': 'website',
+      'og:locale': 'vi_VN',
+      'og:site_name': 'Bếp Thầy Mão',
+    }))
+      this.meta.updateTag({ property, content });
+    const canonical =
+      this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]') ??
+      this.document.createElement('link');
+    canonical.rel = 'canonical';
+    canonical.href = new URL(value.path, this.siteUrl).href;
+    this.document.head.appendChild(canonical);
   }
 }

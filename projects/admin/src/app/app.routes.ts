@@ -1,19 +1,69 @@
 import { Routes } from '@angular/router';
-
+import { unsavedChangesGuard } from './features/branches/pages/branch-edit/unsaved-changes.guard';
+import { authGuard, homeGuard, loginGuard, roleGuard } from './shared/auth/auth.guards';
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'branches' },
+  { path: '', pathMatch: 'full', canActivate: [homeGuard], children: [] },
   {
-    path: 'branches',
-    title: 'Danh sách cơ sở',
-    loadComponent: () =>
-      import('./features/branches/pages/branch-list/branch-list-page').then(
-        (module) => module.BranchListPage,
-      ),
+    path: 'login',
+    canActivate: [loginGuard],
+    title: 'Đăng nhập',
+    loadComponent: () => import('./features/auth/pages/login/login-page').then((m) => m.LoginPage),
+  },
+  { path: 'branches', pathMatch: 'full', redirectTo: 'owner/branches' },
+  {
+    path: 'owner',
+    canActivate: [authGuard, roleGuard('Owner')],
+    children: [
+      {
+        path: 'branches/new',
+        title: 'Tạo cơ sở mới',
+        loadComponent: () =>
+          import('./features/branches/pages/branch-create/branch-create-page').then(
+            (m) => m.BranchCreatePage,
+          ),
+      },
+      {
+        path: 'branches/:id',
+        title: 'Sửa cơ sở',
+        canDeactivate: [unsavedChangesGuard],
+        loadComponent: () =>
+          import('./features/branches/pages/branch-edit/branch-edit-page').then(
+            (m) => m.BranchEditPage,
+          ),
+      },
+      {
+        path: 'branches',
+        title: 'Danh sách cơ sở',
+        loadComponent: () =>
+          import('./features/branches/pages/branch-list/branch-list-page').then(
+            (m) => m.BranchListPage,
+          ),
+      },
+    ],
+  },
+  {
+    path: 'manager',
+    canActivate: [authGuard, roleGuard('BranchManager')],
+    children: [
+      {
+        path: 'settings',
+        title: 'Thông số cơ sở',
+        loadComponent: () =>
+          import('./features/manager-settings/pages/manager-settings-page').then(
+            (m) => m.ManagerSettingsPage,
+          ),
+      },
+    ],
+  },
+  {
+    path: 'forbidden',
+    title: 'Không có quyền',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/forbidden/forbidden-page').then((m) => m.ForbiddenPage),
   },
   {
     path: '**',
     title: 'Không tìm thấy trang',
-    loadComponent: () =>
-      import('./pages/not-found/not-found-page').then((module) => module.NotFoundPage),
+    loadComponent: () => import('./pages/not-found/not-found-page').then((m) => m.NotFoundPage),
   },
 ];

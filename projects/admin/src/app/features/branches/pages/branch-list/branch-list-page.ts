@@ -1,64 +1,58 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import type { PublicBranch } from '@bepthaymao/api-client';
-import { type ApiError, toApiError } from '@bepthaymao/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
+import { BranchResponse } from '@bepthaymao/api-client';
+import { toApiError } from '@bepthaymao/core';
 import { formatOpeningHours, HlmButton } from '@bepthaymao/ui';
-import { type Subscription, timer } from 'rxjs';
-import { AdminBranchesService } from '../../data-access/admin-branches.service';
-
-type ListState =
-  | { readonly kind: 'loading' }
-  | { readonly kind: 'loaded'; readonly branches: readonly PublicBranch[] }
-  | { readonly kind: 'error'; readonly error: ApiError };
-
-const SKELETON_DELAY_MS = 200;
+import { finalize, Subscription, timer } from 'rxjs';
+import { IconComponent } from '../../../../shared/icon/icon';
+import { OwnerBranchesService } from '../../data-access/owner-branches.service';
 
 @Component({
   selector: 'adm-branch-list-page',
-  imports: [HlmButton],
+  imports: [HlmButton, RouterLink, IconComponent],
   templateUrl: './branch-list-page.html',
   styleUrl: './branch-list-page.css',
 })
 export class BranchListPage {
-  private readonly service = inject(AdminBranchesService);
-  private subscriptions: Subscription[] = [];
-
-  protected readonly state = signal<ListState>({ kind: 'loading' });
-  protected readonly showSkeleton = signal(false);
-  protected readonly skeletonRows = [1, 2, 3];
-  protected readonly formatOpeningHours = formatOpeningHours;
-
+  private readonly service = inject(OwnerBranchesService);
+  private readonly destroy = inject(DestroyRef);
+  private request?: Subscription;
+  readonly state = signal<'loading' | 'loaded' | 'error'>('loading');
+  readonly branches = signal<readonly BranchResponse[]>([]);
+  readonly showSkeleton = signal(false);
+  readonly correlationId = signal<string | undefined>(undefined);
+  readonly formatOpeningHours = formatOpeningHours;
   constructor() {
-    inject(DestroyRef).onDestroy(() => {
-      this.cancel();
-    });
     this.load();
   }
-
-  protected load(): void {
-    this.cancel();
-    this.state.set({ kind: 'loading' });
+  load(): void {
+    this.request?.unsubscribe();
+    this.state.set('loading');
     this.showSkeleton.set(false);
-    // Fast responses never flash a skeleton (UI-SPEC A2).
-    const skeleton = timer(SKELETON_DELAY_MS).subscribe(() => {
-      this.showSkeleton.set(true);
-    });
-    const request = this.service.list().subscribe({
-      next: (branches) => {
-        this.state.set({ kind: 'loaded', branches });
-      },
-      error: (error: unknown) => {
-        skeleton.unsubscribe();
-        this.state.set({ kind: 'error', error: toApiError(error) });
-      },
-      complete: () => {
-        skeleton.unsubscribe();
-      },
-    });
-    this.subscriptions = [skeleton, request];
-  }
-
-  private cancel(): void {
-    for (const subscription of this.subscriptions) subscription.unsubscribe();
-    this.subscriptions = [];
+    const delay = timer(200)
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe(() => {
+        this.showSkeleton.set(true);
+      });
+    this.request = this.service
+      .list()
+      .pipe(
+        takeUntilDestroyed(this.destroy),
+        finalize(() => {
+          delay.unsubscribe();
+          this.showSkeleton.set(false);
+        }),
+      )
+      .subscribe({
+        next: (branches) => {
+          this.branches.set(branches);
+          this.state.set('loaded');
+        },
+        error: (error: unknown) => {
+          this.correlationId.set(toApiError(error).correlationId);
+          this.state.set('error');
+        },
+      });
   }
 }

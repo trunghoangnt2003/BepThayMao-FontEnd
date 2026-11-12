@@ -1,123 +1,116 @@
 import { TestBed } from '@angular/core/testing';
-import type { PublicBranch } from '@bepthaymao/api-client';
-import type { ApiError } from '@bepthaymao/core';
+import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
 import { Subject } from 'rxjs';
-import { AdminBranchesService } from '../../data-access/admin-branches.service';
+import { BranchResponse } from '@bepthaymao/api-client';
+import { OwnerBranchesService } from '../../data-access/owner-branches.service';
+import { branchFixture } from '../../testing/branch-fixture';
+import { IconComponent } from '../../../../shared/icon/icon';
 import { BranchListPage } from './branch-list-page';
 
-const branches: PublicBranch[] = [
-  {
-    id: 'a',
-    name: 'Cơ sở Mẫu 1',
-    address: 'Số 1 Đường Mẫu',
-    phone: '02800000001',
-    openTime: '06:00',
-    closeTime: '21:30',
-  },
-  {
-    id: 'b',
-    name: 'Cơ sở Mẫu 2',
-    address: 'Số 2 Đường Mẫu',
-    phone: '02800000002',
-    openTime: '07:00',
-    closeTime: '21:00',
-  },
-];
-
-function setup() {
-  const requests: Subject<readonly PublicBranch[]>[] = [];
-  const service = {
-    list: () => {
-      const request = new Subject<readonly PublicBranch[]>();
-      requests.push(request);
-      return request.asObservable();
-    },
-  };
+let responses: Subject<BranchResponse[]>;
+beforeEach(() => {
+  responses = new Subject<BranchResponse[]>();
   TestBed.configureTestingModule({
-    providers: [{ provide: AdminBranchesService, useValue: service }],
-  });
-  const fixture = TestBed.createComponent(BranchListPage);
-  fixture.detectChanges();
-  return { fixture, requests, element: fixture.nativeElement as HTMLElement };
-}
-
-function respond(
-  request: Subject<readonly PublicBranch[]> | undefined,
-  value: readonly PublicBranch[],
-) {
-  request?.next(value);
-  request?.complete();
-}
-
-describe('Admin BranchListPage', () => {
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it('shows the skeleton only after 200ms of loading', () => {
-    vi.useFakeTimers();
-    const { fixture, element } = setup();
-    expect(element.querySelector('[aria-busy="true"]')).not.toBeNull();
-    vi.advanceTimersByTime(199);
-    fixture.detectChanges();
-    expect(element.querySelectorAll('.skeleton-row').length).toBe(0);
-    vi.advanceTimersByTime(1);
-    fixture.detectChanges();
-    expect(element.querySelectorAll('.skeleton-row').length).toBe(3);
-    expect(element.querySelector('[role="status"]')?.textContent).toContain(
-      'Đang tải danh sách cơ sở…',
-    );
-  });
-
-  it('renders a two column table with row headers and opening hours', async () => {
-    const { fixture, requests, element } = setup();
-    respond(requests[0], branches);
-    await fixture.whenStable();
-    expect(element.querySelector('h1')?.textContent).toBe('Danh sách cơ sở');
-    const headers = [...element.querySelectorAll('thead th')].map((th) => th.textContent.trim());
-    expect(headers).toEqual(['Cơ sở', 'Giờ nhận đơn']);
-    const rowHeaders = element.querySelectorAll('tbody th[scope="row"]');
-    expect(rowHeaders.length).toBe(2);
-    expect(rowHeaders[0].querySelector('.name')?.textContent).toBe('Cơ sở Mẫu 1');
-    expect(rowHeaders[0].textContent).toContain('Số 1 Đường Mẫu');
-    expect(rowHeaders[0].querySelector('a')).toBeNull();
-    expect(element.querySelector('tbody td')?.textContent.trim()).toBe('06:00 đến 21:30');
-    expect(element.querySelector('[aria-busy="true"]')).toBeNull();
-  });
-
-  it('shows the empty state without a create button', async () => {
-    const { fixture, requests, element } = setup();
-    respond(requests[0], []);
-    await fixture.whenStable();
-    expect(element.querySelector('h2')?.textContent).toBe('Chưa có cơ sở nào');
-    expect(element.textContent).toContain('Danh sách sẽ hiện ở đây khi có cơ sở mở nhận đơn.');
-    expect(element.textContent).not.toContain('Tạo cơ sở mới');
-    expect(element.querySelector('button')).toBeNull();
+    providers: [
+      provideRouter([]),
+      { provide: OwnerBranchesService, useValue: { list: () => responses } },
+    ],
   });
 });
+it('shows loading, public rows, and empty state', async () => {
+  const fixture = TestBed.createComponent(BranchListPage);
+  await fixture.whenStable();
+  expect(fixture.componentInstance.state()).toBe('loading');
+  expect(fixture.componentInstance.showSkeleton()).toBe(false);
+  responses.next([branchFixture({ name: 'Mẫu', address: 'Địa chỉ' })]);
+  responses.complete();
+  await fixture.whenStable();
+  const html = fixture.nativeElement as HTMLElement;
+  expect(html.querySelectorAll('tbody tr')).toHaveLength(1);
+  expect(html.textContent).toContain('06:00 đến 21:30');
+  responses = new Subject<BranchResponse[]>();
+  fixture.componentInstance.load();
+  responses.next([]);
+  responses.complete();
+  await fixture.whenStable();
+  expect(html.textContent).toContain('Chưa có cơ sở nào');
+});
+it('renders safe errors with correlation and permits retry', async () => {
+  const fixture = TestBed.createComponent(BranchListPage);
+  responses.error({
+    kind: 'http',
+    status: 500,
+    correlationId: 'real-id',
+    detail: 'private-detail',
+  });
+  await fixture.whenStable();
+  const html = fixture.nativeElement as HTMLElement;
+  expect(html.textContent).toContain('real-id');
+  expect(html.textContent).not.toContain('private-detail');
+  responses = new Subject<BranchResponse[]>();
+  html.querySelector('button')?.click();
+  responses.next([]);
+  responses.complete();
+  await fixture.whenStable();
+  expect(fixture.componentInstance.state()).toBe('loaded');
+});
+it('only shows skeleton after 200ms and cancels it when destroyed', async () => {
+  vi.useFakeTimers();
+  try {
+    const fixture = TestBed.createComponent(BranchListPage);
+    await vi.advanceTimersByTimeAsync(199);
+    expect(fixture.componentInstance.showSkeleton()).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fixture.componentInstance.showSkeleton()).toBe(true);
+    fixture.destroy();
+    expect(fixture.componentInstance.showSkeleton()).toBe(false);
+  } finally {
+    vi.useRealTimers();
+  }
+});
 
-describe('Admin BranchListPage errors', () => {
-  it('shows the correlation id on error and retries', async () => {
-    const { fixture, requests, element } = setup();
-    const error: ApiError = {
-      kind: 'http',
-      status: 500,
-      detail: 'secret detail',
-      correlationId: 'corr-42',
-    };
-    requests[0].error(error);
+describe('owner branch rows', () => {
+  async function render(branches: BranchResponse[]) {
+    const fixture = TestBed.createComponent(BranchListPage);
+    responses.next(branches);
+    responses.complete();
     await fixture.whenStable();
-    expect(element.querySelector('h2')?.textContent).toBe('Không tải được danh sách cơ sở');
-    expect(element.textContent).toContain(
-      'Kiểm tra kết nối mạng rồi thử lại. Nếu vẫn lỗi, gửi mã corr-42 cho đội phát triển.',
+    return fixture;
+  }
+
+  it('links the branch name to its edit screen and shows hours', async () => {
+    const branch = branchFixture({ id: 'abc-123', name: 'Cơ sở Một' });
+    const fixture = await render([branch]);
+    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+      'tbody th a',
     );
-    expect(element.textContent).not.toContain('secret detail');
-    const retry = element.querySelector('button');
-    expect(retry?.textContent.trim()).toBe('Thử lại');
-    retry?.click();
-    expect(requests.length).toBe(2);
-    respond(requests[1], branches);
-    await fixture.whenStable();
-    expect(element.querySelectorAll('tbody tr').length).toBe(2);
+    expect(link?.textContent.trim()).toBe('Cơ sở Một');
+    expect(link?.getAttribute('href')).toBe('/owner/branches/abc-123');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('06:00 đến 21:30');
+  });
+
+  it('shows the receiving status with a distinct icon and text', async () => {
+    const fixture = await render([
+      branchFixture({ id: '1', isActive: true }),
+      branchFixture({ id: '2', isActive: false }),
+    ]);
+    const cells = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll('tbody td[data-label="Trạng thái"]'),
+    );
+    expect(cells.map((cell) => cell.textContent.trim())).toEqual(['Đang nhận đơn', 'Đã tắt']);
+    const icons = fixture.debugElement
+      .queryAll(By.directive(IconComponent))
+      .map((icon) => (icon.componentInstance as IconComponent).name());
+    expect(icons).toEqual(['check-circle', 'prohibit']);
+  });
+
+  it('offers one create link to the new branch screen above the table', async () => {
+    const fixture = await render([branchFixture()]);
+    const links = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLAnchorElement>('a[hlmBtn]'),
+    );
+    expect(links.map((link) => link.textContent.trim())).toEqual(['Tạo cơ sở mới']);
+    expect(links[0]?.getAttribute('href')).toBe('/owner/branches/new');
   });
 });

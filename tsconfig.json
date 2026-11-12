@@ -7,9 +7,7 @@
         "./projects/api-client/src/generated/endpoints/index.ts"
       ],
       "@bepthaymao/core": ["./projects/core/src/public-api.ts"],
-      "@bepthaymao/ui": ["./projects/ui/src/public-api.ts"],
-      "@bepthaymao/ui/helm/button": ["./projects/ui/src/lib/helm/button/src/index.ts"],
-      "@bepthaymao/ui/helm/utils": ["./projects/ui/src/lib/helm/utils/src/index.ts"]
+      "@bepthaymao/ui": ["./projects/ui/src/public-api.ts"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -65,9 +63,7 @@
     },
     {
       "path": "./projects/ui/tsconfig.spec.json"
-    },
-    {
-      "path": "./e2e/tsconfig.json"
     }
-  ]
+  ],
+  "include": ["orval.config.ts", "playwright.config.ts"]
 }

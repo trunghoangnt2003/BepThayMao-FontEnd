@@ -1,52 +1,45 @@
-// Fails when the committed generated client differs from a fresh Orval run, or (full workspace only)
-// when openapi/v1.json is stale against ../backend.
-import { spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { join, relative, resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { diffTrees, isSame } from './lib/tree-diff.mjs';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const committed = join(root, 'projects', 'api-client', 'src', 'generated');
-const directory = mkdtempSync(join(tmpdir(), 'bep-api-check-'));
-let failed = false;
-try {
-  if (existsSync(join(root, '..', 'backend', 'openapi', 'v1.json'))) {
-    const sync = spawnSync(process.execPath, [join(root, 'scripts', 'api-sync.mjs'), '--check'], {
-      stdio: 'inherit',
-    });
-    failed ||= sync.status !== 0;
-  } else {
-    console.log('Bỏ qua so với backend: không có ../backend.');
-  }
-
-  const orval = spawnSync(
-    process.execPath,
-    [
-      join(root, 'node_modules', 'orval', 'dist', 'bin', 'orval.mjs'),
-      '--config',
-      'orval.config.ts',
-    ],
-    { cwd: root, encoding: 'utf8', env: { ...process.env, ORVAL_OUT: directory } },
-  );
-  if (orval.error || orval.status !== 0)
-    throw new Error(`Orval lỗi:\n${orval.stdout}${orval.stderr}`);
-
-  const diff = diffTrees(committed, directory);
-  for (const file of diff.changed) console.error(`LỆCH   ${file}`);
-  for (const file of diff.missing)
-    console.error(`THIẾU  ${file} (có trong repo, Orval không sinh)`);
-  for (const file of diff.extra) console.error(`THỪA   ${file} (Orval sinh, chưa commit)`);
-  if (isSame(diff)) console.log('Client sinh khớp openapi/v1.json.');
-  else {
-    console.error('Chạy npm run api:generate rồi commit projects/api-client/src/generated.');
-    failed = true;
-  }
-} catch (error) {
-  console.error(error.message);
-  failed = true;
-} finally {
-  rmSync(directory, { recursive: true, force: true });
+export function tree(directory, root = directory) {
+  return readdirSync(directory, { withFileTypes: true })
+    .flatMap((entry) => {
+      const path = join(directory, entry.name);
+      return entry.isDirectory()
+        ? tree(path, root)
+        : [
+            [
+              relative(root, path).replaceAll('\\', '/'),
+              readFileSync(path, 'utf8').replaceAll('\r\n', '\n'),
+            ],
+          ];
+    })
+    .sort(([a], [b]) => a.localeCompare(b));
 }
-process.exitCode = failed ? 1 : 0;
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const directory = mkdtempSync(join(tmpdir(), 'bep-client-'));
+  try {
+    if (existsSync('../backend/openapi/v1.json')) {
+      const sync = spawnSync(process.execPath, ['scripts/api-sync.mjs', '--check'], {
+        stdio: 'inherit',
+      });
+      if (sync.status !== 0) throw new Error('OpenAPI drift.');
+    }
+    const generate = spawnSync(
+      process.execPath,
+      ['node_modules/orval/./dist/bin/orval.mjs', '--config', 'orval.config.ts'],
+      { env: { ...process.env, ORVAL_OUT: directory.replaceAll('\\', '/') }, stdio: 'inherit' },
+    );
+    if (generate.status !== 0) throw new Error('Không sinh được client.');
+    if (
+      JSON.stringify(tree(directory)) !== JSON.stringify(tree('projects/api-client/src/generated'))
+    )
+      throw new Error('Client lỗi thời. Chạy api:generate.');
+    console.log('API client khớp hợp đồng.');
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+}

@@ -1,29 +1,36 @@
-<a uiSkipLink class="skip-link" href="#main">Bỏ qua tới nội dung chính</a>
-<header>
-  <div
-    class="mx-auto flex w-full max-w-(--container-app) items-center gap-(--space-md) px-(--gutter) py-(--space-lg)"
-  >
-    <a class="wordmark" routerLink="/" aria-label="Bếp Thầy Mão, về trang quản trị">Bếp Thầy Mão</a>
-    <span class="administration">Quản trị</span>
-  </div>
-  <nav class="mx-auto w-full max-w-(--container-app) px-(--gutter)" aria-label="Điều hướng chính">
-    <ul>
-      <li>
-        <a
-          class="nav-link"
-          routerLink="/branches"
-          routerLinkActive="active"
-          ariaCurrentWhenActive="page"
-          >Cơ sở</a
-        >
-      </li>
-    </ul>
-  </nav>
-</header>
-<main
-  class="mx-auto w-full max-w-(--container-app) px-(--gutter) py-(--space-xl)"
-  id="main"
-  tabindex="-1"
+<a class="skip-link" href="#main" (click)="$event.preventDefault(); mainContent.focus()"
+  >Bỏ qua tới nội dung chính</a
 >
-  <router-outlet />
-</main>
+@if (staffSession(); as session) {
+  <header>
+    <div class="container topbar">
+      <span class="wordmark">Bếp Thầy Mão</span><span class="area">Quản trị</span>
+      <div class="account">
+        <span class="identity"
+          >{{ session.identifier }}
+          <span>{{ session.role === 'Owner' ? 'Chủ sở hữu' : 'Quản lý cơ sở' }}</span></span
+        >
+        <button
+          hlmBtn
+          variant="outline"
+          (click)="logout()"
+          [attr.aria-label]="'Đăng xuất khỏi tài khoản ' + session.identifier"
+        >
+          <btm-icon name="sign-out" />Đăng xuất
+        </button>
+      </div>
+    </div>
+  </header>
+  <nav class="container" aria-label="Điều hướng chính">
+    @if (session.role === 'Owner') {
+      <a routerLink="/owner/branches" routerLinkActive="active" ariaCurrentWhenActive="page"
+        >Cơ sở</a
+      >
+    } @else {
+      <a routerLink="/manager/settings" routerLinkActive="active" ariaCurrentWhenActive="page"
+        >Thông số cơ sở</a
+      >
+    }
+  </nav>
+}
+<main #mainContent id="main" class="container" tabindex="-1"><router-outlet /></main>

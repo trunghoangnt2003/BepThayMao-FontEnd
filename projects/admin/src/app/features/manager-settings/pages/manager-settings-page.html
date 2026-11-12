@@ -1,0 +1,128 @@
+<h1 tabindex="-1">Thông số cơ sở</h1>
+@if (loading()) {
+  <div class="skeleton" aria-busy="true">
+    @if (showSkeleton()) {
+      <p class="visually-hidden" role="status">Đang tải thông số cơ sở…</p>
+    }
+    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+} @else if (loadFailure()) {
+  <adm-banner kind="error">{{ loadMessage() }}</adm-banner>
+  <button hlmBtn variant="outline" type="button" class="retry" (click)="load()">Thử lại</button>
+} @else {
+  <p class="lead">Chỉnh số điện thoại, giờ nhận đơn và người nhận tin cho cơ sở của bạn.</p>
+  @if (failure()) {
+    <adm-banner kind="error">{{ failureMessage() }}</adm-banner>
+  }
+  @if (summary().length) {
+    <adm-error-summary [errors]="summary()" />
+  }
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <section class="block" aria-labelledby="settings-orders-title">
+      <h2 id="settings-orders-title">Nhận đơn</h2>
+      <div class="field">
+        <label hlmLabel for="settings-phone">Số điện thoại</label>
+        <input
+          hlmInput
+          id="settings-phone"
+          type="tel"
+          formControlName="phone"
+          autocomplete="tel"
+          aria-required="true"
+          [attr.aria-describedby]="messages().phone ? 'settings-phone-note' : null"
+        />
+        <adm-field-note noteId="settings-phone-note" [error]="messages().phone" />
+      </div>
+      <fieldset>
+        <legend>Giờ nhận đơn</legend>
+        <div class="pair">
+          <div class="field">
+            <label hlmLabel for="settings-open">Giờ mở nhận đơn</label>
+            <input
+              hlmInput
+              id="settings-open"
+              type="time"
+              formControlName="openTime"
+              aria-required="true"
+              [attr.aria-describedby]="messages().openTime ? 'settings-open-note' : null"
+            />
+            <adm-field-note noteId="settings-open-note" [error]="messages().openTime" />
+          </div>
+          <div class="field">
+            <label hlmLabel for="settings-close">Giờ đóng nhận đơn</label>
+            <input
+              hlmInput
+              id="settings-close"
+              type="time"
+              formControlName="closeTime"
+              aria-required="true"
+              [attr.aria-describedby]="messages().closeTime ? 'settings-close-note' : null"
+            />
+            <adm-field-note noteId="settings-close-note" [error]="messages().closeTime" />
+          </div>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label hlmLabel for="settings-threshold">Cảnh báo đơn bị bỏ quên sau (phút)</label>
+        <input
+          hlmInput
+          id="settings-threshold"
+          formControlName="threshold"
+          inputmode="numeric"
+          autocomplete="off"
+          aria-required="true"
+          aria-describedby="settings-threshold-note"
+        />
+        <adm-field-note
+          noteId="settings-threshold-note"
+          [error]="messages().threshold"
+          help="Đơn đã thanh toán mà chưa ai nhận quá số phút này sẽ được cảnh báo."
+        />
+      </div>
+    </section>
+    <section class="block" aria-labelledby="settings-zalo-title">
+      <h2 id="settings-zalo-title">Người nhận tin Zalo</h2>
+      <div class="field">
+        <label hlmLabel for="settings-zalo">ID Zalo người nhận tin (không bắt buộc)</label>
+        <textarea
+          hlmInput
+          id="settings-zalo"
+          formControlName="zaloIds"
+          rows="4"
+          autocomplete="off"
+          aria-describedby="settings-zalo-note"
+        ></textarea>
+        <adm-field-note
+          noteId="settings-zalo-note"
+          [error]="messages().zaloIds"
+          help="Mỗi dòng một ID."
+        />
+      </div>
+    </section>
+    <div class="actions">
+      <button hlmBtn type="submit" [disabled]="submitting()">
+        @if (showProgress()) {
+          Đang lưu…
+        } @else {
+          Lưu thông số
+        }
+      </button>
+      <p class="saved" role="status">{{ savedText() }}</p>
+    </div>
+  </form>
+  <section class="well" aria-labelledby="settings-owned-title">
+    <h2 id="settings-owned-title">Do chủ sở hữu quản lý</h2>
+    <p class="well__note">
+      <btm-icon name="lock-simple" />Muốn đổi các thông tin này, hãy liên hệ chủ sở hữu.
+    </p>
+    <dl>
+      @for (row of owned(); track row.label) {
+        <div>
+          <dt>{{ row.label }}</dt>
+          <dd>{{ row.value }}</dd>
+        </div>
+      }
+    </dl>
+  </section>
+}

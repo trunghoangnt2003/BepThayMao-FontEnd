@@ -42,6 +42,10 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Browser test artifacts are generated, not source.
 /playwright-report/
 /test-results/
-/.nx/
+
+# Hallmark sloplint render output (local tooling)
+.hallmark/

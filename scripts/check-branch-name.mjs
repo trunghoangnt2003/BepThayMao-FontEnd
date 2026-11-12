@@ -3,7 +3,6 @@ import { spawnSync } from 'node:child_process';
 export function validBranch(name) {
   return (
     name === 'main' ||
-    name === 'develop' ||
     /^(feat|fix|docs|refactor|test|chore|ci|build|perf)\/[a-z0-9][a-z0-9._-]*$/.test(name) ||
     /^gsd\/[a-z0-9._/-]+$/.test(name)
   );
@@ -19,6 +18,6 @@ if (result && result.status !== 0) {
 } else if (name === '' && explicit < 0) {
   console.log('HEAD tách rời: không kiểm tên nhánh.');
 } else if (!name || !validBranch(name)) {
-  console.error('Tên nhánh không hợp lệ; dùng main, develop, <type>/<slug> hoặc gsd/<slug>.');
+  console.error('Tên nhánh không hợp lệ; dùng main, <type>/<slug> hoặc gsd/<slug>.');
   process.exitCode = 1;
 }

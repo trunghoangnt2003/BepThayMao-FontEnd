@@ -1,0 +1,88 @@
+/* Hallmark · shape: app screen · theme: Garden · scope: admin create branch */
+/* Hallmark · critique: one column form, one filled action, token-only styling */
+:host {
+  display: grid;
+  gap: var(--space-md);
+  max-width: var(--measure-form);
+  align-content: start;
+}
+.lead {
+  max-width: 65ch;
+}
+.note {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+form {
+  display: grid;
+  gap: var(--space-xl);
+  margin-top: var(--space-md);
+}
+.block {
+  display: grid;
+  gap: var(--space-lg);
+  align-content: start;
+}
+.password-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-xs);
+}
+.password-control button {
+  padding-inline: var(--space-sm);
+}
+.block > button {
+  justify-self: start;
+}
+.actions {
+  display: grid;
+  gap: var(--space-md);
+}
+.cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-h);
+  color: var(--color-ink);
+}
+.success {
+  display: grid;
+  gap: var(--space-lg);
+  justify-items: start;
+}
+.credentials {
+  display: grid;
+  gap: var(--space-md);
+  width: 100%;
+  margin: 0;
+  padding: var(--space-md);
+  background: var(--color-paper-2);
+  border-radius: var(--radius-card);
+}
+.credentials div {
+  display: grid;
+  gap: var(--space-2xs);
+}
+.credentials dt {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+.credentials dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.secret {
+  font-variant-numeric: lining-nums tabular-nums;
+  font-weight: var(--weight-strong);
+  user-select: all;
+}
+@media (min-width: 40rem) {
+  .actions {
+    grid-template-columns: auto auto;
+    justify-content: start;
+    align-items: center;
+  }
+  .success .actions {
+    margin-top: var(--space-md);
+  }
+}

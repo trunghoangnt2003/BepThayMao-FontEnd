@@ -1,0 +1,65 @@
+<h1 tabindex="-1">{{ heading() }}</h1>
+@switch (state()) {
+  @case ('loading') {
+    <div class="skeleton" aria-busy="true">
+      @if (showSkeleton()) {
+        <p class="visually-hidden" role="status">Đang tải cơ sở…</p>
+      }
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      <span class="bar"></span><span class="bar"></span>
+    </div>
+  }
+  @case ('notFound') {
+    <p class="lead">Đường dẫn có thể sai, hoặc cơ sở không thuộc tài khoản của bạn.</p>
+    <a hlmBtn routerLink="/owner/branches" class="back">Về danh sách cơ sở</a>
+  }
+  @case ('failed') {
+    <adm-banner kind="error">{{ loadMessage() }}</adm-banner>
+    <button hlmBtn variant="outline" type="button" class="back" (click)="retry()">Thử lại</button>
+  }
+  @case ('ready') {
+    <p class="note">Các trường đều bắt buộc trừ khi ghi “không bắt buộc”.</p>
+    @if (failure()) {
+      <adm-banner kind="error">{{ failureMessage() }}</adm-banner>
+    }
+    @if (summary().length) {
+      <adm-error-summary [errors]="summary()" />
+    }
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <adm-branch-form [group]="form" />
+      <div class="actions">
+        <button hlmBtn type="submit" [disabled]="submitting()">
+          @if (showProgress()) {
+            Đang lưu…
+          } @else {
+            Lưu thay đổi
+          }
+        </button>
+        <p class="saved" role="status">{{ savedText() }}</p>
+      </div>
+    </form>
+    <section class="block" aria-labelledby="orders-title">
+      <h2 id="orders-title">Nhận đơn</h2>
+      <p class="order-status" role="status">
+        {{ branch()?.isActive ? 'Cơ sở đang nhận đơn.' : 'Cơ sở đã tắt nhận đơn.' }}
+      </p>
+      <button
+        hlmBtn
+        variant="outline"
+        type="button"
+        id="toggle-orders"
+        [disabled]="toggling()"
+        (click)="toggleActive()"
+      >
+        {{ branch()?.isActive ? 'Tắt nhận đơn' : 'Bật nhận đơn' }}
+      </button>
+    </section>
+    <section class="block" aria-labelledby="manager-title">
+      <h2 id="manager-title">Tài khoản quản lý</h2>
+      <p>Đặt lại khi quản lý quên mật khẩu.</p>
+      <button hlmBtn variant="outline" type="button" (click)="openResetPassword()">
+        Đặt lại mật khẩu
+      </button>
+    </section>
+  }
+}

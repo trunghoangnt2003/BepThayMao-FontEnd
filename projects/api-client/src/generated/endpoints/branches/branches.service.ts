@@ -81,8 +81,8 @@ type HttpClientObserveOptions = HttpClientOptions & {
 export class BranchesService {
   private readonly http = inject(HttpClient);
 /**
- * Chỉ trả thông tin công khai tối thiểu; không lộ tọa độ, cấu hình ngân hàng, SePay, Zalo hay cờ hoạt động.
- * @summary Danh sách cơ sở đang hoạt động
+ * Danh sách cơ sở đang hoạt động; chỉ trả dữ liệu công khai, không yêu cầu đăng nhập.
+ * @summary Danh sách cơ sở đang hoạt động (công khai)
  */
  listPublicBranches<TData = PublicBranch[]>( options?: HttpClientBodyOptions): Observable<TData>;
  listPublicBranches<TData = PublicBranch[]>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;

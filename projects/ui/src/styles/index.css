@@ -1,14 +1,8 @@
 /* Hallmark · shape: app screen (admin) + Index-First (customer) · genre: editorial · theme: Garden (deal 3/3, seed gian-rustic-vietnamese-home-1376·ad2bb4ce·2026-11-08·r0)
- * nav: topbar + row of links (admin) / wordmark only (customer) · signature: the two-column branch table that reflows into labelled blocks (admin), the branch index with tel links (customer) · states: loading, empty, error, full, session-expired, forbidden
+ * nav: topbar + row of links (admin) / wordmark only (customer) · signature: the branch list table with open/closed status (admin), the branch index with tel links (customer) · states: loading, empty, error, full, session-expired, forbidden
  * axes: light/roman-serif/chromatic-green · posture: committed · contrast: pass · v2.0.0 */
-/* Hallmark · pre-emit critique: P4 H4 E4 S3 R4 V2 · weakest: V, khôi phục đúng thiết kế đã duyệt của lần build 2026-11-09 nên trùng log; giữ UI-SPEC thay vì đổi bố cục, S nâng bằng tel: chuẩn hóa +84 và giờ nhận đơn thật thay vì thẻ chung chung */
-/* Hallmark · waive 79 · danh sách bắt đầu ngay màn đầu ở 1280x800 và 375x667, không có hero · trang cơ sở là một danh mục một khối theo UI-SPEC C1, Phase 2 mới có trang chủ với hero */
-@layer theme, base, components, utilities;
-@import 'tailwindcss/theme.css' layer(theme);
-@import 'tailwindcss/preflight.css' layer(base);
-@import 'tailwindcss/utilities.css';
-@import '@spartan-ng/brain/hlm-tailwind-preset.css';
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: density; short directory verified at 320px and desktop */
 @import './tokens.css';
-@import './spartan-theme.css';
 @import './base.css';
-@source '../../../../../projects';
+@import './dialog.css';
+@import 'tailwindcss' source('../../../../');

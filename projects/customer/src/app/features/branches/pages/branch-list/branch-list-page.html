@@ -1,15 +1,13 @@
-<div class="index">
-  <div class="intro">
-    <h1>Các cơ sở của Bếp Thầy Mão</h1>
-    <p>Địa chỉ, số điện thoại và giờ nhận đơn của từng cơ sở.</p>
-  </div>
-
-  @let state = branches();
-  @if (state.kind === 'loaded' && state.branches.length > 0) {
-    <div class="list">
-      @for (branch of state.branches; track branch.id) {
-        <article [attr.aria-labelledby]="'branch-' + branch.id">
-          <h2 [id]="'branch-' + branch.id">{{ branch.name }}</h2>
+<section class="intro">
+  <h1 tabindex="-1">Các cơ sở của Bếp Thầy Mão</h1>
+  <p>Địa chỉ, số điện thoại và giờ nhận đơn của từng cơ sở.</p>
+</section>
+<div class="branches">
+  @if (branches(); as result) {
+    @if (result.kind === 'loaded') {
+      @for (branch of result.branches; track branch.id) {
+        <article>
+          <h2>{{ branch.name }}</h2>
           <dl>
             <div>
               <dt>Địa chỉ</dt>
@@ -18,7 +16,7 @@
             <div>
               <dt>Điện thoại</dt>
               <dd>
-                <a class="tel num" [href]="toTelHref(branch.phone)">{{ branch.phone }}</a>
+                <a [href]="toTelHref(branch.phone)">{{ branch.phone }}</a>
               </dd>
             </div>
             <div>
@@ -27,18 +25,15 @@
             </div>
           </dl>
         </article>
-      }
-    </div>
-  } @else {
-    <section class="notice" aria-labelledby="branches-notice">
-      @if (state.kind === 'error') {
-        <h2 id="branches-notice">Không tải được danh sách cơ sở</h2>
-        <p>Kiểm tra kết nối mạng rồi tải lại trang.</p>
-      } @else {
-        <h2 id="branches-notice">Chưa có cơ sở nào đang hoạt động</h2>
+      } @empty {
+        <h2>Chưa có cơ sở nào đang hoạt động</h2>
         <p>Danh sách sẽ hiện ở đây khi có cơ sở mở nhận đơn.</p>
+        <a href="/co-so">Tải lại trang</a>
       }
-      <a class="reload" href="/co-so">Tải lại trang</a>
-    </section>
+    } @else {
+      <h2>Không tải được danh sách cơ sở</h2>
+      <p>Kiểm tra kết nối mạng rồi tải lại trang.</p>
+      <a href="/co-so">Tải lại trang</a>
+    }
   }
 </div>

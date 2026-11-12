@@ -1,0 +1,59 @@
+/* Hallmark · shape: app screen · theme: Garden · scope: admin edit branch */
+/* Hallmark · critique: one column form, one filled action, quiet secondary blocks after the form */
+:host {
+  display: grid;
+  gap: var(--space-md);
+  max-width: var(--measure-form);
+  align-content: start;
+}
+.lead {
+  max-width: 65ch;
+}
+.note {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+form {
+  display: grid;
+  gap: var(--space-xl);
+  margin-top: var(--space-md);
+}
+.block {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+  margin-top: var(--space-lg);
+}
+.block > button {
+  justify-self: start;
+}
+.actions {
+  display: grid;
+  gap: var(--space-md);
+}
+.saved {
+  min-height: 1lh;
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+}
+.back {
+  justify-self: start;
+}
+.skeleton {
+  display: grid;
+  gap: var(--space-md);
+  min-height: 24rem;
+  align-content: start;
+}
+.bar {
+  display: block;
+  height: var(--control-h);
+  border-radius: var(--radius-card);
+  background: var(--color-paper-3);
+}
+@media (min-width: 40rem) {
+  .actions {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+  }
+}

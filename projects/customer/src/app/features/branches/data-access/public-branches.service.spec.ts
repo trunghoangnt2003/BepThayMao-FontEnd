@@ -1,49 +1,32 @@
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideCore } from '@bepthaymao/core';
-import { firstValueFrom } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { PublicBranchesService } from './public-branches.service';
 
-const branch = {
-  id: '01a1c37b-9dbc-79ea-865c-15c529bb6064',
-  name: 'Cơ sở Mẫu 1',
-  address: 'Số 1 Đường Mẫu, Phường Mẫu, TP. Mẫu',
-  phone: '02800000001',
-  openTime: '06:00',
-  closeTime: '21:30',
-};
-
-describe('PublicBranchesService', () => {
-  let controller: HttpTestingController;
-  let service: PublicBranchesService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideCore(), provideHttpClientTesting()] });
-    controller = TestBed.inject(HttpTestingController);
-    service = TestBed.inject(PublicBranchesService);
-  });
-
+describe('Public branches data access', () => {
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    }),
+  );
   afterEach(() => {
-    controller.verify();
+    TestBed.inject(HttpTestingController).verify();
   });
-
-  it('maps 200 to loaded branches', async () => {
-    const result = firstValueFrom(service.list());
-    controller.expectOne('/api/v1/branches').flush([branch]);
-    expect(await result).toEqual({ kind: 'loaded', branches: [branch] });
+  it('loads the generated API response', () => {
+    const received = vi.fn();
+    TestBed.inject(PublicBranchesService).list().subscribe(received);
+    TestBed.inject(HttpTestingController).expectOne('/api/v1/branches').flush([]);
+    expect(received).toHaveBeenCalledWith({ kind: 'loaded', branches: [] });
   });
-
-  it('maps a problem response to an error with its correlation id', async () => {
-    const result = firstValueFrom(service.list());
-    controller
+  it('normalizes problem details without throwing from the resolver', () => {
+    const received = vi.fn();
+    TestBed.inject(PublicBranchesService).list().subscribe(received);
+    TestBed.inject(HttpTestingController)
       .expectOne('/api/v1/branches')
-      .flush(
-        { title: 'Lỗi', status: 500, correlationId: 'corr-1' },
-        { status: 500, statusText: 'Server Error' },
-      );
-    expect(await result).toEqual({
+      .flush({ correlationId: 'real-id' }, { status: 500, statusText: 'Failure' });
+    expect(received).toHaveBeenCalledWith({
       kind: 'error',
-      error: { kind: 'http', status: 500, title: 'Lỗi', correlationId: 'corr-1' },
+      error: { kind: 'http', status: 500, correlationId: 'real-id' },
     });
   });
 });

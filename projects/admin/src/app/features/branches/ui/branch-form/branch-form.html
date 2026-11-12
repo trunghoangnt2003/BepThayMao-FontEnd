@@ -1,0 +1,178 @@
+<div [formGroup]="group()" class="branch-form">
+  <section class="block" aria-labelledby="branch-info-title">
+    <h2 id="branch-info-title">Thông tin cơ sở</h2>
+    <div class="field">
+      <label hlmLabel for="branch-name">Tên cơ sở</label>
+      <input
+        hlmInput
+        id="branch-name"
+        formControlName="name"
+        autocomplete="organization"
+        aria-required="true"
+        [attr.aria-describedby]="describedBy('name')"
+      />
+      <adm-field-note noteId="branch-name-note" [error]="errors().name" />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-address">Địa chỉ</label>
+      <input
+        hlmInput
+        id="branch-address"
+        formControlName="address"
+        autocomplete="street-address"
+        aria-required="true"
+        [attr.aria-describedby]="describedBy('address')"
+      />
+      <adm-field-note noteId="branch-address-note" [error]="errors().address" />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-phone">Số điện thoại</label>
+      <input
+        hlmInput
+        id="branch-phone"
+        type="tel"
+        formControlName="phone"
+        autocomplete="tel"
+        aria-required="true"
+        [attr.aria-describedby]="describedBy('phone')"
+      />
+      <adm-field-note noteId="branch-phone-note" [error]="errors().phone" />
+    </div>
+    <fieldset>
+      <legend>Vị trí</legend>
+      <div class="pair">
+        <div class="field">
+          <label hlmLabel for="branch-lat">Vĩ độ</label>
+          <input
+            hlmInput
+            id="branch-lat"
+            formControlName="lat"
+            inputmode="decimal"
+            placeholder="10.7769"
+            autocomplete="off"
+            aria-required="true"
+            [attr.aria-describedby]="describedBy('lat', 'branch-position-help')"
+          />
+          <adm-field-note noteId="branch-lat-note" [error]="errors().lat" />
+        </div>
+        <div class="field">
+          <label hlmLabel for="branch-lng">Kinh độ</label>
+          <input
+            hlmInput
+            id="branch-lng"
+            formControlName="lng"
+            inputmode="decimal"
+            placeholder="106.7009"
+            autocomplete="off"
+            aria-required="true"
+            [attr.aria-describedby]="describedBy('lng', 'branch-position-help')"
+          />
+          <adm-field-note noteId="branch-lng-note" [error]="errors().lng" />
+        </div>
+      </div>
+      <p class="field__help" id="branch-position-help">
+        Ví dụ 10.7769. Sao chép tọa độ từ ứng dụng bản đồ.
+      </p>
+      <adm-field-note noteId="branch-position-warning" [warning]="coordinateWarning()" />
+    </fieldset>
+    <fieldset>
+      <legend>Giờ nhận đơn</legend>
+      <div class="pair">
+        <div class="field">
+          <label hlmLabel for="branch-open">Giờ mở nhận đơn</label>
+          <input
+            hlmInput
+            id="branch-open"
+            type="time"
+            formControlName="openTime"
+            aria-required="true"
+            [attr.aria-describedby]="describedBy('openTime')"
+          />
+          <adm-field-note noteId="branch-open-note" [error]="errors().openTime" />
+        </div>
+        <div class="field">
+          <label hlmLabel for="branch-close">Giờ đóng nhận đơn</label>
+          <input
+            hlmInput
+            id="branch-close"
+            type="time"
+            formControlName="closeTime"
+            aria-required="true"
+            [attr.aria-describedby]="describedBy('closeTime')"
+          />
+          <adm-field-note noteId="branch-close-note" [error]="errors().closeTime" />
+        </div>
+      </div>
+    </fieldset>
+    <div class="field">
+      <label hlmLabel for="branch-threshold">Cảnh báo đơn bị bỏ quên sau (phút)</label>
+      <input
+        hlmInput
+        id="branch-threshold"
+        formControlName="threshold"
+        inputmode="numeric"
+        autocomplete="off"
+        aria-required="true"
+        [attr.aria-describedby]="describedBy('threshold')"
+      />
+      <adm-field-note
+        noteId="branch-threshold-note"
+        [error]="errors().threshold"
+        help="Đơn đã thanh toán mà chưa ai nhận quá số phút này sẽ được cảnh báo."
+      />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-zalo">ID Zalo người nhận tin (không bắt buộc)</label>
+      <textarea
+        hlmInput
+        id="branch-zalo"
+        formControlName="zaloIds"
+        rows="4"
+        autocomplete="off"
+        [attr.aria-describedby]="describedBy('zaloIds')"
+      ></textarea>
+      <adm-field-note
+        noteId="branch-zalo-note"
+        [error]="errors().zaloIds"
+        help="Mỗi dòng một ID."
+      />
+    </div>
+  </section>
+  <section class="block" aria-labelledby="branch-bank-title">
+    <h2 id="branch-bank-title">Tài khoản nhận tiền</h2>
+    <div class="field">
+      <label hlmLabel for="branch-bank-code">Mã ngân hàng (không bắt buộc)</label>
+      <input
+        hlmInput
+        id="branch-bank-code"
+        formControlName="bankCode"
+        autocomplete="off"
+        [attr.aria-describedby]="describedBy('bankCode')"
+      />
+      <adm-field-note noteId="branch-bank-code-note" [error]="errors().bankCode" />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-bank-account">Số tài khoản (không bắt buộc)</label>
+      <input
+        hlmInput
+        id="branch-bank-account"
+        formControlName="bankAccountNo"
+        inputmode="numeric"
+        autocomplete="off"
+        [attr.aria-describedby]="describedBy('bankAccountNo')"
+      />
+      <adm-field-note noteId="branch-bank-account-note" [error]="errors().bankAccountNo" />
+    </div>
+    <div class="field">
+      <label hlmLabel for="branch-sepay">Mã tham chiếu SePay (không bắt buộc)</label>
+      <input
+        hlmInput
+        id="branch-sepay"
+        formControlName="sepayAccountRef"
+        autocomplete="off"
+        [attr.aria-describedby]="describedBy('sepayAccountRef')"
+      />
+      <adm-field-note noteId="branch-sepay-note" [error]="errors().sepayAccountRef" />
+    </div>
+  </section>
+</div>

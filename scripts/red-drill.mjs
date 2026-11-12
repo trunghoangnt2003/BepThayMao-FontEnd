@@ -1,8 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { assertRed, withFiles } from './lib/drill.mjs';
 
 const root = process.cwd();
@@ -17,7 +16,6 @@ const status = () => {
 if (status().trim()) throw new Error('Commit changes before running the reversible drill.');
 const eslint = [resolve('node_modules/eslint/bin/eslint.js'), '.', '--max-warnings', '0'];
 const view = 'projects/customer/src/app/features/drill/pages/probe.ts';
-const generatedModel = 'projects/api-client/src/generated/models/publicBranch.ts';
 const cases = [
   {
     name: 'cross-app-import',
@@ -66,14 +64,6 @@ const cases = [
     expected: /circular dependency/i,
   },
   {
-    name: 'api-drift',
-    changes: {
-      [generatedModel]: readFileSync(generatedModel, 'utf8').replace('id: string;', 'id: number;'),
-    },
-    args: ['scripts/api-check.mjs'],
-    expected: /LỆCH/,
-  },
-  {
     name: 'ts-ignore-without-reason',
     changes: { [view]: '// @ts-ignore\nexport const probe = 1;\n' },
     args: ['scripts/check-suppressions.mjs'],
@@ -96,6 +86,20 @@ try {
     );
     console.log(`${drill.name} | ĐỎ ĐÚNG | ${evidence}`);
   }
+  const policyPath = 'scripts/license-policy.json';
+  const policy = JSON.parse(readFileSync(policyPath, 'utf8'));
+  policy.allow = policy.allow.filter((license) => license !== 'MIT');
+  const licenseEvidence = withFiles(root, { [policyPath]: JSON.stringify(policy) }, () =>
+    assertRed(run(process.execPath, ['scripts/license-check.mjs']), /violations/),
+  );
+  console.log(`license-outside-allowlist | RED | ${licenseEvidence}`);
+  const generated = 'projects/api-client/src/generated/endpoints/index.ts';
+  const driftEvidence = withFiles(
+    root,
+    { [generated]: readFileSync(generated, 'utf8') + '\n// deliberate drift\n' },
+    () => assertRed(run(process.execPath, ['scripts/api-check.mjs']), /Client lỗi thời/),
+  );
+  console.log(`api-drift | RED | ${driftEvidence}`);
   const cli = resolve('node_modules/@commitlint/cli/cli.js');
   const evidence = assertRed(
     run(process.execPath, [cli], { input: 'Update stuff\n' }),
@@ -107,22 +111,6 @@ try {
     throw new Error('Conventional Commit rejected.');
   }
   console.log(`commit-message | ĐỎ ĐÚNG | ${evidence}`);
-  const policyDirectory = mkdtempSync(join(tmpdir(), 'bep-license-drill-'));
-  try {
-    const strictPolicy = JSON.parse(readFileSync('scripts/license-policy.json', 'utf8'));
-    strictPolicy.allow = strictPolicy.allow.filter((license) => license !== 'MIT');
-    const policyFile = join(policyDirectory, 'policy.json');
-    writeFileSync(policyFile, JSON.stringify(strictPolicy));
-    const proof = assertRed(
-      run(process.execPath, ['scripts/license-check.mjs'], {
-        env: { ...process.env, LICENSE_POLICY_FILE: policyFile },
-      }),
-      /VI PHẠM .+ MIT/,
-    );
-    console.log(`license-outside-allowlist | ĐỎ ĐÚNG | ${proof}`);
-  } finally {
-    rmSync(policyDirectory, { recursive: true, force: true });
-  }
   const secretPath = 'drill-secret.txt';
   withFiles(root, { [secretPath]: 'ghp_' + randomBytes(18).toString('hex') + '\n' }, () => {
     try {

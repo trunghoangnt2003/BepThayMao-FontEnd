@@ -1,8 +1,8 @@
 import { Component, inject, input } from '@angular/core';
 import { formatOpeningHours } from '@bepthaymao/ui';
-import { PageMeta } from '../../../../shared/seo/page-meta';
-import type { PublicBranchList } from '../../data-access/public-branches.service';
+import { PublicBranchList } from '../../data-access/public-branches.service';
 import { toTelHref } from '../../ui/tel-href';
+import { PageMeta } from '../../../../shared/seo/page-meta';
 
 @Component({
   selector: 'cus-branch-list-page',
@@ -11,10 +11,8 @@ import { toTelHref } from '../../ui/tel-href';
 })
 export class BranchListPage {
   readonly branches = input.required<PublicBranchList>();
-
-  protected readonly toTelHref = toTelHref;
-  protected readonly formatOpeningHours = formatOpeningHours;
-
+  readonly formatOpeningHours = formatOpeningHours;
+  readonly toTelHref = toTelHref;
   constructor() {
     inject(PageMeta).set({
       title: 'Các cơ sở',

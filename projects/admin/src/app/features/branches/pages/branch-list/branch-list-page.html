@@ -1,63 +1,68 @@
-<h1 tabindex="-1">Danh sách cơ sở</h1>
-
-@let current = state();
-@switch (current.kind) {
-  @case ('loading') {
-    <div class="loading" aria-busy="true">
-      <p role="status" class="visually-hidden">Đang tải danh sách cơ sở…</p>
+<header class="page-head">
+  <h1 tabindex="-1">Danh sách cơ sở</h1>
+  @if (state() === 'loaded' && branches().length) {
+    <a hlmBtn routerLink="/owner/branches/new">Tạo cơ sở mới</a>
+  }
+</header>
+<section [attr.aria-busy]="state() === 'loading'" aria-label="Danh sách cơ sở">
+  @switch (state()) {
+    @case ('loading') {
+      <p class="visually-hidden" role="status">Đang tải danh sách cơ sở…</p>
       @if (showSkeleton()) {
-        @for (row of skeletonRows; track row) {
-          <div class="skeleton-row" aria-hidden="true">
-            <span class="skeleton skeleton--name"></span>
-            <span class="skeleton skeleton--line"></span>
-          </div>
-        }
+        <div class="skeleton" aria-hidden="true"></div>
+        <div class="skeleton" aria-hidden="true"></div>
+        <div class="skeleton" aria-hidden="true"></div>
       }
-    </div>
-  }
-  @case ('error') {
-    <section class="notice" aria-labelledby="branches-error">
-      <h2 id="branches-error">Không tải được danh sách cơ sở</h2>
+    }
+    @case ('error') {
+      <h2>Không tải được danh sách cơ sở</h2>
       <p>
-        Kiểm tra kết nối mạng rồi thử lại. Nếu vẫn lỗi, gửi mã
-        <span class="num">{{ current.error.correlationId ?? 'không có' }}</span> cho đội phát triển.
+        Kiểm tra kết nối mạng rồi thử lại.
+        @if (correlationId(); as id) {
+          Nếu vẫn lỗi, gửi mã {{ id }} cho đội phát triển.
+        }
       </p>
-      <button hlmBtn class="retry" type="button" (click)="load()">Thử lại</button>
-    </section>
-  }
-  @case ('loaded') {
-    @if (current.branches.length === 0) {
-      <section class="notice" aria-labelledby="branches-empty">
-        <h2 id="branches-empty">Chưa có cơ sở nào</h2>
-        <p>Danh sách sẽ hiện ở đây khi có cơ sở mở nhận đơn.</p>
-      </section>
-    } @else {
-      <!-- Explicit roles keep table semantics when rows reflow into blocks below 40rem (UI-SPEC A2). -->
-      <table role="table" aria-labelledby="branches-caption">
-        <caption id="branches-caption" class="visually-hidden">
-          Danh sách cơ sở
-        </caption>
-        <thead role="rowgroup">
-          <tr role="row">
-            <th role="columnheader" scope="col">Cơ sở</th>
-            <th role="columnheader" scope="col">Giờ nhận đơn</th>
-          </tr>
-        </thead>
-        <tbody role="rowgroup">
-          @for (branch of current.branches; track branch.id) {
+      <button hlmBtn type="button" (click)="load()">Thử lại</button>
+    }
+    @case ('loaded') {
+      @if (branches().length) {
+        <table role="table">
+          <thead role="rowgroup">
             <tr role="row">
-              <th role="rowheader" scope="row">
-                <span class="name">{{ branch.name }}</span>
-                <span class="meta">{{ branch.address }}</span>
-                <span class="meta num">{{ branch.phone }}</span>
-              </th>
-              <td role="cell" class="num" data-label="Giờ nhận đơn">
-                {{ formatOpeningHours(branch.openTime, branch.closeTime) }}
-              </td>
+              <th scope="col" role="columnheader">Cơ sở</th>
+              <th scope="col" role="columnheader">Giờ nhận đơn</th>
+              <th scope="col" role="columnheader">Trạng thái</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody role="rowgroup">
+            @for (branch of branches(); track branch.id) {
+              <tr role="row">
+                <th scope="row" role="rowheader">
+                  <a class="branch-link" [routerLink]="['/owner/branches', branch.id]">{{
+                    branch.name
+                  }}</a>
+                  <p>{{ branch.address }}</p>
+                  <p>{{ branch.phone }}</p>
+                </th>
+                <td data-label="Giờ nhận đơn" role="cell">
+                  {{ formatOpeningHours(branch.openTime, branch.closeTime) }}
+                </td>
+                <td data-label="Trạng thái" role="cell">
+                  <span class="status" [class.status--on]="branch.isActive">
+                    <btm-icon [name]="branch.isActive ? 'check-circle' : 'prohibit'" />{{
+                      branch.isActive ? 'Đang nhận đơn' : 'Đã tắt'
+                    }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <h2>Chưa có cơ sở nào</h2>
+        <p>Tạo cơ sở đầu tiên để cấp tài khoản cho quản lý.</p>
+        <a hlmBtn routerLink="/owner/branches/new">Tạo cơ sở mới</a>
+      }
     }
   }
-}
+</section>

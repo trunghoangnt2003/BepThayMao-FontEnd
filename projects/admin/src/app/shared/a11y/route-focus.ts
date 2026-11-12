@@ -1,34 +1,23 @@
 import { DOCUMENT } from '@angular/common';
-import {
-  afterNextRender,
-  DestroyRef,
-  EnvironmentProviders,
-  inject,
-  Injector,
-  provideEnvironmentInitializer,
-} from '@angular/core';
+import { afterNextRender, inject, Injector, provideEnvironmentInitializer } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, skip } from 'rxjs';
 
-export function provideRouteFocus(): EnvironmentProviders {
+export function provideRouteFocus() {
   return provideEnvironmentInitializer(() => {
     const document = inject(DOCUMENT);
     const injector = inject(Injector);
-    const destroyRef = inject(DestroyRef);
     inject(Router)
       .events.pipe(
-        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        filter((event) => event instanceof NavigationEnd),
         skip(1),
-        takeUntilDestroyed(destroyRef),
+        takeUntilDestroyed(),
       )
       .subscribe(() => {
-        afterNextRender(
-          () => {
-            document.querySelector<HTMLElement>('main#main h1')?.focus({ preventScroll: false });
-          },
-          { injector },
-        );
+        afterNextRender(() => document.querySelector<HTMLElement>('main#main h1')?.focus(), {
+          injector,
+        });
       });
   });
 }

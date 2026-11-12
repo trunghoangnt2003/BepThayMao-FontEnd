@@ -11,9 +11,7 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
-app.get('/healthz', (_request, response) => {
-  response.type('text/plain').send('ok');
-});
+app.get('/healthz', (_request, response) => response.type('text/plain').send('ok'));
 
 /**
  * Example Express Rest API endpoints can be defined here.

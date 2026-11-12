@@ -1,0 +1,43 @@
+/* Hallmark · shape: app screen · theme: Garden · scope: admin branch fields */
+/* Hallmark · critique: token-only fields, one column from 320px, pairs from 40rem */
+:host {
+  display: block;
+}
+.branch-form {
+  display: grid;
+  gap: var(--space-xl);
+}
+.block {
+  display: grid;
+  gap: var(--space-lg);
+  align-content: start;
+}
+.block h2 {
+  max-width: 30ch;
+}
+fieldset {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+legend {
+  padding: 0;
+  margin-bottom: var(--space-xs);
+  color: var(--color-ink-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-strong);
+}
+.pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+}
+@media (min-width: 40rem) {
+  .pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-columns);
+  }
+}
