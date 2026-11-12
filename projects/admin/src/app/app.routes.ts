@@ -34,7 +34,16 @@ export const routes: Routes = [
   {
     path: 'manager',
     canActivate: [authGuard, roleGuard('BranchManager')],
-    children: [],
+    children: [
+      {
+        path: 'settings',
+        title: 'Thông số cơ sở',
+        loadComponent: () =>
+          import('./features/manager-settings/pages/manager-settings-page').then(
+            (m) => m.ManagerSettingsPage,
+          ),
+      },
+    ],
   },
   {
     path: 'forbidden',
