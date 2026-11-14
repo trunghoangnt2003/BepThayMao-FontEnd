@@ -1,10 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-import { CartStore, formatVnd } from './shop-data';
-import { checkoutProblems } from './checkout-rules';
+import { CartStore, formatVnd, matchesQuery, searchKey } from './shop-data';
+import { checkoutProblems, problemsForStep, stepOf } from './checkout-rules';
 
 describe('formatVnd', () => {
   it('uses vi-VN grouping and a non-breaking space before đ', () => {
     expect(formatVnd(35000)).toBe('35.000\u00a0đ');
+  });
+});
+
+describe('searchKey', () => {
+  it('ignores Vietnamese marks, đ and case so customers can type without accents', () => {
+    expect(searchKey('  Xôi   Gà Xé ')).toBe('xoi ga xe');
+    expect(searchKey('Xôi đỗ đen')).toBe('xoi do den');
+    expect(matchesQuery('Xôi gà xé', 'xoi ga')).toBe(true);
+    expect(matchesQuery('Xôi gấc', 'GAC')).toBe(true);
+    expect(matchesQuery('Xôi xéo', 'gac')).toBe(false);
+    expect(matchesQuery('Xôi xéo', '   ')).toBe(true);
   });
 });
 
@@ -78,5 +89,23 @@ describe('checkoutProblems', () => {
     expect(checkoutProblems(values, { ...open, acceptsOrders: false }, [])[0]?.message).toContain(
       'tạm chưa nhận đơn',
     );
+  });
+});
+
+describe('checkout steps', () => {
+  it('sends recipient problems to step 1 and branch problems to step 2', () => {
+    const problems = checkoutProblems(
+      { address: '', name: '', phone: '12', acknowledged: false },
+      null,
+      [],
+    );
+    expect(problems.map((problem) => stepOf(problem))).toEqual([1, 2, 1, 1]);
+    expect(problemsForStep(problems, 1).map((problem) => problem.id)).toEqual([
+      'f-address',
+      'f-name',
+      'f-phone',
+    ]);
+    expect(problemsForStep(problems, 2).map((problem) => problem.id)).toEqual(['branch-first']);
+    expect(problemsForStep(problems, 0)).toEqual([]);
   });
 });

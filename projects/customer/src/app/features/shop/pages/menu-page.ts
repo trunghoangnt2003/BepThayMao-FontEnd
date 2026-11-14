@@ -28,8 +28,8 @@ import { CartBar, DishRow } from '../ui/shop-ui';
       @for (group of groups(); track group.value) {
         <section class="card" [id]="group.value" [attr.aria-labelledby]="group.value + '-h'">
           <h2 [id]="group.value + '-h'">{{ group.label }}</h2>
-          @for (dish of group.dishes; track dish.id) {
-            <cus-dish-row [dish]="dish" />
+          @for (dish of group.dishes; track dish.id; let index = $index) {
+            <cus-dish-row class="fx-in" [style.--i]="index" [dish]="dish" />
           }
         </section>
       } @empty {

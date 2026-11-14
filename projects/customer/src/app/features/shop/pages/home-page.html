@@ -3,76 +3,62 @@
   <section class="card">
     <h1 tabindex="-1">Không tải được thực đơn</h1>
     <p>Kiểm tra kết nối mạng rồi tải lại trang.</p>
-    <a class="btn" href="/">Tải lại trang</a>
+    <a class="btn btn--primary" href="/dat-mon">Tải lại trang</a>
   </section>
 } @else {
-  <h1 class="visually-hidden" tabindex="-1">Bếp Thầy Mão, đặt xôi online</h1>
-  @if (banners().length > 0) {
-    <section class="banner" aria-roledescription="carousel" aria-label="Giới thiệu Bếp Thầy Mão">
-      <div class="track" #track tabindex="0" (scroll)="onScroll(track)">
-        @for (banner of banners(); track banner.id; let index = $index) {
-          <article
-            class="slide"
-            [attr.data-tone]="index % 3"
-            aria-roledescription="slide"
-            [attr.aria-label]="index + 1 + ' trên ' + banners().length"
-          >
-            <span class="blob" aria-hidden="true"></span>
-            <h2>{{ banner.title }}</h2>
-            @if (banner.body) {
-              <p>{{ banner.body }}</p>
-            }
-            @if (banner.linkDishId) {
-              <a class="go" [routerLink]="['/mon', banner.linkDishId]">Xem món</a>
-            } @else if (index === 0) {
-              <a class="go" routerLink="/thuc-don">Xem thực đơn</a>
-            }
-          </article>
-        }
-      </div>
-      @if (banners().length > 1) {
-        <div class="controls">
-          <span class="num">{{ slide() + 1 }}/{{ banners().length }}</span>
-          <span class="buttons">
-            <button type="button" (click)="go(-1)" aria-label="Banner trước">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-            </button>
-            <button type="button" (click)="go(1)" aria-label="Banner sau">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
-            </button>
-          </span>
-        </div>
-      }
-    </section>
-  }
-
-  <section class="card" aria-labelledby="cats-h">
-    <h2 id="cats-h" class="visually-hidden">Nhóm món</h2>
-    <nav class="cats" aria-label="Nhóm món">
-      @for (category of categories; track category.value) {
-        <a [routerLink]="['/thuc-don']" [fragment]="category.value">{{ category.label }}</a>
-      }
-    </nav>
-    <p class="hint">Chọn món trước, bạn chọn cơ sở gần nhất ở bước đặt hàng.</p>
+  <section class="lead" aria-labelledby="lead-h">
+    <span class="kicker">Thực đơn hôm nay</span>
+    <h1 id="lead-h" tabindex="-1">Chọn món, <span class="accent-word">xôi đang nóng</span></h1>
+    <p>Chọn món trước. Bạn chọn cơ sở gần nhất ở bước đặt hàng.</p>
+    <label class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="M20 20l-4-4" />
+      </svg>
+      <span class="visually-hidden">Tìm món</span>
+      <input
+        type="search"
+        placeholder="Tìm món xôi"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)"
+      />
+    </label>
   </section>
 
-  @if (featured().length > 0) {
-    <section class="card" aria-labelledby="featured-h">
+  <nav class="chips" aria-label="Lọc nhóm món">
+    @for (chip of chips; track chip.value) {
+      <button
+        type="button"
+        [attr.data-cat]="chip.value"
+        [attr.aria-pressed]="category() === chip.value"
+        (click)="category.set(chip.value)"
+      >
+        {{ chip.label }}
+      </button>
+    }
+  </nav>
+
+  @if (browsing() && banners().length > 0) {
+    <cus-banner-strip [banners]="banners()" />
+  }
+
+  @if (browsing() && featured().length > 0) {
+    <section aria-labelledby="featured-h">
       <div class="row-h">
         <h2 id="featured-h">Quán giới thiệu</h2>
-        <a routerLink="/thuc-don">Xem thực đơn</a>
+        <span>Chủ quán chọn</span>
       </div>
       <ul class="featured">
-        @for (dish of featured(); track dish.id) {
-          <li>
-            <div class="thumb">
+        @for (dish of featured(); track dish.id; let index = $index) {
+          <li btmSpotlight class="fx-in" [style.--i]="index">
+            <a class="pic" [routerLink]="['/mon', dish.id]" [attr.aria-label]="'Xem ' + dish.name">
               <cus-dish-thumb
                 [name]="dish.name"
                 [category]="dish.category"
                 [imageUrl]="dish.imageUrl"
               />
-              <span class="tag">Quán giới thiệu</span>
-            </div>
+              <span class="tag">Quán gợi ý</span>
+            </a>
             <a class="name" [routerLink]="['/mon', dish.id]">{{ dish.name }}</a>
             <div class="bottom">
               <span class="price num">{{ formatVnd(dish.price) }}</span>
@@ -84,22 +70,32 @@
     </section>
   }
 
-  <section class="card" aria-labelledby="menu-h">
-    <div class="row-h">
-      <h2 id="menu-h">Món của quán</h2>
-      <a routerLink="/thuc-don">Xem tất cả</a>
-    </div>
-    @for (dish of home()?.menu ?? []; track dish.id) {
-      <cus-dish-row [dish]="dish" />
-    } @empty {
-      <p>Thực đơn đang được cập nhật. Hãy quay lại sau.</p>
-    }
-  </section>
+  @for (group of groups(); track group.value) {
+    <section [attr.aria-labelledby]="group.value + '-h'">
+      <div class="row-h">
+        <h2 [id]="group.value + '-h'">{{ group.label }}</h2>
+        <span class="num">{{ group.dishes.length }} món</span>
+      </div>
+      <div class="list">
+        @for (dish of group.dishes; track dish.id; let index = $index) {
+          <cus-dish-row class="fx-in" [style.--i]="index" [dish]="dish" />
+        }
+      </div>
+    </section>
+  } @empty {
+    <p class="empty" role="status">
+      @if (query()) {
+        Không có món nào khớp “{{ query() }}”. Thử từ khác hoặc chọn Tất cả.
+      } @else {
+        Thực đơn đang được cập nhật. Hãy quay lại sau.
+      }
+    </p>
+  }
 
-  <section class="card" aria-labelledby="about-h">
+  <section class="card about" aria-labelledby="about-h">
     <h2 id="about-h">Về Bếp Thầy Mão</h2>
     @if (home()?.content?.about; as about) {
-      <p class="about">{{ about }}</p>
+      <p>{{ about }}</p>
     }
     <a routerLink="/co-so">Xem các cơ sở và giờ nhận đơn</a>
   </section>

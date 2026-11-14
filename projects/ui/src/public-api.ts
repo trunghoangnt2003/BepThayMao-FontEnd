@@ -8,3 +8,5 @@ export {
   HlmDialogDescription,
   HlmDialogTitle,
 } from './lib/dialog/hlm-dialog';
+export { BtmClickSpark } from './lib/effects/click-spark';
+export { BtmSpotlight } from './lib/effects/spotlight';

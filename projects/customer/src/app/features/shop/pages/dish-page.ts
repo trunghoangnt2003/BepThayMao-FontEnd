@@ -1,13 +1,14 @@
+import { DOCUMENT, Location } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MenuDishDetailDto } from '@bepthaymao/api-client';
 import { PageMeta } from '../../../shared/seo/page-meta';
 import { CartStore, CATEGORY_LABELS, formatVnd, Loaded } from '../data-access/shop-data';
-import { CartBar, DishThumb } from '../ui/shop-ui';
+import { DishThumb } from '../ui/shop-ui';
 
 @Component({
   selector: 'cus-dish-page',
-  imports: [RouterLink, DishThumb, CartBar],
+  imports: [RouterLink, DishThumb],
   template: `
     @let state = dish();
     @if (state.kind === 'error') {
@@ -18,7 +19,11 @@ import { CartBar, DishThumb } from '../ui/shop-ui';
       </section>
     } @else {
       @let value = state.value;
-      <div class="hero">
+      <div class="hero fx-in">
+        <button type="button" class="back" (click)="back()">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+          Quay lại
+        </button>
         <cus-dish-thumb
           [name]="value.name"
           [category]="value.category"
@@ -89,12 +94,12 @@ import { CartBar, DishThumb } from '../ui/shop-ui';
           {{ added() ? 'Đã thêm ' + value.name + ' vào giỏ.' : '' }}
         </p>
       </article>
-      <cus-cart-bar />
     }
   `,
   styles: `
     :host {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: 0;
     }
     .hero {
@@ -106,6 +111,33 @@ import { CartBar, DishThumb } from '../ui/shop-ui';
     .hero cus-dish-thumb {
       border-radius: var(--radius-panel);
     }
+    .back {
+      position: absolute;
+      z-index: 1;
+      top: var(--space-sm);
+      left: var(--space-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 44px;
+      padding: 0 16px 0 10px;
+      border: 0;
+      border-radius: var(--radius-pill);
+      background: oklch(22% 0.03 50 / 0.6);
+      color: var(--on-cocoa);
+      font: inherit;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-strong);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+    }
+    .back svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+    }
     .tag {
       position: absolute;
       left: var(--space-md);
@@ -116,7 +148,6 @@ import { CartBar, DishThumb } from '../ui/shop-ui';
       color: var(--color-ink);
       font-size: var(--text-sm);
       font-weight: var(--weight-strong);
-      transform: rotate(-3deg);
       box-shadow: var(--shadow-card);
     }
     .body {
@@ -178,26 +209,38 @@ import { CartBar, DishThumb } from '../ui/shop-ui';
       color: var(--color-success);
     }
     .add {
+      position: sticky;
+      bottom: calc(var(--space-sm) + env(safe-area-inset-bottom, 0px));
+      z-index: var(--z-sticky);
       display: flex;
       align-items: center;
-      gap: var(--space-sm);
+      gap: var(--space-xs);
+      padding: var(--space-xs);
+      border-radius: var(--radius-pill);
+      background: var(--color-paper-2);
+      box-shadow:
+        0 0 0 12px var(--color-paper-2),
+        var(--shadow-lift);
     }
     .add .btn {
       flex: 1;
-      min-height: 48px;
+      min-width: 0;
+      padding-inline: var(--space-md);
+      font-size: 0.9375rem;
     }
     .stepper {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-xs);
+      border-radius: var(--radius-pill);
+      background: var(--color-paper);
     }
     .stepper button {
-      width: 40px;
-      height: 40px;
-      border: 1.5px solid var(--color-accent);
+      width: 44px;
+      height: 48px;
+      border: 0;
       border-radius: var(--radius-pill);
-      background: var(--color-paper-2);
-      color: var(--color-accent);
+      background: transparent;
+      color: var(--color-ink);
       font-size: var(--text-lg);
       cursor: pointer;
     }
@@ -211,6 +254,9 @@ export class DishPage {
   readonly dish = input.required<Loaded<MenuDishDetailDto>>();
   private readonly cart = inject(CartStore);
   private readonly meta = inject(PageMeta);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private readonly document = inject(DOCUMENT);
   protected readonly formatVnd = formatVnd;
   protected readonly qty = signal(1);
   protected readonly added = signal(false);
@@ -229,6 +275,18 @@ export class DishPage {
           path: `/mon/${state.value.id}`,
         });
     });
+  }
+
+  /** Đến từ trang khác trong app thì quay lại đúng chỗ (giữ vị trí cuộn); mở thẳng link món thì về trang đặt món. */
+  protected back(): void {
+    const state: unknown = this.document.defaultView?.history.state;
+    const id: unknown =
+      state && typeof state === 'object' ? Reflect.get(state, 'navigationId') : null;
+    if (typeof id === 'number' && id > 1) {
+      this.location.back();
+      return;
+    }
+    void this.router.navigateByUrl('/dat-mon');
   }
 
   protected add(value: MenuDishDetailDto): void {

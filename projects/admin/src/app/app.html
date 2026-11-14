@@ -1,82 +1,90 @@
-<a class="skip-link" href="#main" (click)="$event.preventDefault(); mainContent.focus()"
-  >Bỏ qua tới nội dung chính</a
->
-<div class="shell" [class.shell--staff]="staffSession() !== null">
-  @if (staffSession(); as session) {
-    <aside class="side" aria-label="Thanh điều hướng quản trị">
+<a class="skip-link" href="#main" (click)="focusMain($event)">Bỏ qua tới nội dung chính</a>
+@if (staffSession(); as session) {
+  <div
+    class="app"
+    [attr.data-collapsed]="collapsed() && !mobile()"
+    [attr.data-drawer]="drawerOpen() ? 'open' : 'closed'"
+  >
+    <aside
+      #side
+      id="side"
+      class="side"
+      aria-label="Thanh điều hướng quản trị"
+      [attr.inert]="mobile() && !drawerOpen() ? '' : null"
+    >
       <span class="brand"
         ><span class="brand__mark" aria-hidden="true">BTM</span
         ><span class="brand__name">Bếp Thầy Mão</span></span
       >
-      <nav class="nav" aria-label="Điều hướng chính">
-        @let area = session.role === 'Owner' ? '/owner' : '/manager';
-        <p class="nav__group">Vận hành</p>
-        <a
-          class="nav__link"
-          [routerLink]="area + '/orders'"
-          routerLinkActive="nav__link--active"
-          ariaCurrentWhenActive="page"
-          >Đơn hàng</a
-        >
-        <a
-          class="nav__link"
-          [routerLink]="area + '/stock'"
-          routerLinkActive="nav__link--active"
-          ariaCurrentWhenActive="page"
-          >Còn món</a
-        >
-        @if (session.role === 'Owner') {
-          <p class="nav__group">Quản trị</p>
-          <a
-            class="nav__link"
-            routerLink="/owner/dishes"
-            routerLinkActive="nav__link--active"
-            ariaCurrentWhenActive="page"
-            >Thực đơn</a
-          >
-          <a
-            class="nav__link"
-            routerLink="/owner/content"
-            routerLinkActive="nav__link--active"
-            ariaCurrentWhenActive="page"
-            >Giới thiệu quán</a
-          >
-          <a
-            class="nav__link"
-            routerLink="/owner/branches"
-            routerLinkActive="nav__link--active"
-            ariaCurrentWhenActive="page"
-            >Cơ sở</a
-          >
-        } @else {
-          <a
-            class="nav__link"
-            routerLink="/manager/settings"
-            routerLinkActive="nav__link--active"
-            ariaCurrentWhenActive="page"
-            >Thông số cơ sở</a
-          >
-        }
-      </nav>
-      <div class="account">
-        <span class="account__avatar" aria-hidden="true">{{
+      <div class="profile">
+        <span class="adm-avatar profile__avatar" aria-hidden="true">{{
           session.identifier.charAt(0).toUpperCase()
         }}</span>
-        <span class="account__identity"
-          >{{ session.identifier }}
-          <span>{{ session.role === 'Owner' ? 'Chủ sở hữu' : 'Quản lý cơ sở' }}</span></span
-        >
-        <button
-          hlmBtn
-          variant="outline"
-          class="account__logout"
-          (click)="logout()"
-          [attr.aria-label]="'Đăng xuất khỏi tài khoản ' + session.identifier"
-        >
-          <btm-icon name="sign-out" /><span class="account__logout-text">Đăng xuất</span>
-        </button>
+        <b class="profile__name">{{ session.identifier }}</b>
+        <small>{{ session.role === 'Owner' ? 'Chủ sở hữu' : 'Quản lý cơ sở' }}</small>
       </div>
+      <nav class="nav" aria-label="Điều hướng chính">
+        @for (group of nav(); track group.title) {
+          <p class="nav__group">{{ group.title }}</p>
+          @for (item of group.items; track item.path) {
+            <a
+              class="nav__link"
+              [routerLink]="item.path"
+              routerLinkActive="nav__link--active"
+              ariaCurrentWhenActive="page"
+              [attr.title]="collapsed() && !mobile() ? item.label : null"
+              ><adm-line-icon [name]="item.icon" /><span class="nav__label">{{
+                item.label
+              }}</span></a
+            >
+          }
+        }
+      </nav>
     </aside>
-  }
-  <main #mainContent id="main" class="main" tabindex="-1"><router-outlet /></main>
-</div>
+    @if (drawerOpen()) {
+      <button
+        class="adm-scrim"
+        type="button"
+        tabindex="-1"
+        aria-label="Đóng menu"
+        (click)="closeDrawer()"
+      ></button>
+    }
+    <div class="column" [attr.inert]="drawerOpen() ? '' : null">
+      <header class="top">
+        <button
+          #menuButton
+          class="adm-iconbtn"
+          type="button"
+          aria-controls="side"
+          [attr.aria-expanded]="menuExpanded()"
+          [attr.aria-label]="menuLabel()"
+          (click)="toggleMenu()"
+        >
+          <adm-line-icon name="burger" />
+        </button>
+        <span class="top__brand" aria-hidden="true">Bếp Thầy Mão</span>
+        <div class="top__right">
+          <span class="top__who"
+            ><span class="adm-avatar top__avatar" aria-hidden="true">{{
+              session.identifier.charAt(0).toUpperCase()
+            }}</span
+            ><span class="top__name">{{ session.identifier }}</span></span
+          >
+          <button
+            class="adm-iconbtn"
+            type="button"
+            (click)="logout()"
+            [attr.aria-label]="'Đăng xuất khỏi tài khoản ' + session.identifier"
+            title="Đăng xuất"
+          >
+            <adm-line-icon name="logout" />
+          </button>
+        </div>
+      </header>
+      <main id="main" class="main" tabindex="-1"><router-outlet /></main>
+    </div>
+  </div>
+} @else {
+  <main id="main" class="main main--bare" tabindex="-1"><router-outlet /></main>
+}

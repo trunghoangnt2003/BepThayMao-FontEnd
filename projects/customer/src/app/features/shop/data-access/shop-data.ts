@@ -15,7 +15,7 @@ export type Loaded<T> =
   | { readonly kind: 'loaded'; readonly value: T }
   | { readonly kind: 'error'; readonly error: ApiError };
 
-function load<T>(source: Observable<T>): Observable<Loaded<T>> {
+export function load<T>(source: Observable<T>): Observable<Loaded<T>> {
   return source.pipe(
     map((value): Loaded<T> => ({ kind: 'loaded', value })),
     catchError((error: unknown) => of<Loaded<T>>({ kind: 'error', error: toApiError(error) })),
@@ -50,6 +50,23 @@ export const CATEGORY_LABELS: Record<DishCategory, string> = {
 export const CATEGORY_ORDER: readonly DishCategory[] = ['XoiMan', 'XoiNgot', 'Chay'];
 
 /** 35.000 đ: Intl vi-VN và dấu cách không ngắt trước "đ" (UI-SPEC P2 Typography). */
+/** Khóa tìm kiếm: bỏ dấu tiếng Việt, đ thành d, chữ thường, gộp khoảng trắng. */
+export function searchKey(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'd')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function matchesQuery(name: string, query: string): boolean {
+  const key = searchKey(query);
+  return key === '' || searchKey(name).includes(key);
+}
+
 export function formatVnd(value: number): string {
   return `${new Intl.NumberFormat('vi-VN').format(value)}\u00a0đ`;
 }

@@ -62,3 +62,20 @@ describe('API errors', () => {
     expect(isApiError(value)).toBe(false);
   });
 });
+
+describe('API errors for order conflicts', () => {
+  it('keeps the unavailable dish ids of an order conflict and drops non-string ids', () => {
+    const result = toApiError(
+      new HttpErrorResponse({
+        status: 409,
+        error: { title: 'Món đang hết', unavailableDishIds: ['d1', 7, 'd2'] },
+      }),
+    );
+    expect(result).toEqual({
+      kind: 'http',
+      status: 409,
+      title: 'Món đang hết',
+      unavailableDishIds: ['d1', 'd2'],
+    });
+  });
+});

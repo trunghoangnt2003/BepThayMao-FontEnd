@@ -24,7 +24,9 @@ import type {
 } from 'rxjs';
 
 import type {
-  ShopContentDto
+  PolicyDto,
+  ShopContentDto,
+  ShopLegalDto
 } from '../../models';
 
 import type {
@@ -114,6 +116,76 @@ export class ShopService {
       }
     );
   }
+/**
+ * Trường chủ quán chưa nhập là null; chỉ liệt kê chính sách đã có nội dung.
+ * @summary Thông tin người bán và danh sách chính sách cho chân trang
+ */
+ getShopLegal<TData = ShopLegalDto>( options?: HttpClientBodyOptions): Observable<TData>;
+ getShopLegal<TData = ShopLegalDto>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getShopLegal<TData = ShopLegalDto>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getShopLegal<TData = ShopLegalDto>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/shop/legal`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/shop/legal`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/shop/legal`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * kind: Terms, Privacy, Delivery, Payment, Refund, Complaint (không phân biệt hoa thường); 404 nếu chưa có nội dung.
+ * @summary Nội dung một chính sách
+ */
+ getShopPolicy<TData = PolicyDto>(kind: string, options?: HttpClientBodyOptions): Observable<TData>;
+ getShopPolicy<TData = PolicyDto>(kind: string, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getShopPolicy<TData = PolicyDto>(kind: string, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getShopPolicy<TData = PolicyDto>(
+    kind: string, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/shop/policies/${kind}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/shop/policies/${kind}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/shop/policies/${kind}`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
 };
 
 export type GetShopContentClientResult = NonNullable<ShopContentDto>
+export type GetShopLegalClientResult = NonNullable<ShopLegalDto>
+export type GetShopPolicyClientResult = NonNullable<PolicyDto>

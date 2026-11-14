@@ -38,7 +38,11 @@
               "node_modules/@fontsource/be-vietnam-pro/latin-800.css",
               "node_modules/@fontsource/be-vietnam-pro/latin-ext-800.css",
               "node_modules/@fontsource/be-vietnam-pro/vietnamese-800.css",
-              "projects/ui/src/styles/index.css"
+              "node_modules/@fontsource/cormorant-garamond/vietnamese-600-italic.css",
+              "node_modules/@fontsource/cormorant-garamond/latin-600-italic.css",
+              "node_modules/@fontsource/cormorant-garamond/latin-ext-600-italic.css",
+              "projects/ui/src/styles/index.css",
+              "projects/customer/src/styles.css"
             ],
             "server": "projects/customer/src/main.server.ts",
             "outputMode": "server",
@@ -135,7 +139,8 @@
               "node_modules/@fontsource/be-vietnam-pro/latin-800.css",
               "node_modules/@fontsource/be-vietnam-pro/latin-ext-800.css",
               "node_modules/@fontsource/be-vietnam-pro/vietnamese-800.css",
-              "projects/ui/src/styles/index.css"
+              "projects/ui/src/styles/index.css",
+              "projects/admin/src/styles.css"
             ],
             "baseHref": "/admin/"
           },

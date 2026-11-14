@@ -35,7 +35,7 @@ describe('admin auth guards', () => {
   it('redirects staff away from login but keeps Customer on login', () => {
     session('Owner');
     expect(TestBed.runInInjectionContext(() => loginGuard(route, state))).toEqual(
-      TestBed.inject(Router).createUrlTree(['/owner/branches']),
+      TestBed.inject(Router).createUrlTree(['/owner/overview']),
     );
     session('Customer');
     expect(TestBed.runInInjectionContext(() => loginGuard(route, state))).toBe(true);

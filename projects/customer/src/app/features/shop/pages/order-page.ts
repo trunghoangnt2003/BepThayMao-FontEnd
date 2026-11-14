@@ -16,6 +16,7 @@ import { toApiError } from '@bepthaymao/core';
 import { PageMeta } from '../../../shared/seo/page-meta';
 import { OrderApi } from '../data-access/order-api';
 import { CartStore, formatVnd } from '../data-access/shop-data';
+import { KitchenLoader } from '../../../shared/loader/kitchen-loader';
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   PendingPayment: 'Chờ thanh toán',
@@ -36,7 +37,7 @@ const STEPS: readonly OrderStatus[] = [
 
 @Component({
   selector: 'cus-order-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, KitchenLoader],
   templateUrl: './order-page.html',
   styleUrl: './order-page.css',
 })

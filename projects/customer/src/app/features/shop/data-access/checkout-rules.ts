@@ -41,3 +41,27 @@ export function checkoutProblems(
     problems.push({ id: 'f-phone', message: 'Nhập số điện thoại hợp lệ, ví dụ 0901 234 567.' });
   return problems;
 }
+
+/** Bước đặt hàng: 0 giỏ hàng, 1 người nhận, 2 cơ sở, 3 xem lại và gửi. */
+export type CheckoutStep = 0 | 1 | 2 | 3;
+
+const STEP_OF_FIELD: Record<string, CheckoutStep> = {
+  'f-name': 1,
+  'f-phone': 1,
+  'f-address': 1,
+  'branch-first': 2,
+  'drop-missing': 2,
+  'f-ack': 2,
+};
+
+export function stepOf(problem: CheckoutProblem): CheckoutStep {
+  return STEP_OF_FIELD[problem.id] ?? 3;
+}
+
+/** Lỗi cần sửa trước khi rời bước hiện tại. */
+export function problemsForStep(
+  problems: readonly CheckoutProblem[],
+  step: CheckoutStep,
+): CheckoutProblem[] {
+  return problems.filter((problem) => stepOf(problem) === step);
+}

@@ -23,8 +23,16 @@
   gap: var(--space-sm);
   padding: var(--space-lg) var(--space-md);
   border-radius: var(--radius-panel);
-  background: var(--color-head);
-  color: var(--color-ink);
+  background: var(--cocoa);
+  color: var(--on-cocoa);
+}
+.status .small,
+.status .note {
+  color: var(--on-cocoa-2);
+}
+.status .timer .small,
+.status .timer .note {
+  color: var(--color-ink-2);
 }
 .big {
   font-size: var(--text-display);
@@ -48,16 +56,17 @@
 }
 .steps li {
   padding-top: var(--space-xs);
-  border-top: 5px solid var(--color-paper-2);
-  color: var(--color-ink-2);
+  border-top: 5px solid oklch(97% 0.015 80 / 0.18);
+  color: var(--on-cocoa-2);
   overflow-wrap: anywhere;
 }
 .steps li.on {
-  border-color: var(--color-ink);
-  color: var(--color-ink);
+  border-color: var(--gold);
+  color: var(--on-cocoa);
   font-weight: var(--weight-strong);
 }
 .timer {
+  color: var(--color-ink);
   display: flex;
   align-items: baseline;
   gap: var(--space-sm);

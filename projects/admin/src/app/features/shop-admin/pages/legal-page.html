@@ -1,0 +1,144 @@
+<div class="head">
+  <div>
+    <h1 tabindex="-1">Pháp lý và chính sách</h1>
+    <p>
+      Thông tin người bán và chính sách hiện ở chân trang của khách, theo quy định về thương mại
+      điện tử. Mục nào để trống thì không hiện.
+    </p>
+  </div>
+</div>
+
+<p class="status" role="status">{{ message() }}</p>
+
+@switch (state()) {
+  @case ('loading') {
+    <p class="status">Đang tải…</p>
+  }
+  @case ('error') {
+    <div class="panel error" role="alert">
+      <p>Không tải được dữ liệu. Kiểm tra mạng rồi thử lại.</p>
+      <button hlmBtn variant="outline" type="button" (click)="load()">Thử lại</button>
+    </div>
+  }
+  @default {
+    <section class="detail" aria-labelledby="seller-h">
+      <h2 id="seller-h">Thông tin người bán</h2>
+      <form class="form" [formGroup]="legalForm" (ngSubmit)="saveLegal()" novalidate>
+        <div class="field">
+          <label class="field__label" for="l-name">Tên doanh nghiệp hoặc hộ kinh doanh</label>
+          <input id="l-name" class="field__input" formControlName="businessName" maxlength="200" />
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label class="field__label" for="l-reg">Số giấy chứng nhận ĐKKD hoặc mã số thuế</label>
+            <input
+              id="l-reg"
+              class="field__input"
+              formControlName="registrationNumber"
+              maxlength="50"
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" for="l-date">Ngày cấp</label>
+            <input
+              id="l-date"
+              class="field__input"
+              type="date"
+              formControlName="registrationIssuedOn"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="l-by">Nơi cấp</label>
+          <input
+            id="l-by"
+            class="field__input"
+            formControlName="registrationIssuedBy"
+            maxlength="200"
+          />
+        </div>
+        <div class="field">
+          <label class="field__label" for="l-address">Địa chỉ trụ sở</label>
+          <input id="l-address" class="field__input" formControlName="address" maxlength="300" />
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label class="field__label" for="l-phone">Điện thoại</label>
+            <input
+              id="l-phone"
+              class="field__input"
+              type="tel"
+              formControlName="phone"
+              maxlength="20"
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" for="l-email">Email</label>
+            <input
+              id="l-email"
+              class="field__input"
+              type="email"
+              formControlName="email"
+              maxlength="120"
+            />
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="l-moit">Đường dẫn "Đã thông báo Bộ Công Thương"</label>
+          <input
+            id="l-moit"
+            class="field__input"
+            type="url"
+            formControlName="moitNoticeUrl"
+            placeholder="https://online.gov.vn/..."
+            aria-describedby="l-moit-help"
+          />
+          <span class="field__help" id="l-moit-help"
+            >Dán đường dẫn trang thông tin của quán trên online.gov.vn sau khi thông báo
+            website.</span
+          >
+        </div>
+        <div class="actions">
+          <button hlmBtn type="submit">Lưu thông tin người bán</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="detail" aria-labelledby="policy-h">
+      <h2 id="policy-h">Chính sách</h2>
+      <div class="toolbar" role="group" aria-label="Chọn chính sách">
+        @for (policy of policies(); track policy.kind) {
+          <button
+            hlmBtn
+            type="button"
+            [variant]="policy.kind === selected() ? 'default' : 'outline'"
+            [attr.aria-pressed]="policy.kind === selected()"
+            (click)="pick(policy.kind)"
+          >
+            {{ policy.title }}{{ policy.body ? '' : ' (chưa viết)' }}
+          </button>
+        }
+      </div>
+      <form class="form" [formGroup]="policyForm" (ngSubmit)="savePolicy()" novalidate>
+        <div class="field">
+          <label class="field__label" for="p-body">{{ current()?.title }}</label>
+          <textarea
+            id="p-body"
+            class="field__input"
+            rows="12"
+            maxlength="20000"
+            formControlName="body"
+            aria-describedby="p-body-help"
+          ></textarea>
+          <span class="field__help" id="p-body-help"
+            >Viết thường, xuống dòng giữ nguyên. Để trống rồi lưu thì chính sách ẩn khỏi chân
+            trang.</span
+          >
+        </div>
+        <div class="actions">
+          <button hlmBtn type="submit">Lưu chính sách</button>
+        </div>
+      </form>
+    </section>
+  }
+}

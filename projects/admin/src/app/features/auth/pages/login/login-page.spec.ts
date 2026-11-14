@@ -24,8 +24,8 @@ describe('LoginPage', () => {
     });
   });
   it.each([
-    ['Owner', '/owner/branches'],
-    ['BranchManager', '/manager/settings'],
+    ['Owner', '/owner/overview'],
+    ['BranchManager', '/manager/overview'],
   ] as const)('sends credentials and opens the %s role home', async (role, home) => {
     service.login.mockReturnValueOnce(of({ ...pair, role } as typeof pair));
     const router = TestBed.inject(Router);

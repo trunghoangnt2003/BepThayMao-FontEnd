@@ -1,0 +1,222 @@
+/* Hallmark · scope: hiệu ứng chuyển động dùng chung (khách và admin), lấy cảm hứng React Bits, làm bằng CSS thuần (ADR-0011: không thêm React)
+ * critique: mọi hiệu ứng có trạng thái nghỉ đọc được; tắt hết khi người dùng chọn giảm chuyển động */
+
+/* Nền loang: ba đốm màu mờ trôi chậm. Màu qua --fx-a, --fx-b, --fx-c. */
+.fx-aurora {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  filter: blur(60px);
+}
+.fx-aurora > span {
+  position: absolute;
+  width: 46%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  opacity: 0.55;
+  animation: fx-drift 18s var(--ease-out) infinite alternate;
+}
+.fx-aurora > span:nth-child(1) {
+  top: 4%;
+  left: 52%;
+  background: var(--fx-a);
+}
+.fx-aurora > span:nth-child(2) {
+  top: 50%;
+  left: 0;
+  background: var(--fx-b);
+  animation-duration: 22s;
+}
+.fx-aurora > span:nth-child(3) {
+  top: 62%;
+  left: 60%;
+  background: var(--fx-c);
+  animation-duration: 26s;
+}
+
+/* Lưới chấm chạy chậm, mờ dần ra mép. Màu chấm qua --fx-dot. */
+.fx-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(var(--fx-dot) 1.2px, transparent 1.4px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(70% 60% at 30% 40%, black, transparent);
+  animation: fx-pan 30s linear infinite;
+}
+
+/* Chữ hiện từng từ: mỗi từ là một span có --i (thứ tự). */
+.fx-word {
+  display: inline-block;
+  animation: fx-rise 700ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 120ms);
+}
+
+/* Phần tử trồi lên theo thứ tự khi trang mở (danh sách thẻ). */
+.fx-in {
+  animation: fx-rise-soft 520ms var(--ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 8) * 50ms);
+}
+
+/* Ánh sáng lướt qua nút khi rê chuột. */
+.fx-shine {
+  position: relative;
+  overflow: hidden;
+}
+.fx-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, oklch(100% 0 0 / 0.35) 50%, transparent 65%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+.fx-shine:hover::after {
+  transform: translateX(120%);
+  transition: transform 700ms var(--ease-out);
+}
+
+/* Trôi nhẹ lên xuống. */
+.fx-float {
+  animation: fx-bob 5s ease-in-out infinite;
+}
+
+/* Dải chạy ngang vô tận: track chứa nội dung lặp hai lần. */
+.fx-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+.fx-marquee > .fx-track {
+  display: flex;
+  width: max-content;
+  animation: fx-scroll var(--fx-speed, 30s) linear infinite;
+}
+.fx-marquee:hover > .fx-track,
+.fx-marquee:focus-within > .fx-track {
+  animation-play-state: paused;
+}
+
+/* Thẻ có vệt sáng theo con trỏ; vị trí do directive btmSpotlight đặt vào --mx, --my. */
+.fx-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.fx-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    240px circle at var(--mx, 50%) var(--my, -40%),
+    color-mix(in oklab, var(--color-main) 28%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity var(--dur-short) var(--ease-out);
+  pointer-events: none;
+}
+.fx-spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Tia bắn khi bấm (directive btmClickSpark); phần tử chủ cần position: relative. */
+.fx-spark {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.fx-spark > i {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 10px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--fx-spark, var(--color-ink));
+  transform-origin: 0 50%;
+  animation: fx-ray 460ms var(--ease-out) forwards;
+}
+
+/* Nảy nhẹ (huy hiệu giỏ hàng khi thêm món). */
+.fx-pop {
+  animation: fx-pop 420ms var(--ease-out);
+}
+
+@keyframes fx-drift {
+  to {
+    transform: translate(-12%, 10%) scale(1.15);
+  }
+}
+@keyframes fx-pan {
+  to {
+    background-position: 220px 110px;
+  }
+}
+@keyframes fx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+    filter: blur(6px);
+  }
+}
+@keyframes fx-rise-soft {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes fx-bob {
+  50% {
+    transform: translateY(-10px) rotate(-1.5deg);
+  }
+}
+@keyframes fx-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes fx-pop {
+  40% {
+    transform: scale(1.35);
+  }
+}
+@keyframes fx-ray {
+  from {
+    opacity: 1;
+    transform: translateX(14px) scaleX(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(26px) scaleX(1);
+  }
+}
+@keyframes fx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-aurora > span,
+  .fx-dots,
+  .fx-word,
+  .fx-in,
+  .fx-float,
+  .fx-marquee > .fx-track,
+  .fx-pop {
+    animation: none;
+  }
+  .fx-shine:hover::after,
+  .fx-spotlight::before {
+    transition: none;
+  }
+  .fx-marquee > .fx-track {
+    flex-wrap: wrap;
+    width: auto;
+  }
+  .fx-marquee > .fx-track > [inert] {
+    display: none;
+  }
+}

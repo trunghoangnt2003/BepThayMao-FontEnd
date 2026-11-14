@@ -5,4 +5,6 @@
 @import './tokens.css';
 @import './base.css';
 @import './dialog.css';
+@import './effects.css';
+@import './auth.css';
 @import 'tailwindcss' source('../../../../');

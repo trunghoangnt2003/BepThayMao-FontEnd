@@ -34,8 +34,14 @@ import type {
   DishAvailabilityRequest,
   DishDto,
   DishInputRequest,
+  GetOwnerOverviewParams,
+  LegalInputRequest,
   ListOwnerOrdersParams,
   OrderDto,
+  OverviewDto,
+  OwnerLegalDto,
+  PolicyDto,
+  PolicyInputRequest,
   ResetManagerPasswordRequest,
   ShopContentDto
 } from '../../models';
@@ -195,6 +201,42 @@ export class OwnerService {
 
     return this.http.get<TData>(
       `/api/v1/owner/orders`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+        params: filteredParams,}
+    );
+  }
+/**
+ * Số đơn, tiền món đã thanh toán, chờ thanh toán, đơn theo giờ, 7 ngày, món đặt nhiều, món đang hết, cơ sở, hoạt động hôm nay (giờ Việt Nam). branchId của Owner khác trả 403.
+ * @summary Tổng quan hôm nay của mọi cơ sở mình sở hữu, hoặc một cơ sở
+ */
+ getOwnerOverview<TData = OverviewDto>(params?: GetOwnerOverviewParams, options?: HttpClientBodyOptions): Observable<TData>;
+ getOwnerOverview<TData = OverviewDto>(params?: GetOwnerOverviewParams, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getOwnerOverview<TData = OverviewDto>(params?: GetOwnerOverviewParams, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getOwnerOverview<TData = OverviewDto>(
+    params?: GetOwnerOverviewParams, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    const filteredParams = filterParams({...params, ...options?.params}, new Set<string>([]));
+
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/owner/overview`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+        params: filteredParams,}
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/owner/overview`,{
+    ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+        params: filteredParams,}
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/owner/overview`,{
     ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'body',
         params: filteredParams,}
@@ -795,9 +837,122 @@ export class OwnerService {
       }
     );
   }
+/**
+ * Chính sách chưa viết có body rỗng.
+ * @summary Thông tin người bán và đủ sáu chính sách để chủ quán sửa
+ */
+ getOwnerLegal<TData = OwnerLegalDto>( options?: HttpClientBodyOptions): Observable<TData>;
+ getOwnerLegal<TData = OwnerLegalDto>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getOwnerLegal<TData = OwnerLegalDto>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getOwnerLegal<TData = OwnerLegalDto>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/owner/shop-content/legal`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/owner/shop-content/legal`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/owner/shop-content/legal`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Trường rỗng là xóa; moitNoticeUrl chỉ nhận https://online.gov.vn/...
+ * @summary Sửa thông tin người bán ở chân trang
+ */
+ updateOwnerLegal<TData = OwnerLegalDto>(legalInputRequest: LegalInputRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ updateOwnerLegal<TData = OwnerLegalDto>(legalInputRequest: LegalInputRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ updateOwnerLegal<TData = OwnerLegalDto>(legalInputRequest: LegalInputRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  updateOwnerLegal<TData = OwnerLegalDto>(
+    legalInputRequest: LegalInputRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/v1/owner/shop-content/legal`,
+      legalInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/v1/owner/shop-content/legal`,
+      legalInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/v1/owner/shop-content/legal`,
+      legalInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
+ * Chuỗi rỗng ẩn chính sách khỏi chân trang; kind không hợp lệ trả 404.
+ * @summary Sửa nội dung một chính sách
+ */
+ updateOwnerPolicy<TData = PolicyDto>(kind: string,
+    policyInputRequest: PolicyInputRequest, options?: HttpClientBodyOptions): Observable<TData>;
+ updateOwnerPolicy<TData = PolicyDto>(kind: string,
+    policyInputRequest: PolicyInputRequest, options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ updateOwnerPolicy<TData = PolicyDto>(kind: string,
+    policyInputRequest: PolicyInputRequest, options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  updateOwnerPolicy<TData = PolicyDto>(
+    kind: string,
+    policyInputRequest: PolicyInputRequest, options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.put<TData>(
+      `/api/v1/owner/shop-content/policies/${kind}`,
+      policyInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.put<TData>(
+      `/api/v1/owner/shop-content/policies/${kind}`,
+      policyInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.put<TData>(
+      `/api/v1/owner/shop-content/policies/${kind}`,
+      policyInputRequest,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
 };
 
 export type ListOwnerOrdersClientResult = NonNullable<OrderDto[]>
+export type GetOwnerOverviewClientResult = NonNullable<OverviewDto>
 export type ListOwnerBranchesClientResult = NonNullable<BranchResponse[]>
 export type CreateOwnerBranchClientResult = NonNullable<BranchResponse>
 export type GetOwnerBranchClientResult = NonNullable<BranchResponse>
@@ -814,3 +969,6 @@ export type CreateOwnerBannerClientResult = NonNullable<BannerDto>
 export type UpdateOwnerBannerClientResult = NonNullable<BannerDto>
 export type DeleteOwnerBannerClientResult = NonNullable<void>
 export type UpdateOwnerAboutClientResult = NonNullable<ShopContentDto>
+export type GetOwnerLegalClientResult = NonNullable<OwnerLegalDto>
+export type UpdateOwnerLegalClientResult = NonNullable<OwnerLegalDto>
+export type UpdateOwnerPolicyClientResult = NonNullable<PolicyDto>

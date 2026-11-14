@@ -7,6 +7,8 @@ export interface ApiError {
   readonly detail?: string;
   readonly errors?: Readonly<Record<string, readonly string[]>>;
   readonly correlationId?: string;
+  /** 409 khi đặt đơn: món đang hết ở cơ sở đã chọn (OrderConflictProblem). */
+  readonly unavailableDishIds?: readonly string[];
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -35,6 +37,32 @@ function validationErrors(value: unknown): ApiError['errors'] {
   return value as Readonly<Record<string, readonly string[]>>;
 }
 
+function unavailableIds(value: unknown): readonly string[] | undefined {
+  return Array.isArray(value)
+    ? value.filter((id): id is string => typeof id === 'string')
+    : undefined;
+}
+
+/** Trường tùy chọn của ProblemDetails, chỉ giữ khi đúng kiểu. */
+function problemFields(
+  body: Record<string, unknown>,
+  fallbackId: string | null,
+): Partial<ApiError> {
+  const title = body['title'];
+  const detail = body['detail'];
+  const errors = validationErrors(body['errors']);
+  const correlationId =
+    typeof body['correlationId'] === 'string' ? body['correlationId'] : fallbackId;
+  const unavailableDishIds = unavailableIds(body['unavailableDishIds']);
+  return {
+    ...(typeof title === 'string' ? { title } : {}),
+    ...(typeof detail === 'string' ? { detail } : {}),
+    ...(errors ? { errors } : {}),
+    ...(correlationId ? { correlationId } : {}),
+    ...(unavailableDishIds ? { unavailableDishIds } : {}),
+  };
+}
+
 export function toApiError(error: unknown): ApiError {
   if (isApiError(error)) return error;
   if (!(error instanceof HttpErrorResponse) || error.status === 0) {
@@ -42,19 +70,9 @@ export function toApiError(error: unknown): ApiError {
   }
   const payload: unknown = error.error;
   const body = isRecord(payload) ? payload : {};
-  const result: ApiError = { kind: 'http', status: error.status };
-  const title = body['title'];
-  const detail = body['detail'];
-  const errors = validationErrors(body['errors']);
-  const correlationId =
-    typeof body['correlationId'] === 'string'
-      ? body['correlationId']
-      : error.headers.get('X-Correlation-Id');
   return {
-    ...result,
-    ...(typeof title === 'string' ? { title } : {}),
-    ...(typeof detail === 'string' ? { detail } : {}),
-    ...(errors ? { errors } : {}),
-    ...(correlationId ? { correlationId } : {}),
+    kind: 'http',
+    status: error.status,
+    ...problemFields(body, error.headers.get('X-Correlation-Id')),
   };
 }

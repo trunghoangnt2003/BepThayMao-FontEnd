@@ -1,12 +1,13 @@
 <a class="skip-link" href="#main">Bỏ qua tới nội dung chính</a>
 <header>
   <div class="container topbar">
-    <a class="wordmark" routerLink="/">Bếp Thầy Mão</a>
+    <a class="wordmark" routerLink="/"
+      ><span class="mark" aria-hidden="true">M</span
+      ><span class="name">Bếp Thầy Mão<small>Xôi nóng giao tận nơi</small></span></a
+    >
     <nav aria-label="Điều hướng chính">
-      <a routerLink="/thuc-don" routerLinkActive="active" ariaCurrentWhenActive="page">Thực đơn</a>
-      <a routerLink="/tra-don" routerLinkActive="active" ariaCurrentWhenActive="page"
-        >Tra cứu đơn</a
-      >
+      <a routerLink="/dat-mon" routerLinkActive="active" ariaCurrentWhenActive="page">Đặt món</a>
+      <a routerLink="/tra-don" routerLinkActive="active" ariaCurrentWhenActive="page">Tra đơn</a>
       <a
         class="cart"
         routerLink="/dat-hang"
@@ -17,7 +18,10 @@
           <path d="M9 8V6a3 3 0 0 1 6 0v2" />
         </svg>
         @if (cart.count() > 0) {
-          <span class="badge num" aria-hidden="true">{{ cart.count() }}</span>
+          <!-- Mỗi lần số món đổi thì dựng lại huy hiệu để hiệu ứng nảy chạy lại. -->
+          @for (count of [cart.count()]; track count) {
+            <span class="badge num fx-pop" aria-hidden="true">{{ count }}</span>
+          }
         }
       </a>
     </nav>
@@ -25,3 +29,5 @@
 </header>
 
 <main id="main" class="container" tabindex="-1"><router-outlet /></main>
+<cus-site-footer />
+<cus-route-loader />

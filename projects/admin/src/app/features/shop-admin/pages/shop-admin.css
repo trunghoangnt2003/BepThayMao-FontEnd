@@ -2,7 +2,7 @@
 /* Hallmark · critique: tables before cards, status as words in pills, one filled action per screen */
 :host {
   display: grid;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 .head {
   display: flex;
@@ -26,9 +26,9 @@
 }
 .panel {
   overflow: hidden;
-  border: var(--rule-hair) solid var(--color-rule);
   border-radius: var(--radius-card);
   background: var(--color-paper-2);
+  box-shadow: var(--shadow-card);
 }
 .scroll {
   overflow-x: auto;
@@ -151,7 +151,6 @@ tr:last-child td {
   display: grid;
   gap: var(--space-md);
   padding: var(--space-lg);
-  border: var(--rule-hair) solid var(--color-rule);
   border-radius: var(--radius-card);
   background: var(--color-paper-2);
   box-shadow: var(--shadow-card);

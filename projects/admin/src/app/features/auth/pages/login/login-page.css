@@ -1,49 +1,54 @@
-/* Hallmark · shape: app screen · theme: Chanh muối · scope: admin login · states: form and session */
-/* Hallmark · critique: reuse Chanh muối tokens, one action and semantic labels */
-.login {
-  max-width: 24rem;
-  margin-inline: auto;
-  padding-block: var(--space-lg);
+/* Hallmark · shape: auth screen · theme: admin xanh dương · signature: lưới chấm chạy chậm trên mảng xanh, chữ hiện từng từ · scope: đăng nhập quản trị (bố cục ở ui/styles/auth.css) */
+/* Hallmark · critique: một hành động chính, lỗi gắn từng ô, chuyển động tắt khi giảm chuyển động */
+:host {
+  display: block;
+  --auth-bg: var(--color-main-deep);
+  --auth-fg: var(--color-paper-2);
+  --auth-fg-2: oklch(90% 0.04 268);
+  --auth-mark-bg: var(--color-paper-2);
+  --auth-mark-fg: var(--color-main-deep);
+  --auth-accent: var(--color-main);
+  --auth-accent-ink: var(--color-paper-2);
+  --fx-a: oklch(62% 0.2 285);
+  --fx-b: oklch(58% 0.17 240);
+  --fx-c: var(--color-main);
+  --fx-dot: oklch(99% 0.005 268 / 0.22);
 }
-.login > p {
-  margin-top: var(--space-sm);
-  color: var(--color-muted);
-}
-form {
+.features {
   display: grid;
-  gap: var(--space-lg);
-  margin-top: var(--space-xl);
+  gap: var(--space-sm);
+  max-width: 26rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.field {
+.features li {
   display: grid;
-  gap: var(--space-xs);
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--space-sm);
+  padding: 14px;
+  border: 1px solid oklch(99% 0.005 268 / 0.14);
+  border-radius: 16px;
+  background: oklch(99% 0.005 268 / 0.08);
 }
-button {
-  width: 100%;
-}
-.password-control {
+.ic {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-xs);
-}
-.password-control button {
-  width: auto;
-  padding-inline: var(--space-sm);
-}
-.banner {
-  padding: var(--space-sm);
-  border-inline-start: 2px solid var(--color-muted);
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: var(--color-paper-2);
+  color: var(--color-main-deep);
 }
-.banner--error {
-  border-color: var(--color-error);
+.features b {
+  display: block;
 }
-.field-error {
-  color: var(--color-error);
+.features span {
+  color: var(--auth-fg-2);
   font-size: var(--text-sm);
 }
-@media (prefers-reduced-motion: reduce) {
-  button {
-    transition: none;
+@media (max-width: 56rem) {
+  .features {
+    display: none;
   }
 }

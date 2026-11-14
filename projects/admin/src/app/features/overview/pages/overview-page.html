@@ -1,0 +1,172 @@
+<div class="page-h">
+  <div>
+    <h1 tabindex="-1">Tổng quan</h1>
+    <p class="crumb">
+      Hôm nay, {{ admin.isOwner() ? scope() || 'tất cả cơ sở' : 'cơ sở của bạn' }}, giờ Việt Nam
+    </p>
+  </div>
+  <div class="tools">
+    @if (admin.isOwner()) {
+      <label class="sr-only" for="ov-branch">Cơ sở</label>
+      <select
+        id="ov-branch"
+        class="select"
+        [value]="branchId()"
+        (change)="selectBranch($any($event.target).value)"
+      >
+        <option value="">Tất cả cơ sở</option>
+        @for (branch of branches(); track branch.id) {
+          <option [value]="branch.id">{{ branch.name }}</option>
+        }
+      </select>
+    }
+    <button hlmBtn variant="outline" type="button" (click)="load()">Tải lại</button>
+  </div>
+</div>
+
+@switch (state()) {
+  @case ('loading') {
+    @if (!data()) {
+      <p class="status" role="status">Đang tải tổng quan…</p>
+    }
+  }
+  @case ('error') {
+    <div class="card error" role="alert">
+      <p>Không tải được tổng quan. Kiểm tra mạng rồi thử lại.</p>
+      <button hlmBtn variant="outline" type="button" (click)="load()">Thử lại</button>
+    </div>
+  }
+}
+
+@if (data(); as data) {
+  <div class="grid" [attr.aria-busy]="state() === 'loading'">
+    <section class="card kpi c3" aria-labelledby="k-orders">
+      <div class="kpi__row">
+        <div>
+          <p class="kpi__val num">{{ data.ordersToday }}</p>
+          <h2 id="k-orders" class="kpi__lbl">Đơn hôm nay</h2>
+        </div>
+        <span class="badge"><adm-line-icon name="orders" /></span>
+      </div>
+      @if (orderRange(); as range) {
+        <p class="kpi__note">7 ngày qua: {{ range.min }} đến {{ range.max }} đơn mỗi ngày</p>
+      }
+      <adm-sparkline class="spark" [values]="orderTrend()" />
+    </section>
+    <section class="card kpi c3" aria-labelledby="k-paid">
+      <div class="kpi__row">
+        <div>
+          <p class="kpi__val num">{{ formatVnd(data.paidAmountToday) }}</p>
+          <h2 id="k-paid" class="kpi__lbl">Tiền món đã thanh toán</h2>
+        </div>
+        <span class="badge"><adm-line-icon name="cash" /></span>
+      </div>
+      <p class="kpi__note">Chỉ tiền món; phí ship khách trả riêng</p>
+      <adm-sparkline class="spark" [values]="paidTrend()" />
+    </section>
+    <section class="card kpi c3" aria-labelledby="k-pending">
+      <div class="kpi__row">
+        <div>
+          <p class="kpi__val num">{{ data.pendingPayment }}</p>
+          <h2 id="k-pending" class="kpi__lbl">Đơn chờ thanh toán</h2>
+        </div>
+        <span class="badge"><adm-line-icon name="clock" /></span>
+      </div>
+      <p class="kpi__note">Đơn hôm nay khách chưa chuyển khoản</p>
+      <a class="link" [routerLink]="base + '/orders'">Xem đơn hàng</a>
+    </section>
+    <section class="card kpi c3" aria-labelledby="k-soldout">
+      <div class="kpi__row">
+        <div>
+          <p class="kpi__val num">{{ data.soldOut.length }}</p>
+          <h2 id="k-soldout" class="kpi__lbl">Món đang hết</h2>
+        </div>
+        <span class="badge"><adm-line-icon name="prohibit" /></span>
+      </div>
+      <p class="kpi__note">{{ soldOutNote(data) }}</p>
+      <a class="link" [routerLink]="base + '/stock'">Mở Còn món</a>
+    </section>
+
+    <section class="card c8" aria-labelledby="h-hours">
+      <div class="card-h">
+        <div>
+          <h2 id="h-hours">Đơn theo giờ</h2>
+          <small>Hôm nay, theo giờ đặt</small>
+        </div>
+        <button class="link" type="button" (click)="hoursAsTable.set(!hoursAsTable())">
+          {{ hoursAsTable() ? 'Xem biểu đồ' : 'Xem dạng bảng' }}
+        </button>
+      </div>
+      <adm-trend-chart
+        [points]="hours()"
+        kind="area"
+        unit="count"
+        label="Đơn theo giờ hôm nay"
+        [asTable]="hoursAsTable()"
+        [format]="formatOrders"
+      />
+    </section>
+
+    <section class="card c4" aria-labelledby="h-activity">
+      <div class="card-h">
+        <h2 id="h-activity">Hoạt động hôm nay</h2>
+        <small>Mới nhất trước</small>
+      </div>
+      <adm-activity-timeline [items]="data.activity" />
+    </section>
+
+    <section class="card c4" aria-labelledby="h-ring">
+      <div class="card-h">
+        <h2 id="h-ring">Đơn đã thanh toán</h2>
+        <small>Hôm nay</small>
+      </div>
+      <adm-paid-ring [paid]="data.paidOrdersToday" [total]="data.ordersToday" />
+    </section>
+
+    <section class="card c4" aria-labelledby="h-top">
+      <div class="card-h">
+        <h2 id="h-top">Món đặt nhiều</h2>
+        <small>Hôm nay, số phần</small>
+      </div>
+      <adm-top-dishes [dishes]="data.topDishes" />
+    </section>
+
+    <section class="card c4" aria-labelledby="h-branches">
+      <div class="card-h">
+        <h2 id="h-branches">Cơ sở</h2>
+        @if (admin.isOwner()) {
+          <a class="link" routerLink="/owner/branches">Quản lý cơ sở</a>
+        }
+      </div>
+      <adm-branch-list [branches]="data.branches" />
+    </section>
+
+    <section class="card c7" aria-labelledby="h-week">
+      <div class="card-h">
+        <div>
+          <h2 id="h-week">Tiền món 7 ngày</h2>
+          <small>Đơn đã thanh toán, cột đậm là hôm nay</small>
+        </div>
+        <button class="link" type="button" (click)="weekAsTable.set(!weekAsTable())">
+          {{ weekAsTable() ? 'Xem biểu đồ' : 'Xem dạng bảng' }}
+        </button>
+      </div>
+      <adm-trend-chart
+        [points]="week()"
+        kind="bar"
+        unit="money"
+        label="Tiền món đã thanh toán 7 ngày"
+        [asTable]="weekAsTable()"
+        [format]="formatVnd"
+      />
+    </section>
+
+    <section class="card c5" aria-labelledby="h-latest">
+      <div class="card-h">
+        <h2 id="h-latest">Đơn mới nhất</h2>
+        <a class="link" [routerLink]="base + '/orders'">Xem tất cả</a>
+      </div>
+      <adm-latest-orders [orders]="latest()" />
+    </section>
+  </div>
+}

@@ -1,1 +1,107 @@
-/* You can add global styles to this file, and also import other style files */
+/* Hallmark · shape: food ordering (khách) · genre: Gen Z hiện đại, ấm, sang · theme: Bếp Việt ấm (by request 2026-11-14, thay Chanh muối ở phía khách)
+ * signature: tiêu đề sans đậm trộn chữ có chân nghiêng vàng, nút viên thuốc nảy nhẹ, khối nâu cacao bo tròn · critique: một màu nhấn, nền kem cho phần đọc, không nghiêng */
+:root {
+  --color-paper: oklch(96.5% 0.022 80);
+  --color-paper-2: oklch(99.4% 0.008 85);
+  --color-paper-3: oklch(93% 0.03 78);
+  --color-ink: oklch(22% 0.03 50);
+  --color-ink-2: oklch(42% 0.03 50);
+  --color-muted: oklch(50% 0.025 55);
+  --color-rule: oklch(22% 0.03 50 / 0.1);
+  --color-rule-2: oklch(22% 0.03 50 / 0.18);
+  --color-accent: oklch(50% 0.1 65);
+  --color-accent-ink: oklch(97% 0.015 80);
+  --color-focus: oklch(50% 0.1 65);
+  --color-head: oklch(24% 0.035 50);
+  --color-main: oklch(80% 0.12 78);
+  --color-tint: oklch(93% 0.03 78);
+  --color-warn: oklch(46% 0.1 65);
+  --color-warn-bg: oklch(95% 0.06 88);
+  --cocoa: oklch(24% 0.035 50);
+  --cocoa-2: oklch(31% 0.045 50);
+  --on-cocoa: oklch(97% 0.015 80);
+  --on-cocoa-2: oklch(82% 0.03 75);
+  --gold: oklch(80% 0.12 78);
+  --dau: oklch(86% 0.14 92);
+  --la: oklch(64% 0.13 145);
+  --gac: oklch(57% 0.19 32);
+  --xoi-man: var(--dau);
+  --xoi-ngot: var(--gac);
+  --xoi-chay: var(--la);
+  --font-accent: 'Cormorant Garamond', 'Times New Roman', serif;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --radius-card: 22px;
+  --radius-panel: 28px;
+  --radius-control: 16px;
+  --shadow-color: oklch(35% 0.05 50 / 0.1);
+  --shadow-card: 0 10px 30px var(--shadow-color);
+  --shadow-lift: 0 18px 44px oklch(30% 0.05 50 / 0.18);
+}
+.accent-word {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--gold);
+}
+.btn {
+  min-height: 48px;
+  border-radius: var(--radius-pill);
+  transition:
+    transform 300ms var(--spring),
+    background-color var(--dur-short) var(--ease-out),
+    color var(--dur-short) var(--ease-out);
+}
+.btn--primary {
+  border-color: var(--cocoa);
+  background: var(--cocoa);
+  color: var(--gold);
+}
+.btn--gold {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--cocoa);
+}
+@media (hover: hover) {
+  .btn:hover:not(:disabled):not([aria-disabled='true']) {
+    transform: translateY(-2px);
+  }
+  .btn--primary:hover:not(:disabled):not([aria-disabled='true']) {
+    border-color: var(--cocoa-2);
+    background: var(--cocoa-2);
+  }
+  .btn--gold:hover:not(:disabled):not([aria-disabled='true']) {
+    border-color: var(--gold);
+    background: oklch(84% 0.12 80);
+  }
+}
+.field__input,
+.search input {
+  font-size: max(16px, 1rem);
+}
+.field__input {
+  min-height: 52px;
+  border: 1.5px solid transparent;
+  background: var(--color-paper);
+  padding-inline: var(--space-md);
+}
+.field__input:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  background: var(--color-paper-2);
+}
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  font-weight: var(--weight-strong);
+}
+.kicker::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}

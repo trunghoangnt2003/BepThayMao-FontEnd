@@ -1,18 +1,17 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DishCategory, MenuDishDto } from '@bepthaymao/api-client';
+import { BtmClickSpark } from '@bepthaymao/ui';
 import { CartStore, formatVnd } from '../data-access/shop-data';
 
-/** Ảnh món; chưa có ảnh thật thì là ô màu xôi theo nhóm món (không dùng ảnh kho, Floor 8). */
+/** Ảnh món chủ quán tải lên; chưa có ảnh thì là khung ánh bếp theo nhóm món (không dùng ảnh kho, Floor 8). */
 @Component({
   selector: 'cus-dish-thumb',
   template: `
     @if (imageUrl(); as src) {
       <img [src]="src" [alt]="'Ảnh món ' + name()" loading="lazy" width="96" height="96" />
     } @else {
-      <span class="swatch" [attr.data-category]="category()">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11h18a9 9 0 0 1-18 0z" /></svg>
-      </span>
+      <span class="swatch" [attr.data-category]="category()" aria-hidden="true"></span>
     }
   `,
   styles: `
@@ -29,25 +28,26 @@ import { CartStore, formatVnd } from '../data-access/shop-data';
       object-fit: cover;
     }
     .swatch {
-      display: grid;
-      place-items: center;
-      background: var(--xoi-man);
-      color: var(--color-ink);
+      --h: 75;
+      display: block;
+      background:
+        radial-gradient(
+          ellipse 60% 50% at 58% 42%,
+          oklch(80% 0.13 var(--h) / 0.95),
+          transparent 70%
+        ),
+        radial-gradient(
+          ellipse 45% 40% at 28% 75%,
+          oklch(62% 0.14 calc(var(--h) - 25) / 0.75),
+          transparent 70%
+        ),
+        linear-gradient(160deg, oklch(42% 0.05 55), oklch(22% 0.03 50));
     }
     .swatch[data-category='XoiNgot'] {
-      background: var(--xoi-ngot);
-      color: var(--on-xoi-dark);
+      --h: 32;
     }
     .swatch[data-category='Chay'] {
-      background: var(--xoi-chay);
-    }
-    svg {
-      width: 40%;
-      height: 40%;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.4;
-      opacity: 0.45;
+      --h: 140;
     }
   `,
 })
@@ -60,13 +60,14 @@ export class DishThumb {
 /** Nút + tròn; có món trong giỏ thì thành bộ − số +. Không đổi chiều rộng khi số có 2 chữ số. */
 @Component({
   selector: 'cus-qty-stepper',
+  imports: [BtmClickSpark],
   template: `
     @let quantity = cart.quantityOf(dish().id);
     <span class="stepper" role="group" [attr.aria-label]="'Số lượng ' + dish().name">
       @if (quantity > 0) {
         <button
           type="button"
-          class="round round--quiet"
+          class="round"
           (click)="change(-1)"
           [attr.aria-label]="'Bớt ' + dish().name"
         >
@@ -77,6 +78,7 @@ export class DishThumb {
       <button
         type="button"
         class="round"
+        btmClickSpark
         (click)="change(1)"
         [disabled]="quantity >= 99"
         [attr.aria-label]="'Thêm ' + dish().name"
@@ -89,42 +91,40 @@ export class DishThumb {
     .stepper {
       display: inline-flex;
       align-items: center;
-      gap: var(--space-xs);
+      border-radius: var(--radius-pill);
+      background: var(--cocoa);
+      color: var(--gold);
+      box-shadow: 0 6px 16px oklch(25% 0.04 50 / 0.3);
     }
     .round {
+      --fx-spark: var(--color-accent);
       position: relative;
       display: grid;
       place-items: center;
-      width: 36px;
-      height: 36px;
+      width: 42px;
+      height: 42px;
       border: 0;
       border-radius: var(--radius-pill);
-      background: var(--color-accent);
-      color: var(--color-accent-ink);
+      background: transparent;
+      color: inherit;
       cursor: pointer;
-      transition: transform var(--dur-micro) var(--ease-out);
+      transition: transform 300ms var(--spring);
     }
-    .round::before {
-      content: '';
-      position: absolute;
-      inset: -4px;
+    .round:hover:not(:disabled) {
+      transform: scale(1.1);
     }
     .round:active:not(:disabled) {
-      transform: scale(0.94);
+      transform: scale(0.9);
     }
     .round:disabled {
       opacity: 0.45;
       cursor: not-allowed;
     }
-    .round--quiet {
-      background: var(--color-paper-2);
-      color: var(--color-accent);
-      box-shadow: inset 0 0 0 1.5px var(--color-accent);
-    }
     .count {
       min-width: 2ch;
+      color: var(--on-cocoa);
       text-align: center;
-      font-weight: var(--weight-strong);
+      font-weight: var(--weight-heavy);
     }
     svg {
       width: 18px;
@@ -145,53 +145,58 @@ export class QtyStepper {
   }
 }
 
-/** Dòng món: ảnh trái, tên là liên kết chi tiết, mô tả 2 dòng, giá và nút thêm. */
+/** Thẻ món: chữ trái (tên là liên kết chi tiết, mô tả 2 dòng, giá), ảnh phải có nút thêm ở góc. */
 @Component({
   selector: 'cus-dish-row',
   imports: [RouterLink, DishThumb, QtyStepper],
   template: `
-    <cus-dish-thumb
-      [name]="dish().name"
-      [category]="dish().category"
-      [imageUrl]="dish().imageUrl"
-    />
     <div class="text">
       <a class="name" [routerLink]="['/mon', dish().id]">{{ dish().name }}</a>
       @if (dish().description) {
         <p class="desc">{{ dish().description }}</p>
       }
-      <div class="bottom">
+      @if (soldOutEverywhere()) {
+        <span class="soldout">Hết ở mọi cơ sở</span>
+      } @else {
         <span class="price num">{{ price() }}</span>
-        @if (soldOutEverywhere()) {
-          <span class="soldout">Hết món</span>
-        } @else {
-          <cus-qty-stepper [dish]="dish()" />
-        }
-      </div>
+      }
+    </div>
+    <div class="pic">
+      <cus-dish-thumb
+        [name]="dish().name"
+        [category]="dish().category"
+        [imageUrl]="dish().imageUrl"
+      />
+      @if (!soldOutEverywhere()) {
+        <cus-qty-stepper class="ctl" [dish]="dish()" />
+      }
     </div>
   `,
   styles: `
     :host {
       display: grid;
-      grid-template-columns: 88px minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) 100px;
       gap: var(--space-sm);
-      padding-block: var(--space-sm);
+      padding: 12px 12px 12px 16px;
+      border-radius: var(--radius-card);
+      background: var(--color-paper-2);
+      box-shadow: 0 2px 10px oklch(35% 0.05 50 / 0.05);
+      transition: transform 300ms var(--spring);
     }
-    :host + :host {
-      border-top: var(--rule-hair) solid var(--color-rule);
+    :host(:hover) {
+      transform: translateY(-2px);
     }
     .text {
       display: grid;
-      gap: 2px;
+      gap: 4px;
       align-content: start;
       min-width: 0;
     }
     .name {
       color: var(--color-ink);
-      font-weight: var(--weight-strong);
+      font-weight: var(--weight-heavy);
       text-decoration: none;
       overflow-wrap: anywhere;
-      min-height: 24px;
     }
     .name:hover {
       text-decoration: underline;
@@ -204,21 +209,32 @@ export class QtyStepper {
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    .bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-xs);
-      margin-top: var(--space-xs);
-    }
     .price {
+      margin-top: 4px;
       color: var(--color-accent);
       font-weight: var(--weight-heavy);
     }
     .soldout {
-      font-size: var(--text-sm);
+      justify-self: start;
+      margin-top: 4px;
+      padding: 2px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--color-paper-3);
       color: var(--color-muted);
+      font-size: var(--text-sm);
       font-weight: var(--weight-strong);
+    }
+    .pic {
+      position: relative;
+      align-self: start;
+    }
+    .pic cus-dish-thumb {
+      border-radius: 16px;
+    }
+    .ctl {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
     }
   `,
 })
@@ -242,7 +258,7 @@ export class DishRow {
           <span>{{ cart.count() }} món</span>
           <strong class="num">{{ total() }}</strong>
         </div>
-        <a class="btn btn--primary" routerLink="/dat-hang">Tiếp tục đặt hàng</a>
+        <a class="btn btn--gold fx-shine" routerLink="/dat-hang">Đặt hàng</a>
       </div>
     }
   `,
@@ -252,35 +268,47 @@ export class DishRow {
       bottom: 0;
       z-index: var(--z-sticky);
       display: block;
+      margin-inline: calc(-1 * var(--gutter));
+      padding: var(--space-lg) var(--gutter)
+        calc(var(--space-sm) + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(transparent, var(--color-paper) 45%);
+      pointer-events: none;
+    }
+    :host:empty {
+      display: none;
+    }
+    .bar {
+      pointer-events: auto;
     }
     .bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: var(--space-md);
-      margin-top: var(--space-md);
-      padding: var(--space-sm) var(--space-sm)
-        calc(var(--space-sm) + env(safe-area-inset-bottom, 0px)) var(--space-lg);
+      padding: 8px 8px 8px 20px;
       border-radius: var(--radius-pill);
-      background: var(--color-ink);
-      color: var(--color-accent-ink);
-      box-shadow: var(--shadow-card);
+      background: var(--cocoa);
+      color: var(--on-cocoa);
+      box-shadow: var(--shadow-lift);
+      animation: rise 450ms var(--spring);
     }
     .sum {
       display: grid;
       line-height: 1.25;
     }
     .sum span {
+      color: var(--on-cocoa-2);
       font-size: var(--text-sm);
     }
     .sum strong {
       font-size: var(--text-lg);
+      font-weight: var(--weight-heavy);
     }
-    .btn--primary {
-      min-height: 48px;
-      background: var(--color-main);
-      border-color: var(--color-main);
-      color: var(--color-ink);
+    @keyframes rise {
+      from {
+        transform: translateY(24px);
+        opacity: 0;
+      }
     }
   `,
 })

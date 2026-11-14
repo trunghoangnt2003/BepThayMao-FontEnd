@@ -1,12 +1,18 @@
 import { Routes } from '@angular/router';
+import { policyResolver } from './features/legal/data-access/legal.service';
 import { publicBranchesResolver } from './features/branches/data-access/public-branches.resolver';
 import { dishResolver, homeResolver, menuResolver } from './features/shop/data-access/shop-data';
 
-// Chọn món trước, chọn cơ sở ở /dat-hang (D-13). Mọi route SSR, có <title> riêng qua PageMeta.
+// / là trang giới thiệu; đặt món ở /dat-mon, chọn cơ sở ở /dat-hang (D-13). Mọi route SSR, có <title> riêng qua PageMeta.
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
+    resolve: { data: homeResolver, branches: publicBranchesResolver },
+    loadComponent: () => import('./features/landing/pages/landing-page').then((m) => m.LandingPage),
+  },
+  {
+    path: 'dat-mon',
     resolve: { data: homeResolver },
     loadComponent: () => import('./features/shop/pages/home-page').then((m) => m.HomePage),
   },
@@ -39,6 +45,11 @@ export const routes: Routes = [
       import('./features/branches/pages/branch-list/branch-list-page').then(
         (m) => m.BranchListPage,
       ),
+  },
+  {
+    path: 'chinh-sach/:slug',
+    resolve: { policy: policyResolver },
+    loadComponent: () => import('./features/legal/pages/policy-page').then((m) => m.PolicyPage),
   },
   {
     path: '**',

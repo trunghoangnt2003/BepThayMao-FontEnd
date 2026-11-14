@@ -1,67 +1,112 @@
-<section class="login" aria-labelledby="login-title">
-  <h1 id="login-title" tabindex="-1">Đăng nhập quản trị</h1>
-  <p>Dành cho chủ sở hữu và quản lý cơ sở.</p>
-  @if (expired()) {
-    <p class="banner" role="status">Phiên đăng nhập đã hết hạn. Đăng nhập lại để tiếp tục.</p>
-  }
-  @if (customerDenied()) {
-    <p class="banner" role="alert">Tài khoản này không có quyền vào trang quản trị.</p>
-    <button hlmBtn type="button" (click)="logout()">Đăng xuất</button>
-  }
-  @if (errorMessage(); as message) {
-    <p class="banner banner--error" role="alert">{{ message }}</p>
-  }
-  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <div class="field">
-      <label hlmLabel for="identifier">Tên đăng nhập</label>
-      <input
-        hlmInput
-        #identifierInput
-        id="identifier"
-        formControlName="identifier"
-        autocomplete="username"
-        [attr.aria-invalid]="fieldInvalid('identifier')"
-        [attr.aria-describedby]="fieldInvalid('identifier') ? 'identifier-error' : null"
-      />
-      @if (fieldInvalid('identifier')) {
-        <p class="field-error" id="identifier-error">Nhập tên đăng nhập.</p>
-      }
+<div class="auth-screen">
+  <section class="auth-brand" aria-label="Bếp Thầy Mão quản trị">
+    <div class="fx-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="fx-dots" aria-hidden="true"></div>
+    <span class="auth-wordmark"><i aria-hidden="true">BTM</i>Bếp Thầy Mão · Quản trị</span>
+    <div class="auth-hero">
+      <p class="auth-title">
+        <span class="auth-sr-only">Cả bếp trong một màn hình</span>
+        @for (word of heroWords; track $index) {
+          <span class="fx-word" aria-hidden="true" [style.--i]="$index">{{ word }}</span>
+          {{ ' ' }}
+        }
+      </p>
+      <p>Theo dõi đơn hôm nay, bật tắt món đang hết và quản lý cơ sở của bạn.</p>
     </div>
-    <div class="field">
-      <label hlmLabel for="password">Mật khẩu</label>
-      <div class="password-control">
-        <input
-          hlmInput
-          #passwordInput
-          id="password"
-          [type]="visiblePassword() ? 'text' : 'password'"
-          formControlName="password"
-          autocomplete="current-password"
-          [attr.aria-invalid]="fieldInvalid('password')"
-          [attr.aria-describedby]="fieldInvalid('password') ? 'password-error' : null"
-        /><button
-          hlmBtn
-          variant="outline"
-          type="button"
-          [attr.aria-label]="visiblePassword() ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
-          [attr.aria-pressed]="visiblePassword()"
-          (click)="visiblePassword.set(!visiblePassword())"
-        >
-          <btm-icon [name]="visiblePassword() ? 'eye-slash' : 'eye'" />{{
-            visiblePassword() ? 'Ẩn' : 'Hiện'
-          }}
+    <ul class="features auth-desktop">
+      <li>
+        <span class="ic"><adm-line-icon name="home" /></span>
+        <div>
+          <b>Tổng quan hôm nay</b><span>Đơn theo giờ, tiền món đã thanh toán, món đặt nhiều</span>
+        </div>
+      </li>
+      <li>
+        <span class="ic"><adm-line-icon name="toggle" /></span>
+        <div><b>Còn món</b><span>Quản lý tắt món hết ở cơ sở mình, khách thấy ngay</span></div>
+      </li>
+      <li>
+        <span class="ic"><adm-line-icon name="store" /></span>
+        <div><b>Chủ quán toàn quyền</b><span>Thực đơn chung, giới thiệu quán, mọi cơ sở</span></div>
+      </li>
+    </ul>
+    <p class="auth-foot auth-desktop">Dành cho chủ sở hữu và quản lý cơ sở.</p>
+  </section>
+
+  <section class="auth-form" aria-labelledby="login-title">
+    <div class="auth-panel">
+      <h1 id="login-title" tabindex="-1">Đăng nhập quản trị</h1>
+      <p class="auth-lead">Dùng tên đăng nhập chủ quán cấp cho bạn.</p>
+      @if (expired()) {
+        <p class="auth-note auth-note--info" role="status">
+          Phiên đăng nhập đã hết hạn. Đăng nhập lại để tiếp tục.
+        </p>
+      }
+      @if (customerDenied()) {
+        <p class="auth-note auth-note--error" role="alert">
+          Tài khoản này không có quyền vào trang quản trị.
+        </p>
+        <button hlmBtn variant="outline" type="button" (click)="logout()">Đăng xuất</button>
+      }
+      @if (errorMessage(); as message) {
+        <p class="auth-note auth-note--error" role="alert">{{ message }}</p>
+      }
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="auth-field">
+          <label hlmLabel for="identifier">Tên đăng nhập</label>
+          <div class="auth-ctl" [class.auth-ctl--invalid]="fieldInvalid('identifier')">
+            <adm-line-icon class="auth-ctl__icon" name="user" />
+            <input
+              hlmInput
+              #identifierInput
+              id="identifier"
+              formControlName="identifier"
+              autocomplete="username"
+              [attr.aria-invalid]="fieldInvalid('identifier')"
+              [attr.aria-describedby]="fieldInvalid('identifier') ? 'identifier-error' : null"
+            />
+          </div>
+          @if (fieldInvalid('identifier')) {
+            <p class="auth-error" id="identifier-error">Nhập tên đăng nhập.</p>
+          }
+        </div>
+        <div class="auth-field">
+          <label hlmLabel for="password">Mật khẩu</label>
+          <div class="auth-ctl" [class.auth-ctl--invalid]="fieldInvalid('password')">
+            <adm-line-icon class="auth-ctl__icon" name="lock" />
+            <input
+              hlmInput
+              #passwordInput
+              id="password"
+              [type]="visiblePassword() ? 'text' : 'password'"
+              formControlName="password"
+              autocomplete="current-password"
+              [attr.aria-invalid]="fieldInvalid('password')"
+              [attr.aria-describedby]="fieldInvalid('password') ? 'password-error' : null"
+            /><button
+              class="auth-peek"
+              type="button"
+              [attr.aria-label]="visiblePassword() ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+              [attr.aria-pressed]="visiblePassword()"
+              (click)="visiblePassword.set(!visiblePassword())"
+            >
+              <btm-icon [name]="visiblePassword() ? 'eye-slash' : 'eye'" />{{
+                visiblePassword() ? 'Ẩn' : 'Hiện'
+              }}
+            </button>
+          </div>
+          @if (fieldInvalid('password')) {
+            <p class="auth-error" id="password-error">Nhập mật khẩu.</p>
+          }
+        </div>
+        <button hlmBtn class="auth-submit fx-shine" type="submit" [disabled]="submitting()">
+          @if (showProgress()) {
+            <span class="auth-spinner" aria-hidden="true"></span>Đang đăng nhập…
+          } @else {
+            Đăng nhập
+          }
         </button>
-      </div>
-      @if (fieldInvalid('password')) {
-        <p class="field-error" id="password-error">Nhập mật khẩu.</p>
-      }
+        <p class="auth-small">Quên mật khẩu? Quản lý cơ sở nhờ chủ quán đặt lại trong mục Cơ sở.</p>
+      </form>
     </div>
-    <button hlmBtn type="submit" [disabled]="submitting()">
-      @if (showProgress()) {
-        Đang đăng nhập…
-      } @else {
-        Đăng nhập
-      }
-    </button>
-  </form>
-</section>
+  </section>
+</div>

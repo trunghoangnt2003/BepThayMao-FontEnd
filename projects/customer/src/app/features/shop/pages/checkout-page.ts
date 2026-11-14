@@ -14,10 +14,25 @@ import { Router, RouterLink } from '@angular/router';
 import { BranchOptionDto } from '@bepthaymao/api-client';
 import { toApiError } from '@bepthaymao/core';
 import { PageMeta } from '../../../shared/seo/page-meta';
-import { checkoutProblems, CheckoutProblem } from '../data-access/checkout-rules';
+import {
+  checkoutProblems,
+  CheckoutProblem,
+  CheckoutStep,
+  problemsForStep,
+  stepOf,
+} from '../data-access/checkout-rules';
 import { OrderApi, unavailableDishIds } from '../data-access/order-api';
 import { CartStore, formatVnd } from '../data-access/shop-data';
 import { DishThumb, QtyStepper } from '../ui/shop-ui';
+import { StepProgress } from '../ui/step-progress';
+import { KitchenLoader } from '../../../shared/loader/kitchen-loader';
+
+const STEPS: readonly { title: string; hint: string; label: string }[] = [
+  { title: 'Giỏ hàng', hint: 'Xem lại món và số lượng.', label: 'Giỏ hàng' },
+  { title: 'Người nhận', hint: 'Quán giao tới ai, ở đâu?', label: 'Người nhận' },
+  { title: 'Chọn cơ sở', hint: 'Cơ sở gần bạn được gợi ý trước.', label: 'Cơ sở' },
+  { title: 'Xem lại và thanh toán', hint: 'Kiểm tra lần cuối rồi lấy mã QR.', label: 'Thanh toán' },
+];
 
 function serverMessage(error: unknown): string {
   const apiError = toApiError(error);
@@ -32,7 +47,7 @@ function serverMessage(error: unknown): string {
 
 @Component({
   selector: 'cus-checkout-page',
-  imports: [ReactiveFormsModule, RouterLink, DishThumb, QtyStepper],
+  imports: [ReactiveFormsModule, RouterLink, DishThumb, QtyStepper, StepProgress, KitchenLoader],
   templateUrl: './checkout-page.html',
   styleUrl: './checkout-page.css',
 })
@@ -51,6 +66,11 @@ export class CheckoutPage {
   protected readonly unavailable = signal<readonly string[]>([]);
   protected readonly errors = signal<readonly CheckoutProblem[]>([]);
   private readonly summary = viewChild<ElementRef<HTMLElement>>('summary');
+  private readonly heading = viewChild<ElementRef<HTMLElement>>('heading');
+  protected readonly steps = STEPS;
+  protected readonly stepLabels = STEPS.map((item) => item.label);
+  protected readonly step = signal<CheckoutStep>(0);
+  protected readonly reached = signal<CheckoutStep>(0);
 
   protected readonly form = inject(NonNullableFormBuilder).group({
     address: [''],
@@ -131,18 +151,56 @@ export class CheckoutPage {
     this.unavailable.set([]);
   }
 
-  protected submit(): void {
+  private allProblems(): CheckoutProblem[] {
     const value = this.form.getRawValue();
     const phone = value.phone.replace(/[\s.-]/g, '');
-    const option = this.selected();
-    const problems = checkoutProblems({ ...value, phone }, option, this.missingNames());
-    this.errors.set(problems);
+    return checkoutProblems({ ...value, phone }, this.selected(), this.missingNames());
+  }
+
+  /** Nút Tiếp tục (và Enter): kiểm bước hiện tại; bước cuối thì gửi đơn. */
+  protected submit(): void {
     this.serverError.set(null);
+    const step = this.step();
+    if (step < 3) {
+      const problems = problemsForStep(this.allProblems(), step);
+      this.errors.set(problems);
+      if (problems.length > 0) {
+        this.focusSummary();
+        return;
+      }
+      this.goTo((step + 1) as CheckoutStep, true);
+      return;
+    }
+    const problems = this.allProblems();
+    const option = this.selected();
     if (problems.length > 0 || !option) {
+      const first = problems.at(0);
+      if (first) this.goTo(stepOf(first), true);
+      this.errors.set(problemsForStep(problems, this.step()));
       this.focusSummary();
       return;
     }
-    this.send(option.branchId, phone);
+    this.send(option.branchId, this.form.getRawValue().phone.replace(/[\s.-]/g, ''));
+  }
+
+  protected back(): void {
+    const step = this.step();
+    if (step === 0) {
+      void this.router.navigate(['/thuc-don']);
+      return;
+    }
+    this.goTo((step - 1) as CheckoutStep);
+  }
+
+  /** Chỉ quay lại bước đã tới; force dùng khi máy chủ hoặc kiểm cuối báo lỗi ở bước trước. */
+  protected goTo(step: CheckoutStep, force = false): void {
+    if (!force && step > this.reached()) return;
+    this.errors.set([]);
+    this.step.set(step);
+    if (step > this.reached()) this.reached.set(step);
+    queueMicrotask(() => {
+      this.heading()?.nativeElement.focus();
+    });
   }
 
   private send(branchId: string, phone: string): void {
@@ -170,6 +228,7 @@ export class CheckoutPage {
           this.submitting.set(false);
           this.unavailable.set(unavailableDishIds(error));
           this.serverError.set(serverMessage(error));
+          if (this.unavailable().length > 0) this.goTo(2, true);
           this.focusSummary();
         },
       });

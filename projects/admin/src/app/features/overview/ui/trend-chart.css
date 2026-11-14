@@ -1,0 +1,99 @@
+/* Hallmark · scope: biểu đồ một chuỗi trong Tổng quan · critique: lưới nhạt, đường 2px, cột bo đầu 4px, tooltip chữ mực */
+:host {
+  display: block;
+  min-width: 0;
+}
+.chart {
+  position: relative;
+}
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.grid-line {
+  stroke: var(--color-rule);
+  stroke-width: 1;
+}
+.axis {
+  fill: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 11px;
+}
+.area {
+  fill: var(--color-main);
+  opacity: 0.12;
+}
+.line {
+  fill: none;
+  stroke: var(--color-main);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.bar {
+  fill: var(--color-main);
+}
+.bar.dim {
+  opacity: 0.4;
+}
+.hit {
+  fill: transparent;
+  cursor: crosshair;
+}
+.cross {
+  stroke: var(--color-muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.marker {
+  fill: var(--color-main);
+  stroke: var(--color-paper-2);
+  stroke-width: 2;
+}
+.tip {
+  position: absolute;
+  z-index: var(--z-tooltip);
+  transform: translate(-50%, calc(-100% - 10px));
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 8px;
+  background: var(--color-ink);
+  color: var(--color-paper-2);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-card);
+}
+.tablewrap {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+th,
+td {
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  text-align: left;
+}
+th {
+  color: var(--color-muted);
+  font-weight: var(--weight-strong);
+}
+.right {
+  text-align: right;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

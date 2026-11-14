@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { inject } from '@angular/core';
-import { withComponentInputBinding } from '@angular/router';
+import { withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { API_BASE_URL } from '@bepthaymao/core';
 import { provideCore } from '@bepthaymao/core';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
@@ -13,7 +13,11 @@ export const appConfig: ApplicationConfig = {
     provideCore(),
     { provide: API_BASE_URL, useFactory: () => inject(DOCUMENT).location.origin },
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes, withComponentInputBinding()),
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),
+    ),
     provideClientHydration(),
   ],
 };

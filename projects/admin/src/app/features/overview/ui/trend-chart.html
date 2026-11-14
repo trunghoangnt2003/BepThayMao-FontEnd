@@ -1,0 +1,77 @@
+@if (asTable()) {
+  <div class="tablewrap">
+    <table>
+      <caption class="sr-only">
+        {{
+          label()
+        }}
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Mốc</th>
+          <th scope="col" class="right">{{ unit() === 'money' ? 'Tiền món' : 'Số đơn' }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (point of points(); track point.label) {
+          <tr>
+            <td>{{ point.label }}</td>
+            <td class="right num">{{ format()(point.value) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <div class="chart">
+    <svg
+      [attr.viewBox]="'0 0 ' + W + ' ' + H"
+      role="img"
+      [attr.aria-label]="label() + '. Chọn Xem dạng bảng để đọc từng số.'"
+    >
+      @for (tick of ticks(); track $index) {
+        <line class="grid-line" x1="44" [attr.x2]="W - 12" [attr.y1]="tick.y" [attr.y2]="tick.y" />
+        <text class="axis" x="36" [attr.y]="tick.y + 4" text-anchor="end">{{ tick.text }}</text>
+      }
+      @for (mark of marks(); track mark.label; let index = $index) {
+        @if (showLabel(index)) {
+          <text class="axis" [attr.x]="mark.x" [attr.y]="H - 8" text-anchor="middle">
+            {{ mark.label }}
+          </text>
+        }
+      }
+      @if (kind() === 'area') {
+        <path class="area" [attr.d]="areaPath()" />
+        <path class="line" [attr.d]="linePath()" />
+      } @else {
+        @for (bar of bars(); track $index; let last = $last) {
+          @if (bar) {
+            <path class="bar" [class.dim]="!last" [attr.d]="bar" />
+          }
+        }
+      }
+      @if (hovered(); as mark) {
+        @if (kind() === 'area') {
+          <line class="cross" [attr.x1]="mark.x" [attr.x2]="mark.x" y1="12" [attr.y2]="baseline" />
+          <circle class="marker" r="5" [attr.cx]="mark.x" [attr.cy]="mark.y" />
+        }
+      }
+      @for (mark of marks(); track mark.label) {
+        <rect
+          class="hit"
+          [attr.x]="mark.left"
+          y="12"
+          [attr.width]="hitWidth()"
+          [attr.height]="baseline - 12"
+          (pointerenter)="hovered.set(mark)"
+          (pointerleave)="hovered.set(null)"
+        />
+      }
+    </svg>
+    @if (hovered(); as mark) {
+      <div class="tip" [style.left.%]="(mark.x / W) * 100" [style.top.%]="(mark.y / H) * 100">
+        {{ mark.label }}: <b>{{ format()(mark.value) }}</b>
+      </div>
+    }
+  </div>
+}

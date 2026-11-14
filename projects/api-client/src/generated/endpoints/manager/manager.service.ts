@@ -29,7 +29,8 @@ import type {
   DishAvailabilityRequest,
   ListManagerOrdersParams,
   ManagerBranchView,
-  OrderDto
+  OrderDto,
+  OverviewDto
 } from '../../models';
 
 import type {
@@ -193,6 +194,40 @@ export class ManagerService {
     );
   }
 /**
+ * Như tổng quan của Owner, chỉ cơ sở trong claim.
+ * @summary Tổng quan hôm nay của cơ sở mình
+ */
+ getManagerOverview<TData = OverviewDto>( options?: HttpClientBodyOptions): Observable<TData>;
+ getManagerOverview<TData = OverviewDto>( options?: HttpClientEventOptions): Observable<HttpEvent<TData>>;
+ getManagerOverview<TData = OverviewDto>( options?: HttpClientResponseOptions): Observable<AngularHttpResponse<TData>>;
+  getManagerOverview<TData = OverviewDto>(
+     options?: HttpClientObserveOptions): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.get<TData>(
+      `/api/v1/manager/overview`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events',
+      }
+    );
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.get<TData>(
+      `/api/v1/manager/overview`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response',
+      }
+    );
+    }
+
+    return this.http.get<TData>(
+      `/api/v1/manager/overview`,{
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'body',
+      }
+    );
+  }
+/**
  * Chỉ vai trò BranchManager; cơ sở lấy từ claim branch_id, không nhận mã cơ sở trong đường dẫn hay thân.
  * @summary Thông số của cơ sở mình
  */
@@ -341,6 +376,7 @@ export class ManagerService {
 };
 
 export type ListManagerOrdersClientResult = NonNullable<OrderDto[]>
+export type GetManagerOverviewClientResult = NonNullable<OverviewDto>
 export type GetManagerBranchSettingsClientResult = NonNullable<ManagerBranchView>
 export type UpdateManagerBranchSettingsClientResult = NonNullable<ManagerBranchView>
 export type ListManagerDishesClientResult = NonNullable<BranchDishDto[]>

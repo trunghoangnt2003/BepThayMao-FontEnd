@@ -6,8 +6,12 @@ import {
   BranchResponse,
   DishDto,
   DishInputRequest,
+  LegalInputRequest,
   OrderDto,
   OrderStatus,
+  OwnerLegalDto,
+  PolicyDto,
+  PolicyKind,
   ShopContentDto,
 } from '@bepthaymao/api-client';
 import { ManagerService, OwnerService, ShopService } from '@bepthaymao/api-client/endpoints';
@@ -101,6 +105,18 @@ export class ShopAdminService {
 
   saveAbout(about: string): Observable<ShopContentDto> {
     return this.owner.updateOwnerAbout({ about });
+  }
+
+  legal(): Observable<OwnerLegalDto> {
+    return this.owner.getOwnerLegal();
+  }
+
+  saveLegal(input: LegalInputRequest): Observable<OwnerLegalDto> {
+    return this.owner.updateOwnerLegal(input);
+  }
+
+  savePolicy(kind: PolicyKind, body: string): Observable<PolicyDto> {
+    return this.owner.updateOwnerPolicy(kind, { body });
   }
 }
 

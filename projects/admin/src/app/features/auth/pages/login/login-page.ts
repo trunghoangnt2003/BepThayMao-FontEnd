@@ -6,12 +6,14 @@ import { toApiError } from '@bepthaymao/core';
 import { finalize } from 'rxjs';
 import { safeReturnUrl } from '../../../../shared/auth/safe-return-url';
 import { IconComponent } from '../../../../shared/icon/icon';
+import { LineIconComponent } from '../../../../shared/icon/line-icon';
 import { HlmButton, HlmInput, HlmLabel } from '@bepthaymao/ui';
 import { AuthSessionService } from '../../data-access/auth-session.service';
+import { roleHome } from '../../data-access/role-home';
 
 @Component({
   selector: 'adm-login-page',
-  imports: [ReactiveFormsModule, HlmButton, HlmInput, HlmLabel, IconComponent],
+  imports: [ReactiveFormsModule, HlmButton, HlmInput, HlmLabel, IconComponent, LineIconComponent],
   templateUrl: './login-page.html',
   styleUrl: './login-page.css',
 })
@@ -22,6 +24,7 @@ export class LoginPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly identifierInput = viewChild<ElementRef<HTMLInputElement>>('identifierInput');
   private readonly passwordInput = viewChild<ElementRef<HTMLInputElement>>('passwordInput');
+  protected readonly heroWords = ['Cả', 'bếp', 'trong', 'một', 'màn', 'hình'];
   readonly submitting = signal(false);
   readonly showProgress = signal(false);
   readonly visiblePassword = signal(false);
@@ -73,9 +76,7 @@ export class LoginPage {
             return;
           }
           const destination = safeReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
-          void this.router.navigateByUrl(
-            destination ?? (pair.role === 'Owner' ? '/owner/branches' : '/manager/settings'),
-          );
+          void this.router.navigateByUrl(destination ?? roleHome(pair.role));
         },
         error: (error: unknown) => {
           this.handleError(error);

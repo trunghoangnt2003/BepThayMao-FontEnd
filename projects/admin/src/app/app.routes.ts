@@ -15,6 +15,12 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard('Owner')],
     children: [
       {
+        path: 'overview',
+        title: 'Tổng quan',
+        loadComponent: () =>
+          import('./features/overview/pages/overview-page').then((m) => m.OverviewPage),
+      },
+      {
         path: 'branches/new',
         title: 'Tạo cơ sở mới',
         loadComponent: () =>
@@ -56,6 +62,12 @@ export const routes: Routes = [
           import('./features/shop-admin/pages/content-page').then((m) => m.ContentPage),
       },
       {
+        path: 'legal',
+        title: 'Pháp lý và chính sách',
+        loadComponent: () =>
+          import('./features/shop-admin/pages/legal-page').then((m) => m.LegalPage),
+      },
+      {
         path: 'branches',
         title: 'Danh sách cơ sở',
         loadComponent: () =>
@@ -69,6 +81,12 @@ export const routes: Routes = [
     path: 'manager',
     canActivate: [authGuard, roleGuard('BranchManager')],
     children: [
+      {
+        path: 'overview',
+        title: 'Tổng quan',
+        loadComponent: () =>
+          import('./features/overview/pages/overview-page').then((m) => m.OverviewPage),
+      },
       {
         path: 'orders',
         title: 'Đơn hàng',

@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
   BranchOptionDto,
@@ -8,6 +7,7 @@ import {
   OrderTrackingDto,
 } from '@bepthaymao/api-client';
 import { OrdersService } from '@bepthaymao/api-client/endpoints';
+import { toApiError } from '@bepthaymao/core';
 import { Observable } from 'rxjs';
 
 /** Lời gọi API của luồng đặt đơn; trang (view) không gọi client sinh tự động trực tiếp. */
@@ -39,11 +39,7 @@ export class OrderApi {
   }
 }
 
-/** Lấy `unavailableDishIds` từ ProblemDetails 409 (OrderConflictProblem). */
+/** Lấy `unavailableDishIds` từ ProblemDetails 409 (OrderConflictProblem); lỗi đã qua problemInterceptor. */
 export function unavailableDishIds(error: unknown): string[] {
-  if (!(error instanceof HttpErrorResponse)) return [];
-  const body: unknown = error.error;
-  if (body === null || typeof body !== 'object') return [];
-  const ids: unknown = Reflect.get(body, 'unavailableDishIds');
-  return Array.isArray(ids) ? ids.filter((id): id is string => typeof id === 'string') : [];
+  return [...(toApiError(error).unavailableDishIds ?? [])];
 }
