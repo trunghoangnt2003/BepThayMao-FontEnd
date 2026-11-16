@@ -2,9 +2,11 @@
 /* Hallmark · critique: chỉ trang trí (aria-hidden), chạy bằng transform, đứng yên khi reduced-motion */
 :host {
   display: block;
+  min-width: 0;
 }
 .velo {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-sm);
 }
 .velo__row {
