@@ -100,6 +100,13 @@ describe('LandingPage', () => {
 });
 
 describe('LandingPage data sections', () => {
+  it('renders the scroll story right after the hero with the real xéo dish', async () => {
+    const { html } = await render('Quán xôi gia đình.', [branch]);
+    const story = html.querySelector('cus-landing-hero + cus-landing-story');
+    expect(story).not.toBeNull();
+    expect(story?.querySelector('.story__cap--final')?.textContent).toContain('Xôi xéo');
+  });
+
   it('keeps real about text, branch hours and featured dishes on the page', async () => {
     const { html } = await render('Quán xôi gia đình.', [branch]);
     expect(html.textContent).toContain('Quán xôi gia đình.');
@@ -109,7 +116,7 @@ describe('LandingPage data sections', () => {
 
   it('previews the dish under the pointer and hides empty story and branch sections', async () => {
     const { fixture, html } = await render(null, []);
-    expect(html.querySelector('.story')).toBeNull();
+    expect(html.querySelector('.about')).toBeNull();
     expect(html.querySelector('cus-landing-branches')).toBeNull();
     expect(html.querySelector('figcaption')?.textContent).toContain('Xôi gấc');
     const xeo = Array.from(html.querySelectorAll('cus-landing-menu a')).find((link) =>
