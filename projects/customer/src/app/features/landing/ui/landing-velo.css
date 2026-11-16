@@ -1,0 +1,51 @@
+/* Hallmark · shape: dải tên món chạy ngang · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: tên món bằng chữ viết tay nối nhau bằng hình thoi vàng, hai dải ngược chiều · scope: phần trang trí giữa trang giới thiệu */
+/* Hallmark · critique: chỉ trang trí (aria-hidden), chạy bằng transform, đứng yên khi reduced-motion */
+:host {
+  display: block;
+}
+.velo {
+  display: grid;
+  gap: var(--space-sm);
+}
+.velo__row {
+  overflow: clip;
+  transform: rotate(-2deg);
+}
+.velo__row--2 {
+  transform: none;
+}
+.velo__run {
+  display: flex;
+  width: max-content;
+  animation: velo 40s linear infinite;
+}
+.velo__row--2 .velo__run {
+  animation-direction: reverse;
+}
+.velo__name {
+  display: inline-flex;
+  align-items: center;
+  color: var(--lp-red);
+  font-family: var(--lp-font-script);
+  font-size: clamp(28px, 7vw, 44px);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.velo__name::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  margin-inline: var(--space-lg);
+  transform: rotate(45deg);
+  background: var(--lp-gold);
+}
+@keyframes velo {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .velo__run {
+    animation: none;
+  }
+}

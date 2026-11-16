@@ -1,0 +1,89 @@
+/* Hallmark · shape: hàng thẻ món nổi bật · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: nền đỏ mận tràn viền, thẻ trắng cuộn ngang bám mép · scope: món nổi bật trang giới thiệu */
+/* Hallmark · critique: màu qua token của LandingPage, giá và tên là dữ liệu thật, focus vàng sáng trên nền đỏ */
+:host {
+  display: block;
+  --color-focus: var(--lp-gold-hi);
+}
+.featured {
+  margin-inline: calc(50% - 50vw);
+  padding-block: var(--space-xl);
+  border-radius: 40px;
+  background: var(--lp-red);
+}
+.featured__inner {
+  display: grid;
+  gap: var(--space-lg);
+  max-width: var(--lp-container);
+  margin-inline: auto;
+  padding-inline: var(--space-md);
+}
+h2 {
+  min-width: 0;
+  overflow-wrap: break-word;
+  color: var(--lp-gold);
+  font-family: var(--lp-font-script);
+  font-size: clamp(30px, 8vw, 56px);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+.featured__track {
+  display: flex;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 4px 4px var(--space-sm);
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+}
+li {
+  flex: 0 0 min(240px, 72%);
+  scroll-snap-align: start;
+}
+a {
+  display: grid;
+  gap: var(--space-xs);
+  height: 100%;
+  padding: 12px 12px var(--space-md);
+  border-radius: var(--radius-panel);
+  background: var(--lp-surface);
+  color: var(--lp-ink);
+  text-decoration: none;
+}
+a:active {
+  background: var(--lp-tint);
+}
+a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+cus-dish-thumb {
+  aspect-ratio: 4 / 3;
+}
+b {
+  padding-inline: 4px;
+  font-size: 1.25rem;
+}
+small {
+  padding-inline: 4px;
+  color: var(--lp-ink-2);
+}
+.num {
+  padding-inline: 4px;
+  color: var(--lp-red);
+  font-weight: var(--weight-heavy);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  a {
+    transition: transform 300ms var(--ease-out);
+  }
+  a:hover {
+    transform: translateY(-4px);
+  }
+}
+@media (min-width: 56.25rem) {
+  .featured__inner {
+    padding-inline: var(--space-xl);
+  }
+}

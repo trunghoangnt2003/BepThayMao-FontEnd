@@ -1,6 +1,10 @@
 /* Hallmark · shape: landing cuộn kể chuyện · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: chữ viết tay trên ảnh xôi, thẻ kem đè ảnh, nét gạch vàng · scope: chỉ trang giới thiệu */
 /* Hallmark · critique: màu và font chỉ qua token --lp-*, số liệu là dữ liệu thật, mọi nút Đặt món ngay vào /dat-mon, ảnh hero là ảnh tạm chờ thay */
 :host {
+  display: block;
+  margin-top: calc(-1 * var(--space-md));
+}
+[data-theme='plum'] {
   --lp-red: #7b1725;
   --lp-red-2: #a52b37;
   --lp-gold: #d7ad62;
@@ -8,10 +12,10 @@
   --lp-cream: #fffaf1;
   --lp-cream-2: #f1dcd5;
   --lp-bg: #fffdf9;
-  --lp-surface: #ffffff;
+  --lp-surface: #fffefa;
   --lp-tile: #f4e7d8;
   --lp-ink: #292321;
-  --lp-ink-2: #756b65;
+  --lp-ink-2: #695f59;
   --lp-line: #eadfd2;
   --lp-line-2: #ddcfc1;
   --lp-tint: #f9ece8;
@@ -43,9 +47,10 @@
   --on-cocoa: var(--lp-cream);
   --on-cocoa-2: var(--lp-cream-2);
   --gold: var(--lp-gold);
+}
+.lp {
   display: grid;
   gap: var(--space-2xl);
-  margin-top: calc(-1 * var(--space-md));
   background: var(--lp-bg);
   box-shadow: 0 0 0 100vmax var(--lp-bg);
   clip-path: inset(0 -100vmax);
@@ -65,18 +70,16 @@
   outline: 2px solid var(--color-focus);
   outline-offset: 3px;
 }
-.branches__grid {
-  display: grid;
-  gap: var(--space-xl);
-  align-items: center;
-}
-.branches .kicker {
-  color: var(--gold);
-}
 h2 {
-  font-size: clamp(1.875rem, 1.2rem + 2.6vw, 3rem);
-  font-weight: var(--weight-heavy);
+  min-width: 0;
+  overflow-wrap: break-word;
+  color: var(--lp-red);
+  font-family: var(--lp-font-script);
+  font-size: clamp(30px, 8vw, 56px);
+  font-weight: 700;
+  letter-spacing: 0;
   line-height: 1.08;
+  text-wrap: balance;
 }
 .head {
   display: grid;
@@ -89,47 +92,10 @@ h2 {
   max-width: 46rem;
 }
 .about p {
-  color: var(--color-ink-2);
+  margin: 0;
+  color: var(--lp-ink-2);
   font-size: 1.125rem;
   white-space: pre-line;
-}
-.featured ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
-  gap: var(--space-md);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.featured a {
-  display: grid;
-  gap: var(--space-xs);
-  padding: 12px 12px var(--space-md);
-  border-radius: var(--radius-panel);
-  background: var(--color-paper-2);
-  color: var(--color-ink);
-  text-decoration: none;
-  box-shadow: var(--shadow-card);
-  transition: transform 350ms var(--spring);
-}
-.featured a:hover {
-  transform: translateY(-4px);
-}
-.featured cus-dish-thumb {
-  aspect-ratio: 4 / 3;
-}
-.featured b {
-  padding-inline: 4px;
-  font-size: 1.25rem;
-}
-.featured small {
-  padding-inline: 4px;
-  color: var(--color-muted);
-}
-.featured span {
-  padding-inline: 4px;
-  color: var(--color-accent);
-  font-weight: var(--weight-heavy);
 }
 .branches {
   padding-block: var(--space-2xl);
@@ -137,8 +103,19 @@ h2 {
   background: var(--cocoa-2);
   color: var(--on-cocoa);
 }
-.branches p {
+.branches h2,
+.final h2 {
+  color: var(--lp-gold);
+}
+.branches p,
+.final p {
+  margin: 0;
   color: var(--on-cocoa-2);
+}
+.branches__grid {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: center;
 }
 .final {
   display: grid;
@@ -146,12 +123,27 @@ h2 {
   gap: var(--space-md);
   padding: var(--space-2xl) var(--space-md);
   border-radius: var(--radius-panel);
-  background: var(--cocoa);
+  outline: 2px solid var(--lp-gold);
+  outline-offset: -10px;
+  background: var(--lp-red);
   color: var(--on-cocoa);
   text-align: center;
 }
-.final p {
-  color: var(--on-cocoa-2);
+.branches,
+.final {
+  --color-focus: var(--lp-gold-hi);
+}
+.branches a:focus-visible,
+.final a:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+.final .btn:active {
+  transform: translateY(1px);
+}
+.branches p a {
+  color: var(--lp-gold);
 }
 @supports (animation-timeline: view()) {
   .reveal {
@@ -159,8 +151,6 @@ h2 {
     animation-timeline: view();
     animation-range: entry 0% entry 40%;
   }
-}
-@supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     cus-landing-hero {
       animation: hero-out linear both;
@@ -177,7 +167,6 @@ h2 {
 }
 @keyframes reveal {
   from {
-    opacity: 0.2;
     transform: translateY(12px);
   }
 }

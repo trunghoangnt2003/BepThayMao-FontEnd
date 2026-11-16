@@ -31,7 +31,36 @@ export const STORY_STEPS = [
   selector: 'cus-landing-story',
   imports: [RouterLink, LandingStoryArt],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './landing-story.html',
+  template: `
+    <section class="story" aria-labelledby="story-h">
+      <div class="story__track">
+        <div class="story__stage" #stage>
+          <h2 id="story-h" class="story__h">Một phần xôi xéo, lắp từng lớp</h2>
+          <div class="story__art">
+            <cus-landing-story-art [io]="io()" [assembled]="assembled()" />
+          </div>
+          <ol class="story__caps">
+            @for (step of steps; track step.num) {
+              <li class="story__cap" [attr.data-step]="$index + 1">
+                <b>{{ step.num }}</b>
+                <strong>{{ step.name }}</strong>
+                <span>{{ step.text }}</span>
+              </li>
+            }
+            <li class="story__cap story__cap--final">
+              <strong>{{ dish()?.name ?? 'Xôi xéo Thầy Mão' }}</strong>
+              @if (dish(); as d) {
+                <span class="num">{{ formatVnd(d.price) }}</span>
+                <a class="btn btn--gold" [routerLink]="['/mon', d.id]">Xem món</a>
+              } @else {
+                <a class="btn btn--gold" routerLink="/dat-mon">Đặt món ngay</a>
+              }
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  `,
   styleUrl: './landing-story.css',
   host: { '[class.story--io]': 'io()', '[class.is-in]': 'assembled()' },
 })

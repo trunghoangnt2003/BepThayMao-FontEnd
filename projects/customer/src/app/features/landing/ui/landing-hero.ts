@@ -6,7 +6,77 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'cus-landing-hero',
   imports: [RouterLink, NgOptimizedImage],
-  templateUrl: './landing-hero.html',
+  template: `
+    <section class="hero bleed" aria-labelledby="hero-h">
+      <div class="hero__inner">
+        <div class="hero__photo">
+          <img
+            class="hero__img"
+            [ngSrc]="image()"
+            fill
+            priority
+            alt="Đĩa xôi gà xé phủ hành phi, rau mùi và đậu phộng, bên cạnh chén nước mắm ớt"
+          />
+          <span class="hero__say" aria-hidden="true"
+            ><span class="hero__q">Ăn xôi không?</span
+            ><span class="hero__a">Đặt Bếp Thầy Mao đi!</span></span
+          >
+        </div>
+        <div class="hero__card">
+          <h1 id="hero-h" class="hero__h" tabindex="-1">Xôi nóng phố cũ, giao tận nơi</h1>
+          <p class="hero__sub">Chọn món trên web, quán gói lá chuối và giao tới tận tay bạn.</p>
+          <div class="hero__ctas">
+            <a class="btn btn--red" routerLink="/dat-mon"
+              ><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="6" cy="17" r="2.5" />
+                <circle cx="18" cy="17" r="2.5" />
+                <path d="M8.5 17h6.5l2-6h-4M13 11l-2 6M4 13h5l2-3H6" />
+                <path d="M15 7h3" /></svg
+              >Đặt món ngay<svg
+                class="ic ic--end"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" /></svg
+            ></a>
+            <a class="btn btn--ghost" href="#co-so"
+              ><svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M12 6c-2-1.5-5-2-8-1.5V19c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V4.5C17 4 14 4.5 12 6zM12 6v14.5"
+                /></svg
+              >Xem cơ sở</a
+            >
+          </div>
+          <ul class="hero__feat">
+            <li>
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14" />
+                <path d="M5 19l7-7" /></svg
+              >Nguyên liệu tươi ngon
+            </li>
+            <li>
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 11h18a9 9 0 0 1-18 0zM8 21h8" />
+                <path d="M9 7c0-1.5 1.5-1.5 1.5-3M13.5 7c0-1.5 1.5-1.5 1.5-3" /></svg
+              >Hương vị truyền thống
+            </li>
+            <li>
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path
+                  d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"
+                /></svg
+              >Phục vụ tận tâm
+            </li>
+          </ul>
+          <span class="hero__hint" aria-hidden="true"
+            >Lướt xuống<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M6 9l6 6 6-6" /></svg
+          ></span>
+        </div>
+      </div>
+    </section>
+  `,
   styleUrl: './landing-hero.css',
 })
 export class LandingHero {

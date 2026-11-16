@@ -35,22 +35,27 @@ import { formatOpeningHours } from '@bepthaymao/ui';
       display: grid;
       gap: 2px;
       padding: var(--space-md) var(--space-lg);
+      border: 1px solid var(--color-rule);
       border-radius: var(--radius-card);
-      background: oklch(97% 0.015 80 / 0.08);
-      box-shadow: inset 0 0 0 1px oklch(97% 0.015 80 / 0.12);
+      background: var(--color-paper-2);
     }
     b {
+      color: var(--color-accent);
       font-size: 1.25rem;
       font-weight: var(--weight-heavy);
     }
     span {
-      color: var(--on-cocoa-2);
+      color: var(--color-ink-2);
       font-size: var(--text-sm);
     }
     a {
       justify-self: start;
       color: var(--gold);
       font-weight: var(--weight-strong);
+    }
+    a:focus-visible {
+      outline: 2px solid var(--color-focus);
+      outline-offset: 3px;
     }
   `,
 })

@@ -1,6 +1,11 @@
 /* Hallmark · shape: minh họa SVG thúng xôi xéo · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: năm lớp xôi rơi xuống thúng theo nhịp cuộn · scope: phần kể chuyện trang giới thiệu */
 /* Hallmark · critique: màu SVG chỉ qua token --story-*, CSS scroll-driven trong @supports và no-preference, tĩnh khi reduced-motion hoặc tắt JS */
 :host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+[data-theme='story'] {
   --story-nep: #f7f1df;
   --story-dau: #f0c64a;
   --story-hanh: #9a5a22;
@@ -18,9 +23,6 @@
   --story-steam: #b7c3d1;
   --story-grain-hi: rgba(255, 255, 255, 0.7);
   --story-grain-lo: rgba(0, 0, 0, 0.07);
-  display: block;
-  width: 100%;
-  height: 100%;
 }
 svg {
   display: block;
@@ -117,7 +119,7 @@ svg {
   --b: 80%;
 }
 @media (prefers-reduced-motion: no-preference) {
-  :host(.story--io) .story__layer {
+  .js .story__layer {
     opacity: 0;
     transform: translateY(calc(var(--n) * -30px));
     transition:
@@ -125,7 +127,7 @@ svg {
       opacity 600ms var(--ease-out);
     transition-delay: calc(var(--n) * 180ms);
   }
-  :host(.story--io.is-in) .story__layer {
+  .js.is-in .story__layer {
     opacity: 1;
     transform: none;
   }

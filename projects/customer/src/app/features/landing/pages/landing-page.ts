@@ -2,25 +2,27 @@ import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PageMeta } from '../../../shared/seo/page-meta';
 import { PublicBranchList } from '../../branches/data-access/public-branches.service';
-import { formatVnd, HomeData, Loaded } from '../../shop/data-access/shop-data';
-import { DishThumb } from '../../shop/ui/shop-ui';
+import { HomeData, Loaded } from '../../shop/data-access/shop-data';
 import { LandingBranches } from '../ui/landing-branches';
+import { LandingFeatured } from '../ui/landing-featured';
 import { LandingHero } from '../ui/landing-hero';
 import { LandingMenu } from '../ui/landing-menu';
 import { LandingSteps } from '../ui/landing-steps';
+import { LandingVelo } from '../ui/landing-velo';
 import { LandingStory } from '../ui/landing-story';
 
-/** Trang giới thiệu: cuộn kể về quán, mọi nút Đặt ngay dẫn vào trang đặt món. Chỉ dùng dữ liệu thật. */
+/** Trang giới thiệu: cuộn kể về quán, mọi nút Đặt món ngay dẫn vào trang đặt món. Chỉ dùng dữ liệu thật. */
 @Component({
   selector: 'cus-landing-page',
   imports: [
     RouterLink,
-    DishThumb,
+    LandingFeatured,
     LandingHero,
     LandingStory,
     LandingMenu,
     LandingBranches,
     LandingSteps,
+    LandingVelo,
   ],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css',
@@ -28,7 +30,6 @@ import { LandingStory } from '../ui/landing-story';
 export class LandingPage {
   readonly data = input.required<Loaded<HomeData>>();
   readonly branches = input.required<PublicBranchList>();
-  protected readonly formatVnd = formatVnd;
   // TODO(license): ảnh tạm có watermark AdobeStock, MUST thay bằng ảnh có giấy phép trước khi lên production (quick 261116-nif, D-02).
   protected readonly heroImage = '/images/landing/xoi-ga-hero.jpg';
 

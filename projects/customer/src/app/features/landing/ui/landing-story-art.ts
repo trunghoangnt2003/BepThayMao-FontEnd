@@ -4,9 +4,93 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'cus-landing-story-art',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './landing-story-art.html',
+  template: `
+    <svg
+      data-theme="story"
+      viewBox="0 0 400 360"
+      role="img"
+      [attr.aria-label]="label()"
+      [class.js]="io()"
+      [class.is-in]="assembled()"
+    >
+      <defs>
+        <pattern id="story-grain" width="10" height="8" patternUnits="userSpaceOnUse">
+          <ellipse class="story__g1" cx="3" cy="3" rx="2.4" ry="1.3" />
+          <ellipse class="story__g2" cx="8" cy="6" rx="2.2" ry="1.2" />
+        </pattern>
+      </defs>
+      <g class="story__leaves">
+        <path
+          class="story__o story__la"
+          d="M118 246 C70 214 44 150 52 70 C92 116 124 180 118 246Z"
+        />
+        <path
+          class="story__o story__la"
+          d="M282 246 C330 214 356 150 348 70 C308 116 276 180 282 246Z"
+        />
+      </g>
+      <ellipse class="story__o story__la-2" cx="200" cy="240" rx="136" ry="30" />
+      <g class="story__layer" data-step="1">
+        <path class="story__o story__nep" d="M86 240 C92 156 308 156 314 240Z" />
+        <path class="story__grain" d="M86 240 C92 156 308 156 314 240Z" />
+      </g>
+      <g class="story__layer" data-step="2">
+        <path
+          class="story__o story__dau"
+          d="M112 200 C126 168 274 168 288 200 C252 214 148 214 112 200Z"
+        />
+      </g>
+      <g class="story__layer story__hanh" data-step="3">
+        <circle cx="150" cy="190" r="4.5" />
+        <circle cx="172" cy="180" r="4" />
+        <circle cx="198" cy="176" r="4.5" />
+        <circle cx="224" cy="180" r="4" />
+        <circle cx="248" cy="188" r="4.5" />
+        <circle cx="186" cy="194" r="3.5" />
+        <circle cx="214" cy="196" r="3.5" />
+        <circle cx="262" cy="198" r="3.5" />
+        <circle cx="136" cy="200" r="3.5" />
+      </g>
+      <g class="story__layer" data-step="4">
+        <ellipse
+          class="story__o story__cha"
+          cx="166"
+          cy="180"
+          rx="30"
+          ry="10"
+          transform="rotate(-10 166 180)"
+        />
+        <ellipse
+          class="story__o story__cha-2"
+          cx="160"
+          cy="174"
+          rx="30"
+          ry="10"
+          transform="rotate(-10 160 174)"
+        />
+      </g>
+      <g class="story__layer" data-step="5">
+        <ellipse class="story__o story__trung-vo" cx="236" cy="174" rx="22" ry="15" />
+        <ellipse class="story__trung-trang" cx="236" cy="172" rx="16" ry="10" />
+        <circle class="story__trung-do" cx="236" cy="172" r="6.5" />
+      </g>
+      <path
+        class="story__o story__o--thick story__thung"
+        d="M64 240 L336 240 L308 330 Q200 350 92 330 Z"
+      />
+      <path class="story__nan" d="M76 262 L324 262 M84 286 L316 286 M90 310 L310 310" />
+      <ellipse class="story__o story__o--thick story__thung-2" cx="200" cy="240" rx="134" ry="12" />
+      <g class="story__steam">
+        <path d="M168 140 c-12 -18 12 -30 0 -48 c-12 -18 12 -30 0 -48" />
+        <path d="M200 132 c-12 -18 12 -30 0 -48 c-12 -18 12 -30 0 -48" />
+        <path d="M232 140 c-12 -18 12 -30 0 -48 c-12 -18 12 -30 0 -48" />
+      </g>
+    </svg>
+  `,
   styleUrl: './landing-story-art.css',
 })
 export class LandingStoryArt {
+  readonly io = input(false);
+  readonly assembled = input(false);
   readonly label = input('Thúng xôi xéo với nếp, đậu xanh, hành phi, chả lụa và trứng kho');
 }

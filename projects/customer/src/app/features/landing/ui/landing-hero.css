@@ -15,6 +15,7 @@
   position: relative;
   overflow: hidden;
   min-height: 180px;
+  background: var(--lp-night);
   aspect-ratio: 4 / 3;
 }
 .hero__img {
@@ -36,7 +37,7 @@
   left: 6%;
   display: grid;
   justify-items: start;
-  gap: 6px;
+  gap: 8px;
   transform: rotate(-4deg);
   text-align: left;
 }
@@ -50,7 +51,7 @@
 }
 .hero__a {
   margin-left: 14%;
-  padding: 4px 12px 5px;
+  padding: 4px 12px;
   border-radius: 5px 14px 5px 14px;
   background: var(--lp-red);
   color: var(--lp-cream);
@@ -66,8 +67,8 @@
   display: grid;
   justify-items: center;
   gap: 8px;
-  margin-top: -26px;
-  padding: 18px 16px 24px;
+  margin-top: -24px;
+  padding: 16px 16px 24px;
   border-radius: 26px 26px 0 0;
   background: var(--lp-bg);
   box-shadow: var(--lp-card-shadow);
@@ -104,11 +105,11 @@
 .hero__ctas {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
 }
 .hero__ctas .btn {
   min-height: 48px;
-  gap: 6px;
+  gap: 8px;
   padding-inline: 16px;
   font-size: 0.9375rem;
   white-space: nowrap;
@@ -158,8 +159,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding-inline: 6px;
+  gap: 4px;
+  padding-inline: 8px;
   color: var(--lp-ink);
   font-size: 0.75rem;
   line-height: 1.25;
@@ -198,8 +199,8 @@
 }
 @media (max-width: 420px) {
   .hero__ctas .btn {
-    gap: 5px;
-    padding-inline: 13px;
+    gap: 4px;
+    padding-inline: 12px;
   }
   .ic--end {
     display: none;
@@ -229,7 +230,7 @@
   }
   .hero__card {
     justify-items: start;
-    gap: 14px;
+    gap: 16px;
     margin: 0;
     padding: 0;
     border-radius: 0;
