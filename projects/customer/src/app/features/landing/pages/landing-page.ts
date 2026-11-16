@@ -8,11 +8,20 @@ import { LandingBranches } from '../ui/landing-branches';
 import { LandingHero } from '../ui/landing-hero';
 import { LandingMenu } from '../ui/landing-menu';
 import { LandingSteps } from '../ui/landing-steps';
+import { LandingStory } from '../ui/landing-story';
 
 /** Trang giới thiệu: cuộn kể về quán, mọi nút Đặt ngay dẫn vào trang đặt món. Chỉ dùng dữ liệu thật. */
 @Component({
   selector: 'cus-landing-page',
-  imports: [RouterLink, DishThumb, LandingHero, LandingMenu, LandingBranches, LandingSteps],
+  imports: [
+    RouterLink,
+    DishThumb,
+    LandingHero,
+    LandingStory,
+    LandingMenu,
+    LandingBranches,
+    LandingSteps,
+  ],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css',
 })
@@ -29,6 +38,10 @@ export class LandingPage {
   });
   protected readonly menu = computed(() => this.home()?.menu ?? []);
   protected readonly featured = computed(() => this.menu().filter((dish) => dish.isFeatured));
+  /** Món xôi xéo thật trong thực đơn (nếu có) để thẻ cuối của story dẫn tới đúng món. */
+  protected readonly storyDish = computed(
+    () => this.menu().find((dish) => dish.name.toLocaleLowerCase('vi').includes('xéo')) ?? null,
+  );
   protected readonly about = computed(() => this.home()?.content.about?.trim() ?? '');
   protected readonly branchList = computed(() => {
     const list = this.branches();

@@ -83,12 +83,12 @@ h2 {
   gap: var(--space-xs);
   margin-bottom: var(--space-lg);
 }
-.story {
+.about {
   display: grid;
   gap: var(--space-sm);
   max-width: 46rem;
 }
-.story p {
+.about p {
   color: var(--color-ink-2);
   font-size: 1.125rem;
   white-space: pre-line;
@@ -158,6 +158,21 @@ h2 {
     animation: reveal linear both;
     animation-timeline: view();
     animation-range: entry 0% entry 40%;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    cus-landing-hero {
+      animation: hero-out linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+@keyframes hero-out {
+  to {
+    opacity: 0;
+    transform: scale(0.92);
   }
 }
 @keyframes reveal {

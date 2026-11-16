@@ -1,0 +1,193 @@
+/* Hallmark · shape: scroll story xôi xéo · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: năm lớp xôi rơi xuống thúng theo nhịp cuộn, thẻ đỏ viền vàng ở cuối · scope: phần kể chuyện trang giới thiệu */
+/* Hallmark · critique: CSS scroll-driven chỉ trong @supports và no-preference, tĩnh khi reduced-motion hoặc tắt JS, màu SVG qua token --story-* */
+:host {
+  display: block;
+}
+.story {
+  margin-inline: calc(50% - 50vw);
+  background: conic-gradient(
+      var(--lp-tile) 25%,
+      var(--lp-cream) 0 50%,
+      var(--lp-tile) 0 75%,
+      var(--lp-cream) 0
+    )
+    0 0 / 36px 36px;
+}
+.story__stage {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-sm);
+  max-width: var(--lp-container);
+  margin-inline: auto;
+  padding: var(--space-xl) var(--space-md) var(--space-xl);
+}
+.story__h {
+  color: var(--lp-red);
+  font-family: var(--lp-font-script);
+  font-size: clamp(30px, 8vw, 56px);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.08;
+  text-align: center;
+}
+.story__art {
+  width: min(86%, 440px);
+  aspect-ratio: 400 / 360;
+}
+.story__caps {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  max-width: 520px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.story__cap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 2px 12px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--lp-line-2);
+  border-radius: 16px;
+  background: var(--lp-surface);
+}
+.story__cap b {
+  grid-row: span 2;
+  color: var(--lp-red);
+  font-family: var(--lp-font-script);
+  font-size: 1.5rem;
+}
+.story__cap span {
+  color: var(--lp-ink-2);
+  font-size: var(--text-sm);
+}
+.story__cap--final {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  border-color: var(--lp-red);
+  background: var(--lp-red);
+  box-shadow:
+    inset 0 0 0 2px var(--lp-red),
+    inset 0 0 0 4px var(--lp-gold);
+  color: var(--lp-cream);
+}
+.story__cap--final span {
+  color: var(--lp-gold);
+}
+.story__cap--final strong,
+.story__cap--final span {
+  grid-column: 1;
+}
+.story__cap--final a {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+.story__cap--final a:focus-visible {
+  outline: 2px solid var(--lp-cream);
+  outline-offset: 3px;
+}
+[data-step='1'] {
+  --a: 10%;
+  --c: 28%;
+}
+[data-step='2'] {
+  --a: 24%;
+  --c: 42%;
+}
+[data-step='3'] {
+  --a: 38%;
+  --c: 56%;
+}
+[data-step='4'] {
+  --a: 52%;
+  --c: 70%;
+}
+[data-step='5'] {
+  --a: 66%;
+  --c: 82%;
+}
+@media (min-width: 56.25rem) {
+  .story__stage {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+    column-gap: 48px;
+  }
+  .story__h {
+    grid-column: 1 / -1;
+  }
+  .story__art {
+    width: 100%;
+    max-width: 480px;
+    justify-self: center;
+  }
+  .story__cap strong {
+    font-size: var(--text-lg);
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .story__track {
+      height: 320svh;
+      view-timeline: --story-track block;
+    }
+    .story__stage {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      align-content: center;
+    }
+    .story__art {
+      width: min(86%, 440px, 51svh);
+    }
+    .story__caps {
+      position: relative;
+      height: 104px;
+    }
+    .story__cap {
+      position: absolute;
+      inset: 0 0 auto;
+    }
+    .story__cap[data-step] {
+      animation: story-cap linear both;
+      animation-timeline: --story-track;
+      animation-range: contain var(--a) contain var(--c);
+    }
+    .story__cap--final {
+      animation: story-in linear both;
+      animation-timeline: --story-track;
+      animation-range: contain 82% contain 92%;
+    }
+    @media (min-width: 56.25rem) {
+      .story__art {
+        width: 100%;
+        max-width: min(480px, 66svh);
+      }
+      .story__caps {
+        height: 120px;
+      }
+    }
+  }
+}
+@keyframes story-cap {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  15%,
+  85% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+@keyframes story-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}

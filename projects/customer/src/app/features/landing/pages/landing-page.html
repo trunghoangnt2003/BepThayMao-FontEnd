@@ -1,9 +1,11 @@
 <cus-landing-hero [image]="heroImage" />
 
+<cus-landing-story [dish]="storyDish()" />
+
 @if (about()) {
-  <section class="story reveal" aria-labelledby="story-h">
+  <section class="about reveal" aria-labelledby="about-h">
     <span class="kicker">Về bếp</span>
-    <h2 id="story-h">Câu chuyện của <span class="accent-word">Bếp Thầy Mão</span></h2>
+    <h2 id="about-h">Câu chuyện của <span class="accent-word">Bếp Thầy Mão</span></h2>
     <p>{{ about() }}</p>
   </section>
 }

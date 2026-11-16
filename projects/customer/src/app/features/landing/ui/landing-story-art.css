@@ -1,0 +1,157 @@
+/* Hallmark · shape: minh họa SVG thúng xôi xéo · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: năm lớp xôi rơi xuống thúng theo nhịp cuộn · scope: phần kể chuyện trang giới thiệu */
+/* Hallmark · critique: màu SVG chỉ qua token --story-*, CSS scroll-driven trong @supports và no-preference, tĩnh khi reduced-motion hoặc tắt JS */
+:host {
+  --story-nep: #f7f1df;
+  --story-dau: #f0c64a;
+  --story-hanh: #9a5a22;
+  --story-cha: #ecd2b4;
+  --story-cha-2: #f2dcc2;
+  --story-trung-vo: #b5712c;
+  --story-trung-trang: #f6efe2;
+  --story-trung-do: #f2b632;
+  --story-la: #3c9443;
+  --story-la-2: #2f7d36;
+  --story-thung: #c08a48;
+  --story-thung-2: #a8733a;
+  --story-nan: #8a5a26;
+  --story-line: #2a1a12;
+  --story-steam: #b7c3d1;
+  --story-grain-hi: rgba(255, 255, 255, 0.7);
+  --story-grain-lo: rgba(0, 0, 0, 0.07);
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.story__o {
+  stroke: var(--story-line);
+  stroke-width: 2;
+}
+.story__o--thick {
+  stroke-width: 2.5;
+}
+.story__la {
+  fill: var(--story-la);
+}
+.story__la-2 {
+  fill: var(--story-la-2);
+}
+.story__nep {
+  fill: var(--story-nep);
+}
+.story__grain {
+  fill: url('#story-grain');
+}
+.story__g1 {
+  fill: var(--story-grain-hi);
+}
+.story__g2 {
+  fill: var(--story-grain-lo);
+}
+.story__dau {
+  fill: var(--story-dau);
+}
+.story__hanh {
+  fill: var(--story-hanh);
+}
+.story__cha {
+  fill: var(--story-cha);
+}
+.story__cha-2 {
+  fill: var(--story-cha-2);
+}
+.story__trung-vo {
+  fill: var(--story-trung-vo);
+}
+.story__trung-trang {
+  fill: var(--story-trung-trang);
+}
+.story__trung-do {
+  fill: var(--story-trung-do);
+}
+.story__thung {
+  fill: var(--story-thung);
+}
+.story__thung-2 {
+  fill: var(--story-thung-2);
+}
+.story__nan {
+  fill: none;
+  stroke: var(--story-nan);
+  stroke-width: 3;
+}
+.story__steam {
+  fill: none;
+  stroke: var(--story-steam);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+[data-step='1'] {
+  --n: 1;
+  --a: 10%;
+  --b: 24%;
+}
+[data-step='2'] {
+  --n: 2;
+  --a: 24%;
+  --b: 38%;
+}
+[data-step='3'] {
+  --n: 3;
+  --a: 38%;
+  --b: 52%;
+}
+[data-step='4'] {
+  --n: 4;
+  --a: 52%;
+  --b: 66%;
+}
+[data-step='5'] {
+  --n: 5;
+  --a: 66%;
+  --b: 80%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :host(.story--io) .story__layer {
+    opacity: 0;
+    transform: translateY(calc(var(--n) * -30px));
+    transition:
+      transform 600ms var(--ease-out),
+      opacity 600ms var(--ease-out);
+    transition-delay: calc(var(--n) * 180ms);
+  }
+  :host(.story--io.is-in) .story__layer {
+    opacity: 1;
+    transform: none;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .story__layer {
+      animation: story-drop linear both;
+      animation-timeline: --story-track;
+      animation-range: contain var(--a) contain var(--b);
+    }
+    .story__steam {
+      animation: story-in linear both;
+      animation-timeline: --story-track;
+      animation-range: contain 82% contain 92%;
+    }
+  }
+}
+@keyframes story-drop {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--n) * -30px));
+  }
+}
+@keyframes story-in {
+  from {
+    opacity: 0;
+  }
+}
