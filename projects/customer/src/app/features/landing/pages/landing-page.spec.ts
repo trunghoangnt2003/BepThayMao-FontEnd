@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { MenuDishDto, PublicBranch } from '@bepthaymao/api-client';
+import { formatVnd } from '../../shop/data-access/shop-data';
 import { LandingPage } from './landing-page';
 
 function dish(id: string, name: string, extra: Partial<MenuDishDto> = {}): MenuDishDto {
@@ -27,16 +28,22 @@ const branch: PublicBranch = {
   closeTime: '21:30:00',
 };
 
-async function render(about: string | null, branches: readonly PublicBranch[]) {
+const defaultMenu = [
+  dish('d1', 'Xôi xéo'),
+  dish('d2', 'Xôi gấc', { category: 'XoiNgot', isFeatured: true, price: 35000 }),
+];
+
+async function render(
+  about: string | null,
+  branches: readonly PublicBranch[],
+  menu: readonly MenuDishDto[] = defaultMenu,
+) {
   TestBed.configureTestingModule({ providers: [provideRouter([])] });
   const fixture = TestBed.createComponent(LandingPage);
   fixture.componentRef.setInput('data', {
     kind: 'loaded',
     value: {
-      menu: [
-        dish('d1', 'Xôi xéo'),
-        dish('d2', 'Xôi gấc', { category: 'XoiNgot', isFeatured: true, price: 35000 }),
-      ],
+      menu,
       content: { about, banners: [] },
     },
   });
@@ -125,5 +132,77 @@ describe('LandingPage data sections', () => {
     xeo?.dispatchEvent(new Event('mouseenter'));
     await fixture.whenStable();
     expect(html.querySelector('figcaption')?.textContent).toContain('Xôi xéo');
+  });
+});
+
+describe('LandingPage D sections', () => {
+  it('has no eyebrow kicker or accent word anywhere', async () => {
+    const { html } = await render('Quán xôi gia đình.', [branch]);
+    expect(html.querySelector('.kicker')).toBeNull();
+    expect(html.querySelector('.accent-word')).toBeNull();
+  });
+
+  it('scrolls every real dish name in a decorative strip', async () => {
+    const { html } = await render(null, [branch]);
+    const velo = html.querySelector('.velo');
+    expect(velo?.getAttribute('aria-hidden')).toBe('true');
+    expect(velo?.textContent).toContain('Xôi xéo');
+    expect(velo?.textContent).toContain('Xôi gấc');
+  });
+
+  it('hides the dish strip for an empty menu', async () => {
+    const { html } = await render(null, [branch], []);
+    expect(html.querySelector('.velo')).toBeNull();
+  });
+
+  it('shows the featured dish with its real price and link', async () => {
+    const { html } = await render(null, [branch]);
+    const featured = html.querySelector('.featured');
+    expect(featured?.textContent).toContain('Xôi gấc');
+    expect(featured?.textContent).toContain(formatVnd(35000));
+    expect(featured?.querySelector('a')?.getAttribute('href')).toBe('/mon/d2');
+  });
+
+  it('hides the featured section when no dish is featured', async () => {
+    const { html } = await render(null, [branch], [dish('d1', 'Xôi xéo')]);
+    expect(html.querySelector('.featured')).toBeNull();
+  });
+});
+
+describe('LandingPage about, branches and final call', () => {
+  it('shows the about section with the shop text', async () => {
+    const { html } = await render('Quán xôi gia đình.', [branch]);
+    expect(html.querySelector('.about')?.textContent).toContain('Quán xôi gia đình.');
+  });
+
+  it('hides the about section when the shop wrote nothing', async () => {
+    const { html } = await render(null, [branch]);
+    expect(html.querySelector('.about')).toBeNull();
+  });
+
+  it('lists real branches inside the #co-so section', async () => {
+    const { html } = await render(null, [branch]);
+    expect(html.querySelector('section#co-so cus-landing-branches')?.textContent).toContain(
+      'Nhận đơn 06:00 đến 21:30',
+    );
+  });
+
+  it('keeps the #co-so section with a directory link when there is no branch', async () => {
+    const { html } = await render(null, []);
+    const section = html.querySelector('section#co-so');
+    expect(section).not.toBeNull();
+    expect(section?.querySelector('cus-landing-branches')).toBeNull();
+    expect(section?.querySelector('a')?.getAttribute('href')).toBe('/co-so');
+  });
+
+  it('closes with the final call to order', async () => {
+    const { html } = await render(null, [branch], []);
+    expect(html.querySelector('.final h2')?.textContent.trim()).toBe('Đói rồi? Gọi xôi thôi!');
+    const order = Array.from(html.querySelectorAll('a')).filter(
+      (link) =>
+        link.textContent.includes('Đặt món ngay') && link.getAttribute('href') === '/dat-mon',
+    );
+    expect(order.length).toBeGreaterThanOrEqual(2);
+    expect(html.querySelector('.final a')?.getAttribute('href')).toBe('/dat-mon');
   });
 });
