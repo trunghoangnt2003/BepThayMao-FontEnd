@@ -46,18 +46,62 @@ async function render(about: string | null, branches: readonly PublicBranch[]) {
 }
 
 describe('LandingPage', () => {
-  it('tells the real menu and branch counts and sends every order button to /dat-mon', async () => {
+  it('shows the hero D headline with a focusable h1', async () => {
     const { html } = await render('Quán xôi gia đình.', [branch]);
-    expect(html.querySelector('h1')?.textContent).toContain('dẻo thơm');
-    const facts = Array.from(html.querySelectorAll('.facts dd')).map((item) =>
+    const h1 = html.querySelector('h1');
+    expect(h1?.textContent.trim()).toBe('Xôi nóng phố cũ, giao tận nơi');
+    expect(h1?.id).toBe('hero-h');
+    expect(h1?.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('sends every order button to /dat-mon and the facility button to #co-so', async () => {
+    const { html } = await render('Quán xôi gia đình.', [branch]);
+    const order = Array.from(html.querySelectorAll('a')).filter((link) =>
+      link.textContent.includes('Đặt món ngay'),
+    );
+    expect(order.length).toBeGreaterThan(0);
+    expect(order.every((link) => link.getAttribute('href') === '/dat-mon')).toBe(true);
+    expect(html.querySelectorAll('.hero a').length).toBeGreaterThan(0);
+    expect(
+      Array.from(html.querySelectorAll('.hero a')).some((link) =>
+        link.textContent.includes('Đặt món ngay'),
+      ),
+    ).toBe(true);
+    const facility = Array.from(html.querySelectorAll('a')).find((link) =>
+      link.textContent.includes('Xem cơ sở'),
+    );
+    expect(facility?.getAttribute('href')).toBe('#co-so');
+  });
+
+  it('lists the three hero promises in order', async () => {
+    const { html } = await render('Quán xôi gia đình.', [branch]);
+    const items = Array.from(html.querySelectorAll('.hero__feat li')).map((item) =>
       item.textContent.trim(),
     );
-    expect(facts).toEqual(['2', '1', 'QR']);
-    const order = Array.from(html.querySelectorAll('a')).filter((link) =>
-      link.textContent.includes('Đặt ngay'),
-    );
-    expect(order.length).toBe(2);
-    expect(order.every((link) => link.getAttribute('href') === '/dat-mon')).toBe(true);
+    expect(items).toEqual(['Nguyên liệu tươi ngon', 'Hương vị truyền thống', 'Phục vụ tận tâm']);
+  });
+
+  it('renders the hero photo with Vietnamese alt text, high priority and decorative icons', async () => {
+    const { html } = await render('Quán xôi gia đình.', [branch]);
+    const img = html.querySelector('.hero__photo img');
+    expect(img?.getAttribute('alt')).toContain('xôi gà');
+    expect(img?.getAttribute('src')?.endsWith('/images/landing/xoi-ga-hero.jpg')).toBe(true);
+    expect(img?.getAttribute('fetchpriority')).toBe('high');
+    const icons = Array.from(html.querySelectorAll('.hero svg'));
+    expect(icons.length).toBeGreaterThan(0);
+    expect(icons.every((icon) => icon.getAttribute('aria-hidden') === 'true')).toBe(true);
+  });
+
+  it('never leaks the license TODO or the stock vendor name into the page', async () => {
+    const { html } = await render('Quán xôi gia đình.', [branch]);
+    expect(html.textContent).not.toContain('TODO');
+    expect(html.textContent).not.toContain('AdobeStock');
+  });
+});
+
+describe('LandingPage data sections', () => {
+  it('keeps real about text, branch hours and featured dishes on the page', async () => {
+    const { html } = await render('Quán xôi gia đình.', [branch]);
     expect(html.textContent).toContain('Quán xôi gia đình.');
     expect(html.textContent).toContain('Nhận đơn 06:00 đến 21:30');
     expect(html.querySelector('.featured')?.textContent).toContain('Xôi gấc');
