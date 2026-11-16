@@ -1,9 +1,54 @@
-/* Hallmark · shape: landing cuộn kể chuyện · theme: Bếp Việt ấm · signature: khối mở đầu cacao nối liền đầu trang, ánh bếp trôi chậm · scope: trang giới thiệu */
-/* Hallmark · critique: số liệu là dữ liệu thật (số món, số cơ sở), mọi nút Đặt ngay vào /dat-mon, ảnh chưa có thì là ánh bếp */
+/* Hallmark · shape: landing cuộn kể chuyện · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: chữ viết tay trên ảnh xôi, thẻ kem đè ảnh, nét gạch vàng · scope: chỉ trang giới thiệu */
+/* Hallmark · critique: màu và font chỉ qua token --lp-*, số liệu là dữ liệu thật, mọi nút Đặt món ngay vào /dat-mon, ảnh hero là ảnh tạm chờ thay */
 :host {
+  --lp-red: #7b1725;
+  --lp-red-2: #a52b37;
+  --lp-gold: #d7ad62;
+  --lp-gold-hi: #e6c27e;
+  --lp-cream: #fffaf1;
+  --lp-cream-2: #f1dcd5;
+  --lp-bg: #fffdf9;
+  --lp-surface: #ffffff;
+  --lp-tile: #f4e7d8;
+  --lp-ink: #292321;
+  --lp-ink-2: #756b65;
+  --lp-line: #eadfd2;
+  --lp-line-2: #ddcfc1;
+  --lp-tint: #f9ece8;
+  --lp-night: #35151a;
+  --lp-shade: rgba(30, 10, 12, 0.55);
+  --lp-card-shadow: 0 -10px 30px rgba(60, 20, 20, 0.12);
+  --lp-photo-shadow: 0 20px 40px rgba(60, 20, 20, 0.18);
+  --lp-hero-bg:
+    radial-gradient(120% 75% at 50% 0%, #f7ead1 0%, rgba(247, 234, 209, 0) 62%),
+    radial-gradient(80% 55% at 100% 100%, #f4e7d8 0%, rgba(244, 231, 216, 0) 55%), #fffdf9;
+  --lp-container: 1180px;
+  --lp-font-script: 'Dancing Script', cursive;
+  --lp-swash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M2 7C50 2 120 1 198 4' stroke='black' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  --color-paper: var(--lp-bg);
+  --color-paper-2: var(--lp-surface);
+  --color-paper-3: var(--lp-tile);
+  --color-ink: var(--lp-ink);
+  --color-ink-2: var(--lp-ink-2);
+  --color-muted: var(--lp-ink-2);
+  --color-rule: var(--lp-line);
+  --color-rule-2: var(--lp-line-2);
+  --color-accent: var(--lp-red);
+  --color-accent-ink: var(--lp-cream);
+  --color-focus: var(--lp-red-2);
+  --color-head: var(--lp-red);
+  --color-tint: var(--lp-tint);
+  --cocoa: var(--lp-red);
+  --cocoa-2: var(--lp-night);
+  --on-cocoa: var(--lp-cream);
+  --on-cocoa-2: var(--lp-cream-2);
+  --gold: var(--lp-gold);
   display: grid;
   gap: var(--space-2xl);
   margin-top: calc(-1 * var(--space-md));
+  background: var(--lp-bg);
+  box-shadow: 0 0 0 100vmax var(--lp-bg);
+  clip-path: inset(0 -100vmax);
 }
 .bleed {
   margin-inline: calc(50% - 50vw);
@@ -13,114 +58,20 @@
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
-.hero {
-  position: relative;
-  overflow: hidden;
-  padding-block: var(--space-xl) var(--space-2xl);
-  border-radius: 0 0 40px 40px;
-  background: var(--cocoa);
-  color: var(--on-cocoa);
+.featured a:focus-visible,
+.branches a:focus-visible,
+.final a:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
 }
-.hero__grid,
 .branches__grid {
   display: grid;
   gap: var(--space-xl);
   align-items: center;
 }
-.hero .kicker,
 .branches .kicker {
   color: var(--gold);
-}
-.hero h1 {
-  margin-top: var(--space-sm);
-  font-size: clamp(2.5rem, 1.4rem + 5vw, 5rem);
-  font-weight: var(--weight-heavy);
-  line-height: 1.02;
-}
-.hero p {
-  max-width: 32rem;
-  margin-top: var(--space-md);
-  color: var(--on-cocoa-2);
-  font-size: 1.125rem;
-}
-.ctas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin-top: var(--space-lg);
-}
-.btn--line {
-  border-color: oklch(97% 0.015 80 / 0.35);
-  background: transparent;
-  color: var(--on-cocoa);
-}
-.facts {
-  display: flex;
-  gap: var(--space-xl);
-  margin: var(--space-xl) 0 0;
-  padding-top: var(--space-md);
-  border-top: 1px solid oklch(97% 0.015 80 / 0.14);
-}
-.facts div {
-  display: flex;
-  flex-direction: column-reverse;
-}
-.facts dt {
-  color: var(--on-cocoa-2);
-  font-size: var(--text-sm);
-}
-.facts dd {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: var(--weight-heavy);
-}
-.hero__photo {
-  position: relative;
-  aspect-ratio: 1;
-  max-width: 440px;
-  width: 100%;
-  justify-self: center;
-}
-.glow {
-  position: absolute;
-  inset: 6%;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 55% 42%, oklch(82% 0.13 75 / 0.95), transparent 55%),
-    radial-gradient(circle at 30% 72%, oklch(62% 0.16 40 / 0.8), transparent 50%),
-    radial-gradient(circle, oklch(36% 0.05 55), oklch(24% 0.035 50) 70%);
-}
-.chip {
-  position: absolute;
-  top: 14%;
-  left: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: 10px 16px;
-  border-radius: var(--radius-pill);
-  background: var(--color-paper-2);
-  color: var(--color-ink);
-  font-weight: var(--weight-strong);
-  box-shadow: var(--shadow-lift);
-}
-.chip--2 {
-  top: auto;
-  right: 0;
-  bottom: 16%;
-  left: auto;
-}
-.chip i {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--dau);
-}
-.chip i[data-cat='XoiNgot'] {
-  background: var(--gac);
-}
-.chip i[data-cat='Chay'] {
-  background: var(--la);
 }
 h2 {
   font-size: clamp(1.875rem, 1.2rem + 2.6vw, 3rem);
@@ -216,7 +167,6 @@ h2 {
   }
 }
 @media (min-width: 56rem) {
-  .hero__grid,
   .branches__grid {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   }

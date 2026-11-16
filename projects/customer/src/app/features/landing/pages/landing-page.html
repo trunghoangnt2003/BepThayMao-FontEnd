@@ -1,42 +1,4 @@
-<section class="hero bleed" aria-labelledby="hero-h">
-  <div class="inner hero__grid">
-    <div class="hero__text">
-      <span class="kicker">Bếp Thầy Mão</span>
-      <h1 id="hero-h" tabindex="-1">
-        Xôi nóng, <span class="accent-word">dẻo thơm</span>, giao tận nơi
-      </h1>
-      <p>Chọn món trên thực đơn chung, chọn cơ sở gần bạn, quét mã QR là xong.</p>
-      <div class="ctas">
-        <a class="btn btn--gold fx-shine" routerLink="/dat-mon">Đặt ngay</a>
-        <a class="btn btn--line" href="#thuc-don">Xem thực đơn</a>
-      </div>
-      <dl class="facts">
-        <div>
-          <dt>Món xôi</dt>
-          <dd class="num">{{ menu().length }}</dd>
-        </div>
-        @if (branchList().length > 0) {
-          <div>
-            <dt>Cơ sở</dt>
-            <dd class="num">{{ branchList().length }}</dd>
-          </div>
-        }
-        <div>
-          <dt>Thanh toán</dt>
-          <dd>QR</dd>
-        </div>
-      </dl>
-    </div>
-    <div class="hero__photo" aria-hidden="true">
-      <div class="glow fx-float"></div>
-      @for (dish of featured().slice(0, 2); track dish.id; let index = $index) {
-        <span class="chip" [class.chip--2]="index === 1">
-          <i [attr.data-cat]="dish.category"></i>{{ dish.name }}
-        </span>
-      }
-    </div>
-  </div>
-</section>
+<cus-landing-hero [image]="heroImage" />
 
 @if (about()) {
   <section class="story reveal" aria-labelledby="story-h">
@@ -91,20 +53,20 @@
   <cus-landing-steps />
 </section>
 
-@if (branchList().length > 0) {
-  <section class="branches bleed reveal" aria-labelledby="branch-h">
-    <div class="inner branches__grid">
-      <div class="head">
-        <span class="kicker">Cơ sở</span>
-        <h2 id="branch-h">
-          {{ branchList().length }} bếp, <span class="accent-word">một hương vị</span>
-        </h2>
-        <p>Mỗi cơ sở có giờ nhận đơn riêng. Ngoài giờ bạn vẫn đặt được và nhận vào hôm sau.</p>
-      </div>
-      <cus-landing-branches [branches]="branchList()" />
+<section class="branches bleed reveal" id="co-so" aria-labelledby="branch-h">
+  <div class="inner branches__grid">
+    <div class="head">
+      <span class="kicker">Cơ sở</span>
+      <h2 id="branch-h">Các cơ sở của <span class="accent-word">quán</span></h2>
+      <p>Mỗi cơ sở có giờ nhận đơn riêng. Ngoài giờ bạn vẫn đặt được và nhận vào hôm sau.</p>
     </div>
-  </section>
-}
+    @if (branchList().length > 0) {
+      <cus-landing-branches [branches]="branchList()" />
+    } @else {
+      <p><a routerLink="/co-so">Xem danh sách cơ sở và giờ nhận đơn.</a></p>
+    }
+  </div>
+</section>
 
 <section class="final reveal" aria-labelledby="final-h">
   <h2 id="final-h">Bụng đói rồi? <span class="accent-word">Xôi đang nóng.</span></h2>
