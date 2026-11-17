@@ -66,6 +66,11 @@ import { ShopContentDto } from '@bepthaymao/api-client';
     </section>
   `,
   styles: `
+    :host {
+      display: block;
+      min-width: 0;
+      max-width: 100%;
+    }
     .hb-car {
       margin: 6px 0 8px;
     }
@@ -79,6 +84,7 @@ import { ShopContentDto } from '@bepthaymao/api-client';
     }
     .hb {
       position: relative;
+      display: grid;
       flex: 0 0 100%;
       scroll-snap-align: start;
     }
@@ -258,11 +264,19 @@ export class BannerStrip {
     if (!element) return;
     this.slide.set(index);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    element.scrollTo({ left: index * element.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
+    element.scrollTo({ left: index * this.pitch(element), behavior: reduce ? 'auto' : 'smooth' });
   }
 
   protected onScroll(element: HTMLElement): void {
-    if (element.clientWidth > 0)
-      this.slide.set(Math.round(element.scrollLeft / element.clientWidth));
+    const pitch = this.pitch(element);
+    if (pitch > 0) this.slide.set(Math.round(element.scrollLeft / pitch));
+  }
+
+  /** Bước giữa hai slide = bề rộng slide + khoảng cách (gap), lấy từ vị trí thật. */
+  private pitch(element: HTMLElement): number {
+    const [first, second] = [element.children[0], element.children[1]] as (
+      HTMLElement | undefined
+    )[];
+    return first && second ? second.offsetLeft - first.offsetLeft : element.clientWidth;
   }
 }

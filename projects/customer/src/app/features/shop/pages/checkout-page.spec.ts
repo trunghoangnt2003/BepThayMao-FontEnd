@@ -116,7 +116,7 @@ describe('CheckoutPage steps', () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const view = await render();
     buttonWith(view.html, 'Thêm món').click();
-    expect(navigate).toHaveBeenCalledWith(['/thuc-don']);
+    expect(navigate).toHaveBeenCalledWith(['/dat-mon']);
     await view.next();
     view.fillRecipient();
     await view.next();

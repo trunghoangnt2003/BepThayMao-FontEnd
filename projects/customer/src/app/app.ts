@@ -4,7 +4,6 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SiteFooter } from './features/legal/ui/site-footer';
 import { CartStore } from './features/shop/data-access/shop-data';
 import { RouteLoader } from './shared/loader/route-loader';
-import { MotionPreference } from './shared/motion/motion-preference';
 
 @Component({
   selector: 'cus-root',
@@ -15,11 +14,9 @@ import { MotionPreference } from './shared/motion/motion-preference';
 export class App {
   readonly lang = 'vi';
   protected readonly cart = inject(CartStore);
-  protected readonly motion = inject(MotionPreference);
   protected readonly links = [
     { path: '/', label: 'Giới thiệu' },
     { path: '/dat-mon', label: 'Đặt món' },
-    { path: '/thuc-don', label: 'Thực đơn' },
     { path: '/co-so', label: 'Cơ sở' },
     { path: '/tra-don', label: 'Tra đơn' },
   ] as const;

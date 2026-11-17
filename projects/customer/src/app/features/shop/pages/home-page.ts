@@ -1,6 +1,5 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { MotionPreference } from '../../../shared/motion/motion-preference';
 import { PageMeta } from '../../../shared/seo/page-meta';
 import { CATEGORY_LABELS, CATEGORY_ORDER, HomeData, Loaded } from '../data-access/shop-data';
@@ -14,7 +13,7 @@ import { CartBar } from '../ui/shop-ui';
  */
 @Component({
   selector: 'cus-home-page',
-  imports: [RouterLink, BannerStrip, FoodCard, CartBar],
+  imports: [BannerStrip, FoodCard, CartBar],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })

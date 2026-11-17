@@ -102,7 +102,7 @@ describe('HomePage (Đặt món)', () => {
   it('shows favourites and every group as card grids, with an empty note for a group without dishes', async () => {
     const { html } = await render();
     const fav = html.querySelector('#mon-yeu-thich');
-    expect(fav?.querySelector('.fall')?.getAttribute('href')).toBe('/thuc-don');
+    expect(fav?.querySelector('.fall')).toBeNull();
     expect(fav?.querySelectorAll('cus-food-card').length).toBe(2);
     expect(html.querySelectorAll('#g-XoiMan cus-food-card').length).toBe(2);
     expect(html.querySelector('#g-Chay .fempty')?.textContent).toContain('thực đơn chay');

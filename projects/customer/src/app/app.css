@@ -65,16 +65,23 @@ header {
   text-decoration: underline 3px var(--shell-gold);
   text-underline-offset: 8px;
 }
-.cart {
+.account {
   position: relative;
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
   margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
   color: #fff;
 }
-.cart svg,
+.account:disabled {
+  opacity: 0.85;
+  cursor: default;
+}
+.account svg,
 .bnav svg {
   width: 22px;
   height: 22px;
@@ -110,31 +117,6 @@ header {
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-}
-.mbar {
-  background: var(--shell-gold);
-  color: var(--shell-on-gold);
-  font-size: 14px;
-  font-weight: 600;
-}
-.mbar__in {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-block: 8px;
-}
-.mbar button {
-  min-height: 44px;
-  padding: 0 14px;
-  border: 2px solid var(--shell-on-gold);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--shell-on-gold);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
 }
 main {
   flex: 1;
@@ -181,14 +163,10 @@ main {
 }
 .brand:focus-visible,
 .main-nav a:focus-visible,
-.cart:focus-visible,
+.account:focus-visible,
 .order:focus-visible,
 .bnav a:focus-visible {
   outline: 2px solid var(--shell-gold-hi);
-  outline-offset: 3px;
-}
-.mbar button:focus-visible {
-  outline: 2px solid var(--shell-red);
   outline-offset: 3px;
 }
 @media (hover: hover) {
@@ -206,7 +184,7 @@ main {
   .main-nav {
     display: flex;
   }
-  .cart {
+  .account {
     margin-left: 0;
   }
   .order {

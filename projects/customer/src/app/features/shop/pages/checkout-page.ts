@@ -186,7 +186,7 @@ export class CheckoutPage {
   protected back(): void {
     const step = this.step();
     if (step === 0) {
-      void this.router.navigate(['/thuc-don']);
+      void this.router.navigate(['/dat-mon']);
       return;
     }
     this.goTo((step - 1) as CheckoutStep);

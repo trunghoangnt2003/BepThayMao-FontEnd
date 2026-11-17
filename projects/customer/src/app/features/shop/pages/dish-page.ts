@@ -15,7 +15,7 @@ import { DishThumb } from '../ui/shop-ui';
       <section class="card">
         <h1 tabindex="-1">Không tìm thấy món</h1>
         <p>Món này không còn trong thực đơn.</p>
-        <a class="btn" routerLink="/thuc-don">Xem thực đơn</a>
+        <a class="btn" routerLink="/dat-mon">Xem thực đơn</a>
       </section>
     } @else {
       @let value = state.value;

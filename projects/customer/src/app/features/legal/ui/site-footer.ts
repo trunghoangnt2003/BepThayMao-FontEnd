@@ -1,7 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { MotionPreference } from '../../../shared/motion/motion-preference';
 import { LegalService, slugOf } from '../data-access/legal.service';
 
 function viDate(value: string): string {
@@ -62,11 +61,6 @@ function viDate(value: string): string {
           }
         </nav>
       }
-    </div>
-    <div class="container motion">
-      <button type="button" [attr.aria-pressed]="motion.enabled()" (click)="motion.toggle()">
-        {{ motionLabel() }}
-      </button>
     </div>
     <p class="container copy">© {{ year }} {{ info?.businessName || 'Bếp Thầy Mão' }}</p>
   `,
@@ -150,24 +144,6 @@ function viDate(value: string): string {
       stroke: var(--la);
       stroke-width: 2.4;
     }
-    .motion {
-      margin-top: var(--space-lg);
-    }
-    .motion button {
-      min-height: 44px;
-      padding: 0 14px;
-      border: 2px solid var(--on-cocoa-2);
-      border-radius: var(--radius-pill);
-      background: transparent;
-      color: var(--on-cocoa);
-      font: inherit;
-      font-weight: var(--weight-strong);
-      cursor: pointer;
-    }
-    .motion button:focus-visible {
-      outline: 2px solid var(--gold);
-      outline-offset: 3px;
-    }
     .copy {
       margin-top: var(--space-xl);
       padding-top: var(--space-md);
@@ -183,14 +159,6 @@ function viDate(value: string): string {
 export class SiteFooter {
   protected readonly legal = toSignal(inject(LegalService).footer(), { initialValue: null });
   protected readonly slugOf = slugOf;
-  protected readonly motion = inject(MotionPreference);
-  /** Nhãn nút animation: theo máy hay khách đã chọn, đang bật hay tắt. */
-  protected readonly motionLabel = computed(() => {
-    const state = this.motion.enabled() ? 'bật' : 'tắt';
-    return this.motion.forced() === null
-      ? `Animation: theo cài đặt máy (${state})`
-      : `Animation: ${state}`;
-  });
   protected readonly year = new Date().getFullYear();
 
   /** Chỉ những dòng chủ quán đã nhập; không có dòng nào thì ẩn cả mục. */

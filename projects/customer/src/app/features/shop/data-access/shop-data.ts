@@ -35,9 +35,6 @@ export const homeResolver: ResolveFn<Loaded<HomeData>> = () =>
     }),
   );
 
-export const menuResolver: ResolveFn<Loaded<readonly MenuDishDto[]>> = () =>
-  load(inject(MenuService).getMenu());
-
 export const dishResolver: ResolveFn<Loaded<MenuDishDetailDto>> = (route) =>
   load(inject(MenuService).getMenuDish(route.paramMap.get('dishId') ?? ''));
 

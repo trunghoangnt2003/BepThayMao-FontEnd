@@ -93,16 +93,6 @@
   background: var(--fd-gold);
   opacity: 0.7;
 }
-.fall {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--fd-red);
-  font-size: 15px;
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
-}
 .fgrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -123,15 +113,9 @@
   color: var(--fd-ink-2);
   text-align: center;
 }
-.cat:focus-visible,
-.fall:focus-visible {
+.cat:focus-visible {
   outline: 2px solid var(--fd-red);
   outline-offset: 3px;
-}
-@media (hover: hover) {
-  .fall:hover {
-    text-decoration: underline;
-  }
 }
 @media (min-width: 47.5rem) {
   .fgrid {

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { policyResolver } from './features/legal/data-access/legal.service';
 import { publicBranchesResolver } from './features/branches/data-access/public-branches.resolver';
-import { dishResolver, homeResolver, menuResolver } from './features/shop/data-access/shop-data';
+import { dishResolver, homeResolver } from './features/shop/data-access/shop-data';
 
 // / là trang giới thiệu; đặt món ở /dat-mon, chọn cơ sở ở /dat-hang (D-13). Mọi route SSR, có <title> riêng qua PageMeta.
 export const routes: Routes = [
@@ -15,11 +15,6 @@ export const routes: Routes = [
     path: 'dat-mon',
     resolve: { data: homeResolver },
     loadComponent: () => import('./features/shop/pages/home-page').then((m) => m.HomePage),
-  },
-  {
-    path: 'thuc-don',
-    resolve: { menu: menuResolver },
-    loadComponent: () => import('./features/shop/pages/menu-page').then((m) => m.MenuPage),
   },
   {
     path: 'mon/:dishId',
