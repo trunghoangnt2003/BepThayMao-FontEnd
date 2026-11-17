@@ -1,193 +1,159 @@
-/* Hallmark · shape: scroll story xôi xéo · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: năm lớp xôi rơi xuống thúng theo nhịp cuộn, thẻ đỏ viền vàng ở cuối · scope: phần kể chuyện trang giới thiệu */
-/* Hallmark · critique: CSS scroll-driven chỉ trong @supports và no-preference, tĩnh khi reduced-motion hoặc tắt JS, màu SVG qua token --story-* */
+/* Hallmark · shape: scroll story xôi gà · theme: Đỏ mận (D, theo bản thử Biển Hiệu Phố 2026-11-16) · signature: ảnh thật tách năm lớp rơi vào bát theo nhịp cuộn, thẻ đỏ ở cuối · scope: phần kể chuyện trang giới thiệu */
+/* Hallmark · critique: tĩnh và đủ chữ khi tắt animation hoặc JS; GSAP chỉ thêm khi MotionPreference bật; màu qua token --lp-* */
 :host {
   display: block;
 }
-.story {
-  margin-inline: calc(50% - 50vw);
-  background: conic-gradient(
-      var(--lp-tile) 25%,
-      var(--lp-cream) 0 50%,
-      var(--lp-tile) 0 75%,
-      var(--lp-cream) 0
-    )
-    0 0 / 36px 36px;
-}
-.story__stage {
+.xr {
   display: grid;
   justify-items: center;
-  gap: var(--space-sm);
-  max-width: var(--lp-container);
-  margin-inline: auto;
-  padding: var(--space-xl) var(--space-md) var(--space-xl);
+  gap: 12px;
+  padding: 24px var(--space-md) 40px;
 }
-.story__h {
+.xr__h {
+  margin: 0;
   color: var(--lp-red);
-  font-family: var(--lp-font-script);
-  font-size: clamp(30px, 8vw, 56px);
+  font-family: var(--lp-font-sign);
+  font-size: clamp(22px, 6vw, 40px);
   font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.08;
+  line-height: 1.05;
   text-align: center;
+  text-wrap: balance;
 }
-.story__art {
-  width: min(86%, 440px);
-  aspect-ratio: 400 / 360;
+.art {
+  position: relative;
+  width: min(92vw, 560px);
+  aspect-ratio: 1024 / 683;
 }
-.story__caps {
+.art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 18px 30px rgba(28, 25, 23, 0.18));
+}
+.veil {
+  fill: rgba(255, 253, 249, 0.38);
+}
+.steam path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+.caps {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   max-width: 520px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.story__cap {
+.cap {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: baseline;
   gap: 2px 12px;
-  padding: 12px 16px;
-  border: 1.5px solid var(--lp-line-2);
-  border-radius: 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--lp-line);
+  border-radius: 10px;
   background: var(--lp-surface);
+  box-shadow: var(--lp-shadow);
 }
-.story__cap b {
+.cap b {
   grid-row: span 2;
   color: var(--lp-red);
-  font-family: var(--lp-font-script);
-  font-size: 1.5rem;
+  font-family: var(--lp-font-sign);
+  font-size: 20px;
+  font-weight: 700;
 }
-.story__cap span {
+.cap strong {
+  font-size: 16px;
+}
+.cap span {
   color: var(--lp-ink-2);
-  font-size: var(--text-sm);
+  font-size: 14px;
 }
-.story__cap--final {
+.cap--final {
   grid-template-columns: 1fr auto;
   align-items: center;
   border-color: var(--lp-red);
   background: var(--lp-red);
-  box-shadow:
-    inset 0 0 0 2px var(--lp-red),
-    inset 0 0 0 4px var(--lp-gold);
-  color: var(--lp-cream);
+  color: #fff;
 }
-.story__cap--final span {
+.cap--final span {
   color: var(--lp-gold);
 }
-.story__cap--final strong,
-.story__cap--final span {
+.cap--final strong,
+.cap--final span {
   grid-column: 1;
 }
-.story__cap--final a {
+.cap--final .btn {
   grid-column: 2;
   grid-row: 1 / 3;
+  min-height: 44px;
+  padding-inline: 18px;
+  border: 0;
+  background: var(--lp-gold);
+  color: var(--lp-on-gold);
+  font-weight: 700;
 }
-.story__cap--final a:focus-visible {
-  outline: 2px solid var(--lp-cream);
+.cap--final .btn:focus-visible {
+  outline: 2px solid #fff;
   outline-offset: 3px;
 }
-[data-step='1'] {
-  --a: 10%;
-  --c: 28%;
+
+/* Khung đang ghim (landing-motion thêm .lp--motion): chú thích chồng lên nhau, ảnh co theo chiều cao. */
+:host-context(.lp--motion) .xr {
+  position: absolute;
+  inset: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  align-content: stretch;
+  padding-block: 16px 20px;
 }
-[data-step='2'] {
-  --a: 24%;
-  --c: 42%;
+:host-context(.lp--motion) .art {
+  align-self: center;
+  justify-self: center;
+  width: auto;
+  max-width: 92vw;
+  height: 100%;
+  max-height: 60svh;
 }
-[data-step='3'] {
-  --a: 38%;
-  --c: 56%;
+:host-context(.lp--motion) .caps {
+  position: relative;
+  height: 96px;
 }
-[data-step='4'] {
-  --a: 52%;
-  --c: 70%;
+:host-context(.lp--motion) .cap {
+  position: absolute;
+  inset: 0 0 auto;
 }
-[data-step='5'] {
-  --a: 66%;
-  --c: 82%;
-}
+
 @media (min-width: 56.25rem) {
-  .story__stage {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    align-items: center;
-    column-gap: 48px;
+  .cap strong {
+    font-size: 20px;
   }
-  .story__h {
+  .cap span {
+    font-size: 16px;
+  }
+  .cap b {
+    font-size: 28px;
+  }
+  :host-context(.lp--motion) .xr {
+    right: 0;
+    left: 0;
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    column-gap: 48px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  :host-context(.lp--motion) .xr__h {
     grid-column: 1 / -1;
   }
-  .story__art {
-    width: 100%;
-    max-width: 480px;
-    justify-self: center;
-  }
-  .story__cap strong {
-    font-size: var(--text-lg);
-  }
-}
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .story__track {
-      height: 320svh;
-      view-timeline: --story-track block;
-    }
-    .story__stage {
-      position: sticky;
-      top: 0;
-      height: 100svh;
-      align-content: center;
-    }
-    .story__art {
-      width: min(86%, 440px, 51svh);
-    }
-    .story__caps {
-      position: relative;
-      height: 104px;
-    }
-    .story__cap {
-      position: absolute;
-      inset: 0 0 auto;
-    }
-    .story__cap[data-step] {
-      animation: story-cap linear both;
-      animation-timeline: --story-track;
-      animation-range: contain var(--a) contain var(--c);
-    }
-    .story__cap--final {
-      animation: story-in linear both;
-      animation-timeline: --story-track;
-      animation-range: contain 82% contain 92%;
-    }
-    @media (min-width: 56.25rem) {
-      .story__art {
-        width: 100%;
-        max-width: min(480px, 66svh);
-      }
-      .story__caps {
-        height: 120px;
-      }
-    }
-  }
-}
-@keyframes story-cap {
-  0% {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  15%,
-  85% {
-    opacity: 1;
-    transform: none;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-14px);
-  }
-}
-@keyframes story-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
+  :host-context(.lp--motion) .caps {
+    align-self: center;
+    height: auto;
+    min-height: 120px;
   }
 }

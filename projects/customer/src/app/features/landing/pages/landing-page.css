@@ -1,18 +1,21 @@
-/* Hallmark · shape: landing cuộn kể chuyện · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: chữ viết tay trên ảnh xôi, thẻ kem đè ảnh, nét gạch vàng · scope: chỉ trang giới thiệu */
-/* Hallmark · critique: màu và font chỉ qua token --lp-*, số liệu là dữ liệu thật, mọi nút Đặt món ngay vào /dat-mon, ảnh hero là ảnh tạm chờ thay */
+/* Hallmark · shape: landing cuộn kể chuyện · theme: Đỏ mận (D, theo bản thử Biển Hiệu Phố 2026-11-16) · signature: khung ghim hero rồi xôi gà lắp từng lớp, dải tên món chạy, bảng đỏ viền đèn · scope: chỉ trang giới thiệu */
+/* Hallmark · critique: màu và font chỉ qua token --lp-*, số liệu là dữ liệu thật, mọi nút Đặt món ngay vào /dat-mon, bản tĩnh đầy đủ khi tắt animation */
 :host {
   display: block;
   margin-top: calc(-1 * var(--space-md));
+  /* Bù padding đáy của main và margin đỉnh của footer để bảng CTA nối liền chân trang như bản thử. */
+  margin-bottom: calc(-2 * var(--space-2xl));
 }
 [data-theme='plum'] {
   --lp-red: #7b1725;
   --lp-red-2: #a52b37;
   --lp-gold: #d7ad62;
   --lp-gold-hi: #e6c27e;
+  --lp-on-gold: #392817;
   --lp-cream: #fffaf1;
-  --lp-cream-2: #f1dcd5;
+  --lp-cream-2: #f9e9d4;
   --lp-bg: #fffdf9;
-  --lp-surface: #fffefa;
+  --lp-surface: #ffffff;
   --lp-tile: #f4e7d8;
   --lp-ink: #292321;
   --lp-ink-2: #695f59;
@@ -20,7 +23,10 @@
   --lp-line-2: #ddcfc1;
   --lp-tint: #f9ece8;
   --lp-night: #35151a;
+  --lp-ok: #26734d;
+  --lp-ok-bg: #e5f1ea;
   --lp-shade: rgba(30, 10, 12, 0.55);
+  --lp-shadow: 0 4px 15px rgba(75, 36, 16, 0.06);
   --lp-card-shadow: 0 -10px 30px rgba(60, 20, 20, 0.12);
   --lp-photo-shadow: 0 20px 40px rgba(60, 20, 20, 0.18);
   --lp-hero-bg:
@@ -28,156 +34,175 @@
     radial-gradient(80% 55% at 100% 100%, #f4e7d8 0%, rgba(244, 231, 216, 0) 55%), #fffdf9;
   --lp-container: 1180px;
   --lp-font-script: 'Dancing Script', cursive;
+  --lp-font-sign: 'Noto Serif', Georgia, serif;
   --lp-swash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M2 7C50 2 120 1 198 4' stroke='black' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   --color-paper: var(--lp-bg);
   --color-paper-2: var(--lp-surface);
-  --color-paper-3: var(--lp-tile);
   --color-ink: var(--lp-ink);
   --color-ink-2: var(--lp-ink-2);
-  --color-muted: var(--lp-ink-2);
-  --color-rule: var(--lp-line);
-  --color-rule-2: var(--lp-line-2);
   --color-accent: var(--lp-red);
-  --color-accent-ink: var(--lp-cream);
   --color-focus: var(--lp-red-2);
-  --color-head: var(--lp-red);
-  --color-tint: var(--lp-tint);
-  --cocoa: var(--lp-red);
-  --cocoa-2: var(--lp-night);
-  --on-cocoa: var(--lp-cream);
-  --on-cocoa-2: var(--lp-cream-2);
   --gold: var(--lp-gold);
 }
 .lp {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-2xl);
   background: var(--lp-bg);
   box-shadow: 0 0 0 100vmax var(--lp-bg);
   clip-path: inset(0 -100vmax);
 }
+.lp-progress {
+  position: fixed;
+  z-index: 70;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: var(--lp-gold);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
 .bleed {
   margin-inline: calc(50% - 50vw);
 }
+.lp-story {
+  background: var(--lp-hero-bg);
+}
+.stage {
+  position: relative;
+}
+.lp--motion .stage {
+  height: calc(100svh - var(--header-h, 70px) - var(--bnav-h, 0px));
+  overflow: hidden;
+}
+.lp--motion .stage > cus-landing-hero,
+.lp--motion .stage > cus-landing-story {
+  position: absolute;
+  inset: 0;
+}
+/* Hero trong khung ghim: lấp đầy chiều cao màn, ảnh co theo phần còn lại (biến đọc trong landing-hero.css). */
+.lp--motion .stage > cus-landing-hero {
+  --hero-h: 100%;
+  --hero-rows: minmax(0, 1fr) auto;
+  --hero-ratio: auto;
+}
+@media (min-width: 56.25rem) {
+  .lp--motion .stage > cus-landing-hero {
+    --hero-rows: minmax(0, 1fr);
+  }
+}
+.sec {
+  padding-block: 56px;
+}
 .inner {
-  max-width: var(--container-app);
+  max-width: var(--lp-container);
   margin-inline: auto;
-  padding-inline: var(--gutter);
 }
-.featured a:focus-visible,
-.branches a:focus-visible,
-.final a:focus-visible,
-.btn:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 3px;
-}
-h2 {
-  min-width: 0;
-  overflow-wrap: break-word;
+.sec-h {
+  margin: 0 0 8px;
+  overflow: hidden;
+  padding-bottom: 0.08em;
   color: var(--lp-red);
-  font-family: var(--lp-font-script);
-  font-size: clamp(30px, 8vw, 56px);
+  font-family: var(--lp-font-sign);
+  font-size: clamp(30px, 8vw, 64px);
   font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.08;
+  line-height: 1.05;
   text-wrap: balance;
 }
-.head {
-  display: grid;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-lg);
-}
-.about {
-  display: grid;
-  gap: var(--space-sm);
-  max-width: 46rem;
-}
-.about p {
-  margin: 0;
+.sec-lead {
+  max-width: 52ch;
+  margin: 0 0 24px;
   color: var(--lp-ink-2);
-  font-size: 1.125rem;
+}
+.reveal {
+  max-width: 24ch;
+  margin: 0;
+  color: var(--lp-ink);
+  font-size: clamp(24px, 6vw, 48px);
+  font-weight: 800;
+  line-height: 1.25;
   white-space: pre-line;
 }
+.reveal em {
+  color: var(--lp-red);
+  font-style: normal;
+}
 .branches {
-  padding-block: var(--space-2xl);
-  border-radius: 40px;
-  background: var(--cocoa-2);
-  color: var(--on-cocoa);
+  margin-inline: calc(50% - 50vw);
+  padding-inline: var(--gutter);
+  background: var(--lp-tile);
 }
-.branches h2,
-.final h2 {
-  color: var(--lp-gold);
+.more {
+  margin: 20px 0 0;
 }
-.branches p,
-.final p {
-  margin: 0;
-  color: var(--on-cocoa-2);
+.more a {
+  color: var(--lp-red);
+  font-weight: 700;
 }
-.branches__grid {
-  display: grid;
-  gap: var(--space-xl);
-  align-items: center;
+.cta {
+  margin-inline: calc(50% - 50vw);
+  padding: 64px var(--gutter);
+  background: var(--lp-tile);
 }
-.final {
+.board {
+  position: relative;
   display: grid;
   justify-items: center;
-  gap: var(--space-md);
-  padding: var(--space-2xl) var(--space-md);
-  border-radius: var(--radius-panel);
-  outline: 2px solid var(--lp-gold);
-  outline-offset: -10px;
+  gap: 18px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 44px 20px;
+  border-radius: 16px;
   background: var(--lp-red);
-  color: var(--on-cocoa);
+  color: var(--lp-gold);
   text-align: center;
-}
-.branches,
-.final {
   --color-focus: var(--lp-gold-hi);
 }
-.branches a:focus-visible,
-.final a:focus-visible,
+.board::before,
+.board::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 7px dotted var(--lp-gold);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.board::after {
+  border-color: #fff3a3;
+  opacity: 0;
+}
+.board.alt::before {
+  opacity: 0;
+}
+.board.alt::after {
+  opacity: 1;
+}
+.board h2 {
+  margin: 0;
+  color: var(--lp-gold);
+  font-family: var(--lp-font-sign);
+  font-size: clamp(30px, 8.5vw, 72px);
+  font-weight: 700;
+  line-height: 1.05;
+}
+.board p {
+  max-width: 40ch;
+  margin: 0;
+  color: #fff;
+}
+.magnet {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+}
+.board .btn {
+  border: 0;
+  background: var(--lp-gold);
+  color: var(--lp-on-gold);
+}
+.more a:focus-visible,
 .btn:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 3px;
-}
-.final .btn:active {
-  transform: translateY(1px);
-}
-.branches p a {
-  color: var(--lp-gold);
-}
-@supports (animation-timeline: view()) {
-  .reveal {
-    animation: reveal linear both;
-    animation-timeline: view();
-    animation-range: entry 0% entry 40%;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    cus-landing-hero {
-      animation: hero-out linear both;
-      animation-timeline: view();
-      animation-range: exit 0% exit 100%;
-    }
-  }
-}
-@keyframes hero-out {
-  to {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-}
-@keyframes reveal {
-  from {
-    transform: translateY(12px);
-  }
-}
-@media (min-width: 56rem) {
-  .branches__grid {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    animation: none;
-  }
 }

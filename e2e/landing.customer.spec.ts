@@ -67,7 +67,7 @@ test.describe('landing without JavaScript', () => {
   test('still shows the headline and every story layer caption', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('h1')).toBeVisible();
-    await expect(page.getByText('Nếp dẻo')).toBeAttached();
-    await expect(page.getByText('Trứng kho')).toBeAttached();
+    await expect(page.getByText('Xôi nếp', { exact: true })).toBeAttached();
+    await expect(page.getByText('Trứng cút, thịt băm')).toBeAttached();
   });
 });

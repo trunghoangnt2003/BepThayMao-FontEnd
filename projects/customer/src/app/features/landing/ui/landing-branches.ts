@@ -1,61 +1,87 @@
 import { Component, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { PublicBranch } from '@bepthaymao/api-client';
 import { formatOpeningHours } from '@bepthaymao/ui';
 
-/** Các cơ sở đang hoạt động: tên, địa chỉ, giờ nhận đơn (dữ liệu thật từ API cơ sở). */
+/** Các cơ sở đang hoạt động: tên, giờ nhận đơn, địa chỉ (dữ liệu thật từ API cơ sở). */
 @Component({
   selector: 'cus-landing-branches',
-  imports: [RouterLink],
   template: `
-    <ul>
+    <ul class="br-grid">
       @for (branch of branches(); track branch.id) {
-        <li>
-          <b>{{ branch.name }}</b>
-          <span>{{ branch.address }}</span>
-          <span class="num">Nhận đơn {{ hours(branch) }}</span>
+        <li class="br">
+          <h3>{{ branch.name }}</h3>
+          <span class="pill num">Nhận đơn {{ hours(branch) }}</span>
+          <p>
+            <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
+              <circle cx="12" cy="10" r="2.5" />
+            </svg>
+            {{ branch.address }}
+          </p>
         </li>
       }
     </ul>
-    <a routerLink="/co-so">Xem giờ và bản đồ các cơ sở</a>
   `,
   styles: `
     :host {
-      display: grid;
-      gap: var(--space-md);
+      display: block;
     }
-    ul {
+    .br-grid {
       display: grid;
-      gap: var(--space-sm);
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
       margin: 0;
       padding: 0;
       list-style: none;
     }
-    li {
+    .br {
       display: grid;
-      gap: 2px;
-      padding: var(--space-md) var(--space-lg);
-      border: 1px solid var(--color-rule);
-      border-radius: var(--radius-card);
-      background: var(--color-paper-2);
+      gap: 8px;
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--lp-line);
+      border-radius: 16px;
+      background: var(--lp-surface);
+      box-shadow: var(--lp-shadow);
     }
-    b {
-      color: var(--color-accent);
-      font-size: 1.25rem;
-      font-weight: var(--weight-heavy);
+    h3 {
+      margin: 0;
+      color: var(--lp-red);
+      font-family: var(--lp-font-sign);
+      font-size: 22px;
+      font-weight: 700;
     }
-    span {
-      color: var(--color-ink-2);
-      font-size: var(--text-sm);
-    }
-    a {
+    .pill {
       justify-self: start;
-      color: var(--gold);
-      font-weight: var(--weight-strong);
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: var(--lp-ok-bg);
+      color: var(--lp-ok);
+      font-size: 13px;
+      font-weight: 700;
     }
-    a:focus-visible {
-      outline: 2px solid var(--color-focus);
-      outline-offset: 3px;
+    p {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin: 0;
+      color: var(--lp-ink-2);
+      overflow-wrap: anywhere;
+    }
+    .ic {
+      flex: none;
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentcolor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    @media (min-width: 47.5rem) {
+      .br-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
   `,
 })

@@ -1,33 +1,72 @@
 <a class="skip-link" href="#main">Bỏ qua tới nội dung chính</a>
 <header>
   <div class="container topbar">
-    <a class="wordmark" routerLink="/"
-      ><span class="mark" aria-hidden="true">M</span
-      ><span class="name">Bếp Thầy Mão<small>Xôi nóng giao tận nơi</small></span></a
+    <a class="brand" routerLink="/" aria-label="Bếp Thầy Mao, về trang giới thiệu"
+      ><img
+        class="logo"
+        ngSrc="/images/logo-bep-thay-mao.png"
+        width="85"
+        height="58"
+        alt=""
+        priority
+      /><span class="name">Bếp Thầy Mao</span></a
     >
-    <nav aria-label="Điều hướng chính">
-      <a routerLink="/dat-mon" routerLinkActive="active" ariaCurrentWhenActive="page">Đặt món</a>
-      <a routerLink="/tra-don" routerLinkActive="active" ariaCurrentWhenActive="page">Tra đơn</a>
-      <a
-        class="cart"
-        routerLink="/dat-hang"
-        [attr.aria-label]="'Giỏ hàng, ' + cart.count() + ' món'"
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 8h14l-1 12H6z" />
-          <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-        </svg>
-        @if (cart.count() > 0) {
-          <!-- Mỗi lần số món đổi thì dựng lại huy hiệu để hiệu ứng nảy chạy lại. -->
-          @for (count of [cart.count()]; track count) {
-            <span class="badge num fx-pop" aria-hidden="true">{{ count }}</span>
-          }
-        }
-      </a>
+    <nav class="main-nav" aria-label="Điều hướng chính">
+      @for (link of links; track link.path) {
+        <a
+          [routerLink]="link.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+          ariaCurrentWhenActive="page"
+          >{{ link.label }}</a
+        >
+      }
     </nav>
+    <a class="cart" routerLink="/dat-hang" [attr.aria-label]="'Giỏ hàng, ' + cart.count() + ' món'">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 8h14l-1 12H6z" />
+        <path d="M9 8a3 3 0 0 1 6 0" />
+      </svg>
+      @if (cart.count() > 0) {
+        <!-- Mỗi lần số món đổi thì dựng lại huy hiệu để hiệu ứng nảy chạy lại. -->
+        @for (count of [cart.count()]; track count) {
+          <span class="badge num fx-pop" aria-hidden="true">{{ count }}</span>
+        }
+      }
+    </a>
+    <a class="order" routerLink="/dat-mon">Đặt món</a>
   </div>
 </header>
+@if (motion.offerEnable()) {
+  <div class="mbar">
+    <div class="container mbar__in">
+      <span>Máy bạn đang tắt hiệu ứng chuyển động nên trang hiện bản tĩnh.</span>
+      <button type="button" (click)="motion.enable()">Bật animation để xem</button>
+    </div>
+  </div>
+}
 
 <main id="main" class="container" tabindex="-1"><router-outlet /></main>
 <cus-site-footer />
+
+<nav class="bnav" aria-label="Điều hướng nhanh">
+  @for (link of quick; track link.path) {
+    <a
+      [routerLink]="link.path"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+      ariaCurrentWhenActive="page"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        @for (d of link.icon; track $index) {
+          <path [attr.d]="d" />
+        }
+      </svg>
+      {{ link.label }}
+      @if (link.path === '/dat-hang' && cart.count() > 0) {
+        <span class="badge num" aria-hidden="true">{{ cart.count() }}</span>
+      }
+    </a>
+  }
+</nav>
 <cus-route-loader />

@@ -36,6 +36,13 @@
   --shadow-color: oklch(35% 0.05 50 / 0.1);
   --shadow-card: 0 10px 30px var(--shadow-color);
   --shadow-lift: 0 18px 44px oklch(30% 0.05 50 / 0.18);
+  --header-h: 70px;
+  --bnav-h: calc(60px + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 56.25rem) {
+  :root {
+    --bnav-h: 0px;
+  }
 }
 .accent-word {
   font-family: var(--font-accent);
@@ -104,4 +111,20 @@
   height: 8px;
   border-radius: 50%;
   background: currentColor;
+}
+/* Chữ do landing-motion tách ra để bật từng ký tự/từ; phần tử tạo bằng JS nên style phải là global. */
+.split-w {
+  display: inline-block;
+  white-space: nowrap;
+}
+.split-c {
+  display: inline-block;
+}
+.split-rw {
+  display: inline-block;
+  margin-right: 0.25em;
+}
+.split-rw em {
+  color: #7b1725;
+  font-style: normal;
 }

@@ -12,5 +12,11 @@
     "Python-2.0",
     "MPL-2.0"
   ],
-  "exceptions": []
+  "exceptions": [
+    {
+      "package": "gsap@3.12.5",
+      "license": "Standard 'no charge' license: https://gsap.com/standard-license. Club GSAP members get more: https://gsap.com/licensing/. Why GreenSock doesn't employ an MIT license: https://gsap.com/why-license/",
+      "reason": "Chủ dự án chọn GSAP + ScrollTrigger để trang chủ customer chạy đúng animation cuộn của mockup (2026-11-16). Giấy phép Standard no-charge của GreenSock cho phép dùng thương mại miễn phí trên web của quán; không phải SPDX nên cần ngoại lệ, chờ developer thứ hai duyệt."
+    }
+  ]
 }

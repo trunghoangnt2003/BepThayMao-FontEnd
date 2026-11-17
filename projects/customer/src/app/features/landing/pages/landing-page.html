@@ -1,7 +1,15 @@
-<div class="lp" data-theme="plum">
-  <cus-landing-hero [image]="heroImage" />
+<div class="lp" data-theme="plum" #root>
+  <div class="lp-progress" aria-hidden="true"></div>
 
-  <cus-landing-story [dish]="storyDish()" />
+  <!-- Tràn viền ở lớp bọc: phần tử được GSAP ghim không được có margin âm, nếu không bề ngang khi ghim bị đo sai. -->
+  <div class="bleed">
+    <section class="lp-story" id="story" aria-label="Giới thiệu Bếp Thầy Mao">
+      <div class="stage">
+        <cus-landing-hero [image]="heroImage" />
+        <cus-landing-story [image]="storyImage" [dish]="storyDish()" />
+      </div>
+    </section>
+  </div>
 
   @if (menu().length > 0) {
     <cus-landing-velo [menu]="menu()" />
@@ -11,44 +19,31 @@
     <cus-landing-featured [dishes]="featured()" />
   }
 
-  <section class="menu reveal" id="thuc-don" aria-labelledby="menu-h">
-    <div class="head">
-      <h2 id="menu-h">{{ menu().length }} món xôi, một thực đơn cho mọi cơ sở</h2>
-    </div>
-    <cus-landing-menu [menu]="menu()" />
-  </section>
-
   @if (about()) {
-    <section class="about reveal" aria-labelledby="about-h">
-      <h2 id="about-h">Chuyện của bếp</h2>
-      <p>{{ about() }}</p>
+    <section class="sec" id="chuyen-cua-bep" aria-labelledby="about-h">
+      <div class="inner">
+        <h2 id="about-h" class="sec-h" data-float>Chuyện của bếp</h2>
+        <p class="reveal" data-reveal>{{ about() }} <em>Sống trọn từng vị ngon.</em></p>
+      </div>
     </section>
   }
 
-  <section class="how reveal" aria-labelledby="how-h">
-    <div class="head">
-      <h2 id="how-h">Đặt xôi trong ba bước, không cần tài khoản</h2>
-    </div>
-    <cus-landing-steps />
-  </section>
-
-  <section class="branches bleed reveal" id="co-so" aria-labelledby="branch-h">
-    <div class="inner branches__grid">
-      <div class="head">
-        <h2 id="branch-h">Các cơ sở của quán</h2>
-        <p>Mỗi cơ sở có giờ nhận đơn riêng. Ngoài giờ bạn vẫn đặt được và nhận vào hôm sau.</p>
-      </div>
+  <section class="sec branches" id="co-so" aria-labelledby="branch-h">
+    <div class="inner">
+      <h2 id="branch-h" class="sec-h" data-float>Các cơ sở của quán</h2>
+      <p class="sec-lead">Ở bước đặt hàng, quán gợi ý cơ sở gần bạn nhất.</p>
       @if (branchList().length > 0) {
         <cus-landing-branches [branches]="branchList()" />
-      } @else {
-        <p><a routerLink="/co-so">Xem danh sách cơ sở</a></p>
       }
+      <p class="more"><a routerLink="/co-so">Xem giờ và bản đồ các cơ sở</a></p>
     </div>
   </section>
 
-  <section class="final reveal" aria-labelledby="final-h">
-    <h2 id="final-h">Đói rồi? Gọi xôi thôi!</h2>
-    <p>Đặt món trên web, quán giao xôi nóng tận nơi.</p>
-    <a class="btn btn--gold" routerLink="/dat-mon">Đặt món ngay</a>
+  <section class="cta" aria-labelledby="final-h">
+    <div class="board">
+      <h2 id="final-h">Đói rồi? Gọi xôi thôi!</h2>
+      <p>Đặt món trên web, quán giao xôi nóng tận nơi.</p>
+      <span class="magnet"><a class="btn btn--gold" routerLink="/dat-mon">Đặt món ngay</a></span>
+    </div>
   </section>
 </div>

@@ -44,6 +44,12 @@
               "node_modules/@fontsource/dancing-script/vietnamese-700.css",
               "node_modules/@fontsource/dancing-script/latin-700.css",
               "node_modules/@fontsource/dancing-script/latin-ext-700.css",
+              "node_modules/@fontsource/noto-serif/vietnamese-700.css",
+              "node_modules/@fontsource/noto-serif/latin-700.css",
+              "node_modules/@fontsource/noto-serif/latin-ext-700.css",
+              "node_modules/@fontsource/noto-serif/vietnamese-700-italic.css",
+              "node_modules/@fontsource/noto-serif/latin-700-italic.css",
+              "node_modules/@fontsource/noto-serif/latin-ext-700-italic.css",
               "projects/ui/src/styles/index.css",
               "projects/customer/src/styles.css"
             ],

@@ -1,234 +1,156 @@
-/* Hallmark · shape: food ordering home · theme: Bếp Việt ấm · scope: trang chủ đặt món */
-/* Hallmark · critique: khối đầu cacao một hành động (tìm), chip lọc dính, món giới thiệu trượt ngang, nhóm món dạng thẻ */
+/* Hallmark · shape: màn Đặt món · theme: Đỏ mận (D, theo bản thử Biển Hiệu Phố 2026-11-17) · signature: banner ảnh đỏ mận chữ vàng nghiêng, ô nhóm món có ảnh, lưới thẻ nút + tròn · scope: /dat-mon */
+/* Hallmark · critique: màu qua token --fd-*, giá và ảnh là dữ liệu thật, mọi nút ≥ 44px, focus rõ trên nền sáng */
 :host {
-  display: grid;
-  gap: var(--space-lg);
-}
-.lead {
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  gap: var(--space-sm);
-  padding: var(--space-lg) var(--space-md);
-  border-radius: var(--radius-panel);
-  background: var(--cocoa);
-  color: var(--on-cocoa);
-  isolation: isolate;
-}
-.lead::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: -40% -30% auto auto;
-  width: 80%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, oklch(70% 0.14 65 / 0.5), transparent 65%);
-}
-.lead h1 {
-  font-size: clamp(2rem, 1.4rem + 3vw, 3.25rem);
-  font-weight: var(--weight-heavy);
-}
-.lead .accent-word {
-  font-size: 1.12em;
-}
-.lead .kicker {
-  color: var(--gold);
-}
-.lead p {
-  max-width: 34rem;
-  color: var(--on-cocoa-2);
-}
-.search {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  min-height: 52px;
-  margin-top: var(--space-xs);
-  padding-inline: 18px;
-  border-radius: var(--radius-pill);
-  background: var(--color-paper-2);
-  color: var(--color-muted);
-}
-.search:focus-within {
-  box-shadow: 0 0 0 3px var(--gold);
-}
-.search svg {
-  width: 20px;
-  height: 20px;
-  flex: none;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-}
-.search input {
-  flex: 1;
-  min-width: 0;
-  min-height: 48px;
-  border: 0;
-  background: transparent;
-  color: var(--color-ink);
-  font: inherit;
-}
-.search input:focus {
-  outline: none;
-}
-.chips {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-raised);
-  display: flex;
-  gap: var(--space-xs);
-  margin: calc(-1 * var(--space-sm)) calc(-1 * var(--gutter));
-  padding: var(--space-sm) var(--gutter);
-  overflow-x: auto;
-  scrollbar-width: none;
-  background: var(--color-paper);
-}
-.chips button {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  min-height: 44px;
-  padding-inline: 16px;
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: var(--color-paper-2);
-  box-shadow: inset 0 0 0 1px var(--color-rule);
-  color: var(--color-ink-2);
-  font: inherit;
-  font-size: var(--text-sm);
-  font-weight: var(--weight-strong);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: transform 250ms var(--spring);
-}
-.chips button:hover {
-  transform: translateY(-2px);
-}
-.chips button::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--c, var(--gold));
-}
-.chips [data-cat='XoiMan'] {
-  --c: var(--dau);
-}
-.chips [data-cat='XoiNgot'] {
-  --c: var(--gac);
-}
-.chips [data-cat='Chay'] {
-  --c: var(--la);
-}
-.chips [aria-pressed='true'] {
-  background: var(--cocoa);
-  box-shadow: none;
-  color: var(--gold);
-}
-.row-h {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
-}
-.row-h h2 {
-  font-size: 1.375rem;
-  font-weight: var(--weight-heavy);
-}
-.row-h span {
-  color: var(--color-muted);
-  font-size: var(--text-sm);
-}
-.featured {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: min(68%, 260px);
-  gap: var(--space-sm);
-  margin: 0;
-  margin-inline: calc(-1 * var(--gutter));
-  padding: 4px var(--gutter) var(--space-lg);
-  scroll-padding-inline: var(--gutter);
-  list-style: none;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-}
-.featured li {
-  display: grid;
-  gap: var(--space-xs);
-  padding: 10px;
-  border-radius: var(--radius-panel);
-  background: var(--color-paper-2);
-  box-shadow: var(--shadow-card);
-  scroll-snap-align: start;
-  transition: transform 350ms var(--spring);
-}
-.featured li:hover {
-  transform: translateY(-4px);
-}
-.pic {
-  position: relative;
+  --fd-red: #7b1725;
+  --fd-red-2: #a52b37;
+  --fd-gold: #d7ad62;
+  --fd-on-gold: #392817;
+  --fd-ink: #292321;
+  --fd-ink-2: #695f59;
+  --fd-tile: #f4e7d8;
+  --fd-line: #eadfd2;
+  --fd-line-2: #ddcfc1;
+  --fd-shadow: 0 4px 15px rgb(75 36 16 / 0.06);
   display: block;
 }
-.tag {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 4px 12px;
-  border-radius: var(--radius-pill);
-  background: var(--dau);
-  color: var(--cocoa);
-  font-size: 0.6875rem;
-  font-weight: var(--weight-heavy);
+.cats {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 6px;
 }
-.name {
-  padding-inline: 4px;
-  color: var(--color-ink);
-  font-weight: var(--weight-heavy);
-  text-decoration: none;
+.cat {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 6px 10px;
+  border: 1px solid var(--fd-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--fd-shadow);
+  color: var(--fd-ink);
+  font: 800 14px/1.2 var(--font-body);
+  cursor: pointer;
 }
-.bottom {
+.cat img,
+.cat-ic {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.cat-ic {
+  display: grid;
+  place-items: center;
+  background: var(--fd-tile);
+  color: var(--fd-red);
+}
+.cat-ic svg {
+  width: 56%;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.fsec {
+  margin-top: 26px;
+  scroll-margin-top: calc(var(--header-h) + 12px);
+}
+.fhead {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-left: 4px;
-}
-.price {
-  color: var(--color-accent);
-  font-weight: var(--weight-heavy);
-}
-.list {
-  display: grid;
   gap: 10px;
+  margin-bottom: 12px;
 }
-.empty {
-  color: var(--color-muted);
+.fhead h2 {
+  min-width: 0;
+  margin: 0;
+  color: var(--fd-red);
+  font:
+    700 clamp(19px, 5vw, 30px) / 1.15 'Noto Serif',
+    Georgia,
+    serif;
+  white-space: nowrap;
 }
-.card {
+.star {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: var(--fd-gold);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+.fline {
+  flex: 1;
+  min-width: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--fd-gold);
+  opacity: 0.7;
+}
+.fall {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--fd-red);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.fgrid {
   display: grid;
-  gap: var(--space-sm);
-  padding: var(--space-lg);
-  border-radius: var(--radius-panel);
-  background: var(--color-paper-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.about p {
-  color: var(--color-ink-2);
+.fgrid li {
+  display: grid;
+  min-width: 0;
 }
-.about a {
-  justify-self: start;
-  color: var(--color-accent);
-  font-weight: var(--weight-strong);
+.fempty {
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed var(--fd-line-2);
+  border-radius: 16px;
+  color: var(--fd-ink-2);
+  text-align: center;
 }
-@media (min-width: 60rem) {
-  .featured {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    overflow: visible;
+.cat:focus-visible,
+.fall:focus-visible {
+  outline: 2px solid var(--fd-red);
+  outline-offset: 3px;
+}
+@media (hover: hover) {
+  .fall:hover {
+    text-decoration: underline;
   }
-  .list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 47.5rem) {
+  .fgrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+@media (min-width: 56.25rem) {
+  .cats {
+    gap: 16px;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+  .cat {
+    font-size: 16px;
+  }
+}
+@media (min-width: 68.75rem) {
+  .fgrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }

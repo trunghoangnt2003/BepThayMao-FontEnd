@@ -1,53 +1,44 @@
-/* Hallmark · shape: dải tên món chạy ngang · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: tên món bằng chữ viết tay nối nhau bằng hình thoi vàng, hai dải ngược chiều · scope: phần trang trí giữa trang giới thiệu */
-/* Hallmark · critique: chỉ trang trí (aria-hidden), chạy bằng transform, đứng yên khi reduced-motion */
+/* Hallmark · shape: dải tên món chạy ngang · theme: Đỏ mận (D, theo bản thử Biển Hiệu Phố 2026-11-16) · signature: dải đỏ chữ vàng nghiêng nhẹ trên dải vàng chữ đen, nối bằng sao · scope: phần trang trí giữa trang giới thiệu */
+/* Hallmark · critique: chỉ trang trí (aria-hidden), chạy bằng transform do GSAP, đứng yên khi tắt animation */
 :host {
   display: block;
   min-width: 0;
+  margin-inline: calc(50% - 50vw);
 }
 .velo {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-sm);
+  gap: 10px;
+  padding-block: 28px;
+  overflow: hidden;
 }
-.velo__row {
-  overflow: clip;
+.band {
+  overflow: hidden;
+}
+.band:first-child {
+  margin-inline: -20px;
   transform: rotate(-2deg);
-}
-.velo__row--2 {
-  transform: none;
 }
 .velo__run {
   display: flex;
   width: max-content;
-  animation: velo 40s linear infinite;
-}
-.velo__row--2 .velo__run {
-  animation-direction: reverse;
-}
-.velo__name {
-  display: inline-flex;
-  align-items: center;
-  color: var(--lp-red);
-  font-family: var(--lp-font-script);
-  font-size: clamp(28px, 7vw, 44px);
+  background: var(--lp-red);
+  color: var(--lp-gold);
+  font-family: var(--lp-font-sign);
+  font-size: clamp(28px, 8vw, 64px);
   font-weight: 700;
+  line-height: 1.15;
   white-space: nowrap;
 }
-.velo__name::after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  margin-inline: var(--space-lg);
-  transform: rotate(45deg);
+.velo__run.r2 {
   background: var(--lp-gold);
+  color: var(--lp-ink);
 }
-@keyframes velo {
-  to {
-    transform: translateX(-50%);
-  }
+span {
+  padding: 4px 18px;
 }
-@media (prefers-reduced-motion: reduce) {
-  .velo__run {
-    animation: none;
-  }
+span::after {
+  content: '\2605';
+  margin-left: 36px;
+  font-size: 0.55em;
+  vertical-align: middle;
 }

@@ -1,89 +1,179 @@
-/* Hallmark · shape: hàng thẻ món nổi bật · theme: Đỏ mận (D, theo yêu cầu 2026-11-16) · signature: nền đỏ mận tràn viền, thẻ trắng cuộn ngang bám mép · scope: món nổi bật trang giới thiệu */
-/* Hallmark · critique: màu qua token của LandingPage, giá và tên là dữ liệu thật, focus vàng sáng trên nền đỏ */
+/* Hallmark · shape: hàng thẻ món nổi bật · theme: Đỏ mận (D, theo bản thử Biển Hiệu Phố 2026-11-16) · signature: nền đỏ mận tràn viền, tiêu đề vàng bật từng chữ, thẻ trắng có tem "Món tủ" · scope: món nổi bật trang giới thiệu */
+/* Hallmark · critique: màu qua token --lp-*, giá và tên là dữ liệu thật, desktop ghim và trượt ngang khi animation bật */
 :host {
   display: block;
+  margin-inline: calc(50% - 50vw);
   --color-focus: var(--lp-gold-hi);
 }
 .featured {
-  margin-inline: calc(50% - 50vw);
-  padding-block: var(--space-xl);
-  border-radius: 40px;
+  overflow: hidden;
+  padding-block: 56px;
   background: var(--lp-red);
+  color: #fff;
 }
-.featured__inner {
-  display: grid;
-  gap: var(--space-lg);
+.featured__head {
   max-width: var(--lp-container);
   margin-inline: auto;
   padding-inline: var(--space-md);
 }
-h2 {
-  min-width: 0;
-  overflow-wrap: break-word;
+.sec-h {
+  margin: 0 0 8px;
+  overflow: hidden;
+  padding-bottom: 0.08em;
   color: var(--lp-gold);
-  font-family: var(--lp-font-script);
-  font-size: clamp(30px, 8vw, 56px);
+  font-family: var(--lp-font-sign);
+  font-size: clamp(30px, 8vw, 64px);
   font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.08;
+  line-height: 1.05;
   text-wrap: balance;
+}
+.sec-lead {
+  max-width: 52ch;
+  margin: 0 0 24px;
+  color: var(--lp-cream-2);
+}
+.featured__wrap {
+  padding-inline: var(--space-md) 0;
+  padding-bottom: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+:host-context(.lp--hs) .featured__wrap {
+  overflow: visible;
 }
 .featured__track {
   display: flex;
-  gap: var(--space-md);
+  gap: 16px;
+  width: max-content;
   margin: 0;
-  padding: 4px 4px var(--space-sm);
-  overflow-x: auto;
+  padding: 0 16px 0 0;
   list-style: none;
-  scroll-snap-type: x mandatory;
 }
-li {
-  flex: 0 0 min(240px, 72%);
+.fcard {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: min(78vw, 300px);
+  overflow: hidden;
+  border: 1px solid var(--lp-line);
+  border-radius: 16px;
+  background: var(--lp-surface);
+  box-shadow: var(--lp-shadow);
+  color: var(--lp-ink);
   scroll-snap-align: start;
 }
-a {
-  display: grid;
-  gap: var(--space-xs);
+.ph {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  background: var(--lp-tile);
+}
+.ph cus-dish-thumb {
+  width: 100%;
   height: 100%;
-  padding: 12px 12px var(--space-md);
-  border-radius: var(--radius-panel);
-  background: var(--lp-surface);
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+.stamp {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--lp-gold);
+  box-shadow: var(--lp-shadow);
+  color: var(--lp-on-gold);
+  font-family: var(--lp-font-sign);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  transform: rotate(12deg);
+}
+.bd {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 14px;
+}
+h3 {
+  margin: 0;
+  font-family: var(--lp-font-sign);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+h3 a {
   color: var(--lp-ink);
   text-decoration: none;
 }
-a:active {
-  background: var(--lp-tint);
+p {
+  margin: 0;
+  color: var(--lp-ink-2);
+  font-size: 14px;
 }
-a:focus-visible {
+.ft {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+.price {
+  color: var(--lp-red);
+  font-family: var(--lp-font-sign);
+  font-size: 20px;
+  font-weight: 700;
+}
+.add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lp-red);
+  color: #fff;
+  font: 700 14px/1 var(--font-body);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.add:active {
+  transform: scale(0.97);
+}
+.ic {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+a:focus-visible,
+.add:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 3px;
 }
-cus-dish-thumb {
-  aspect-ratio: 4 / 3;
-}
-b {
-  padding-inline: 4px;
-  font-size: 1.25rem;
-}
-small {
-  padding-inline: 4px;
-  color: var(--lp-ink-2);
-}
-.num {
-  padding-inline: 4px;
-  color: var(--lp-red);
-  font-weight: var(--weight-heavy);
-}
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  a {
-    transition: transform 300ms var(--ease-out);
+@media (hover: hover) {
+  .add:hover {
+    background: var(--lp-red-2);
   }
-  a:hover {
-    transform: translateY(-4px);
+  h3 a:hover {
+    color: var(--lp-red);
   }
 }
 @media (min-width: 56.25rem) {
-  .featured__inner {
-    padding-inline: var(--space-xl);
+  .featured__head,
+  .featured__wrap {
+    padding-inline-start: var(--space-xl);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .add {
+    transition: none;
   }
 }

@@ -4,11 +4,14 @@
   display: block;
 }
 .hero {
+  height: var(--hero-h, auto);
   margin-inline: calc(50% - 50vw);
   background: var(--lp-hero-bg);
 }
 .hero__inner {
   display: grid;
+  grid-template-rows: var(--hero-rows, none);
+  height: var(--hero-h, auto);
   text-align: center;
 }
 .hero__photo {
@@ -16,7 +19,7 @@
   overflow: hidden;
   min-height: 180px;
   background: var(--lp-night);
-  aspect-ratio: 4 / 3;
+  aspect-ratio: var(--hero-ratio, 4 / 3);
 }
 .hero__img {
   object-fit: cover;
@@ -108,7 +111,6 @@
   gap: 8px;
 }
 .hero__ctas .btn {
-  min-height: 48px;
   gap: 8px;
   padding-inline: 16px;
   font-size: 0.9375rem;
@@ -179,10 +181,6 @@
   gap: 4px;
   color: var(--lp-ink-2);
   font-size: 12px;
-}
-.btn:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 3px;
 }
 @media (max-height: 760px) {
   .hero__feat {

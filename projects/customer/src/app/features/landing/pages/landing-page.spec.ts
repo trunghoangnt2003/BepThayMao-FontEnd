@@ -107,11 +107,12 @@ describe('LandingPage', () => {
 });
 
 describe('LandingPage data sections', () => {
-  it('renders the scroll story right after the hero with the real xéo dish', async () => {
-    const { html } = await render('Quán xôi gia đình.', [branch]);
-    const story = html.querySelector('cus-landing-hero + cus-landing-story');
+  it('pins the hero and the chicken story in one stage with the real chicken dish', async () => {
+    const menu = [...defaultMenu, dish('d3', 'Xôi gà xé', { price: 40000 })];
+    const { html } = await render('Quán xôi gia đình.', [branch], menu);
+    const story = html.querySelector('#story .stage cus-landing-hero + cus-landing-story');
     expect(story).not.toBeNull();
-    expect(story?.querySelector('.story__cap--final')?.textContent).toContain('Xôi xéo');
+    expect(story?.querySelector('.cap--final')?.textContent).toContain('Xôi gà xé');
   });
 
   it('keeps real about text, branch hours and featured dishes on the page', async () => {
@@ -121,17 +122,10 @@ describe('LandingPage data sections', () => {
     expect(html.querySelector('.featured')?.textContent).toContain('Xôi gấc');
   });
 
-  it('previews the dish under the pointer and hides empty story and branch sections', async () => {
-    const { fixture, html } = await render(null, []);
-    expect(html.querySelector('.about')).toBeNull();
+  it('hides empty story text and branch cards', async () => {
+    const { html } = await render(null, []);
+    expect(html.querySelector('[data-reveal]')).toBeNull();
     expect(html.querySelector('cus-landing-branches')).toBeNull();
-    expect(html.querySelector('figcaption')?.textContent).toContain('Xôi gấc');
-    const xeo = Array.from(html.querySelectorAll('cus-landing-menu a')).find((link) =>
-      link.textContent.includes('Xôi xéo'),
-    );
-    xeo?.dispatchEvent(new Event('mouseenter'));
-    await fixture.whenStable();
-    expect(html.querySelector('figcaption')?.textContent).toContain('Xôi xéo');
   });
 });
 
@@ -142,12 +136,13 @@ describe('LandingPage D sections', () => {
     expect(html.querySelector('.accent-word')).toBeNull();
   });
 
-  it('scrolls every real dish name in a decorative strip', async () => {
+  it('scrolls every real dish name, upper-cased, in two decorative strips', async () => {
     const { html } = await render(null, [branch]);
     const velo = html.querySelector('.velo');
     expect(velo?.getAttribute('aria-hidden')).toBe('true');
-    expect(velo?.textContent).toContain('Xôi xéo');
-    expect(velo?.textContent).toContain('Xôi gấc');
+    expect(velo?.querySelectorAll('.velo__run').length).toBe(2);
+    expect(velo?.textContent).toContain('XÔI XÉO');
+    expect(velo?.textContent).toContain('XÔI GẤC');
   });
 
   it('hides the dish strip for an empty menu', async () => {
@@ -170,14 +165,16 @@ describe('LandingPage D sections', () => {
 });
 
 describe('LandingPage about, branches and final call', () => {
-  it('shows the about section with the shop text', async () => {
+  it('shows the shop story text followed by the brand promise', async () => {
     const { html } = await render('Quán xôi gia đình.', [branch]);
-    expect(html.querySelector('.about')?.textContent).toContain('Quán xôi gia đình.');
+    const reveal = html.querySelector('[data-reveal]');
+    expect(reveal?.textContent).toContain('Quán xôi gia đình.');
+    expect(reveal?.querySelector('em')?.textContent).toBe('Sống trọn từng vị ngon.');
   });
 
   it('hides the about section when the shop wrote nothing', async () => {
     const { html } = await render(null, [branch]);
-    expect(html.querySelector('.about')).toBeNull();
+    expect(html.querySelector('[data-reveal]')).toBeNull();
   });
 
   it('lists real branches inside the #co-so section', async () => {
@@ -192,17 +189,17 @@ describe('LandingPage about, branches and final call', () => {
     const section = html.querySelector('section#co-so');
     expect(section).not.toBeNull();
     expect(section?.querySelector('cus-landing-branches')).toBeNull();
-    expect(section?.querySelector('a')?.getAttribute('href')).toBe('/co-so');
+    expect(section?.querySelector('.more a')?.getAttribute('href')).toBe('/co-so');
   });
 
   it('closes with the final call to order', async () => {
     const { html } = await render(null, [branch], []);
-    expect(html.querySelector('.final h2')?.textContent.trim()).toBe('Đói rồi? Gọi xôi thôi!');
+    expect(html.querySelector('.cta h2')?.textContent.trim()).toBe('Đói rồi? Gọi xôi thôi!');
     const order = Array.from(html.querySelectorAll('a')).filter(
       (link) =>
         link.textContent.includes('Đặt món ngay') && link.getAttribute('href') === '/dat-mon',
     );
     expect(order.length).toBeGreaterThanOrEqual(2);
-    expect(html.querySelector('.final a')?.getAttribute('href')).toBe('/dat-mon');
+    expect(html.querySelector('.cta a')?.getAttribute('href')).toBe('/dat-mon');
   });
 });
